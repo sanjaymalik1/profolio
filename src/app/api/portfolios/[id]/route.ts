@@ -1,0 +1,179 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/nextauth';
+import { prisma } from '@/lib/prisma';
+
+interface RouteParams {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+// GET /api/portfolios/[id] - Get specific portfolio
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const portfolio = await prisma.portfolio.findFirst({
+      where: { 
+        id: id,
+        userId: user.id 
+      },
+    });
+
+    if (!portfolio) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      data: portfolio 
+    });
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// PUT /api/portfolios/[id] - Update portfolio
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const body = await request.json();
+    const { title, content, template, isPublic } = body;
+
+    // Check if portfolio exists and belongs to user
+    const existingPortfolio = await prisma.portfolio.findFirst({
+      where: { 
+        id: id,
+        userId: user.id 
+      },
+    });
+
+    if (!existingPortfolio) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
+
+    // Update slug if title changed
+    let slug = existingPortfolio.slug;
+    if (title && title !== existingPortfolio.title) {
+      const baseSlug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      let newSlug = baseSlug;
+      let counter = 1;
+      
+      // Ensure unique slug (excluding current portfolio)
+      while (await prisma.portfolio.findFirst({ 
+        where: { 
+          slug: newSlug,
+          id: { not: id }
+        } 
+      })) {
+        newSlug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+      slug = newSlug;
+    }
+
+    // If portfolio is published and content is being updated, update lastPublishedAt
+    const updateData: any = {
+      ...(title && { title }),
+      ...(content && { content }),
+      ...(template && { template }),
+      ...(typeof isPublic === 'boolean' && { isPublic }),
+      slug,
+    };
+
+    // Update lastPublishedAt if portfolio is public and content changed
+    if (existingPortfolio.isPublic && content) {
+      updateData.lastPublishedAt = new Date();
+    }
+
+    const updatedPortfolio = await prisma.portfolio.update({
+      where: { id: id },
+      data: updateData,
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      data: updatedPortfolio 
+    });
+  } catch (error) {
+    console.error('Error updating portfolio:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// DELETE /api/portfolios/[id] - Delete portfolio
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check if portfolio exists and belongs to user
+    const existingPortfolio = await prisma.portfolio.findFirst({
+      where: { 
+        id: id,
+        userId: user.id 
+      },
+    });
+
+    if (!existingPortfolio) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
+
+    await prisma.portfolio.delete({
+      where: { id: id },
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Portfolio deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting portfolio:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
