@@ -119,4 +119,57 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Standard cursor styles for interactive elements */
+  a, button, [role="button"], [type="button"], [type="submit"], [type="reset"],
+  label, select, summary, [onclick], [data-clickable="true"] {
+    cursor: pointer;
+  }
+
+  /* Text cursor for input fields */
+  input[type="text"], input[type="email"], input[type="password"], 
+  input[type="search"], input[type="tel"], input[type="url"],
+  input[type="number"], input[type="date"], input[type="time"],
+  textarea, [contenteditable="true"] {
+    cursor: text;
+  }
+
+  /* Default cursor for checkboxes and radio buttons */
+  input[type="checkbox"], input[type="radio"] {
+    cursor: pointer;
+  }
+
+  /* Grab cursor for draggable elements */
+  [draggable="true"] {
+    cursor: grab;
+  }
+
+  [draggable="true"]:active {
+    cursor: grabbing;
+  }
+
+  /* Not-allowed cursor for disabled elements */
+  :disabled, [disabled], [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Move cursor for resizable elements */
+  [resize], .resize {
+    cursor: move;
+  }
+
+  /* Help cursor for elements with additional info */
+  [title]:not(a):not(button), [data-tooltip] {
+    cursor: help;
+  }
+
+  /* Ensure text is selectable in appropriate areas */
+  p, h1, h2, h3, h4, h5, h6, li, td, th, span, div {
+    user-select: text;
+  }
+
+  /* Prevent text selection on UI controls */
+  button, [role="button"], label, select {
+    user-select: none;
+  }
 }
