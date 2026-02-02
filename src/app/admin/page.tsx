@@ -121,17 +121,17 @@ export default function AdminPage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-blue-600">
+          <div className="flex justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/" className="text-lg sm:text-xl font-bold text-blue-600">
                 ProFolio
               </Link>
-              <span className="ml-4 px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
+              <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
                 ADMIN
               </span>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/dashboard" className="text-xs sm:text-sm text-gray-700 hover:text-gray-900">
                 Dashboard
               </Link>
             </div>
@@ -139,18 +139,18 @@ export default function AdminPage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div className="sm:px-0">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Admin Panel - User Management</CardTitle>
-              <CardDescription>
+            <CardHeader className="px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl">Admin Panel - User Management</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 Manage user roles and permissions
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               {message && (
-                <div className={`mb-4 p-4 rounded-md ${
+                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${
                   message.includes('success') || message.includes('updated')
                     ? 'bg-green-50 border border-green-200 text-green-600' 
                     : 'bg-red-50 border border-red-200 text-red-600'
@@ -159,41 +159,46 @@ export default function AdminPage() {
                 </div>
               )}
 
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Joined</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <div className="overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs sm:text-sm">User</TableHead>
+                          <TableHead className="text-xs sm:text-sm hidden md:table-cell">Email</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Role</TableHead>
+                          <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Joined</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
                     {users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <Avatar>
-                              <AvatarFallback>
+                        <TableCell className="text-xs sm:text-sm">
+                          <div className="flex items-center space-x-2 sm:space-x-3">
+                            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                              <AvatarFallback className="text-xs sm:text-sm">
                                 {(user.name || user.email)[0].toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            <div>
-                              <div className="font-medium">
+                            <div className="min-w-0">
+                              <div className="font-medium truncate">
                                 {user.name || 'No name'}
+                              </div>
+                              <div className="text-xs text-gray-500 truncate md:hidden">
+                                {user.email}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{user.email}</TableCell>
+                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">{user.email}</TableCell>
                         <TableCell>
-                          <Badge variant={user.role === 'ADMIN' ? 'destructive' : 'secondary'}>
+                          <Badge variant={user.role === 'ADMIN' ? 'destructive' : 'secondary'} className="text-xs">
                             {user.role}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">
+                        <TableCell className="text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
@@ -206,25 +211,30 @@ export default function AdminPage() {
                               disabled={updating === user.id}
                               variant={user.role === 'ADMIN' ? 'destructive' : 'default'}
                               size="sm"
+                              className="text-xs"
                             >
-                              {updating === user.id ? 'Updating...' : (
+                              {updating === user.id ? (
+                                <span className="hidden sm:inline">Updating...</span>
+                              ) : (
                                 user.role === 'ADMIN' ? 'Demote' : 'Promote'
                               )}
                             </Button>
                           )}
                           {user.id === (session.user as any)?.id && (
-                            <Badge variant="outline">You</Badge>
+                            <Badge variant="outline" className="text-xs">You</Badge>
                           )}
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               </div>
 
               {users.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No users found.</p>
+                <div className="text-center py-6 sm:py-8">
+                  <p className="text-xs sm:text-sm text-muted-foreground">No users found.</p>
                 </div>
               )}
             </CardContent>

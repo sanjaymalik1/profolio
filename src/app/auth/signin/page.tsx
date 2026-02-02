@@ -54,14 +54,14 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         <Card>
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">
+          <CardHeader className="space-y-1 px-4 sm:px-6">
+            <CardTitle className="text-xl sm:text-2xl text-center">
               Sign in to your account
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center text-sm sm:text-base">
               Or{' '}
               <Link
                 href="/auth/signup"
@@ -71,16 +71,16 @@ export default function SignInPage() {
               </Link>
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <form className="space-y-4" onSubmit={handleSubmit}>
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                <div className="bg-red-50 border border-red-200 text-red-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm">
                   {error}
                 </div>
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email" className="text-sm sm:text-base">Email address</Label>
                 <Input
                   id="email"
                   name="email"
@@ -90,11 +90,12 @@ export default function SignInPage() {
                   placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleChange}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -104,11 +105,12 @@ export default function SignInPage() {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="text-sm">
+                <div className="text-xs sm:text-sm">
                   <Link
                     href="/auth/forgot-password"
                     className="font-medium text-primary hover:underline"
@@ -121,7 +123,7 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full"
+                className="w-full text-sm sm:text-base"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
               </Button>
@@ -129,7 +131,7 @@ export default function SignInPage() {
               <div className="text-center">
                 <Link
                   href="/"
-                  className="font-medium text-muted-foreground hover:text-foreground text-sm"
+                  className="font-medium text-muted-foreground hover:text-foreground text-xs sm:text-sm"
                 >
                   ← Back to home
                 </Link>

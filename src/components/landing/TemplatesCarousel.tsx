@@ -47,14 +47,14 @@ export default function TemplatesCarousel() {
   };
 
   return (
-    <section id="templates" className="py-16 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
+    <section id="templates" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 sm:mb-12">
           <motion.h2 
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4"
           >
             Professional Templates
           </motion.h2>
@@ -63,14 +63,14 @@ export default function TemplatesCarousel() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
+            className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto px-4"
           >
             Choose from our curated collection of modern, responsive templates designed for different professions and styles.
           </motion.p>
         </div>
 
         <div className="flex justify-center">
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl">
+          <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl w-full">
             {featuredTemplates.map((template, index) => (
               <motion.div
                 key={template.id}
@@ -81,22 +81,22 @@ export default function TemplatesCarousel() {
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
                 className="w-full"
               >
-                <Card className="overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 border-0 relative h-full flex flex-col">
+                <Card className="overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 border-0 relative h-full flex flex-col group">
                 <div className="relative">
-                  <div className={`h-48 bg-gradient-to-br ${getCategoryColor(template.category)} flex items-center justify-center relative overflow-hidden`}>
+                  <div className={`h-40 sm:h-48 lg:h-52 bg-gradient-to-br ${getCategoryColor(template.category)} flex items-center justify-center relative overflow-hidden`}>
                     {/* Template Preview Placeholder */}
                     <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     
                     {/* Template Name */}
-                    <div className="text-white text-center z-10">
-                      <h3 className="text-lg font-semibold mb-1">{template.name}</h3>
-                      <p className="text-white/80 text-sm">{template.category}</p>
+                    <div className="text-white text-center z-10 px-4">
+                      <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-1">{template.name}</h3>
+                      <p className="text-white/80 text-xs sm:text-sm">{template.category}</p>
                     </div>
 
                     {/* Premium Badge */}
                     {template.isPremium && (
-                      <div className="absolute top-3 right-3">
-                        <Badge variant="secondary" className="bg-yellow-500 text-yellow-900 border-0">
+                      <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+                        <Badge variant="secondary" className="bg-yellow-500 text-yellow-900 border-0 text-xs">
                           <Crown className="w-3 h-3 mr-1" />
                           Pro
                         </Badge>
@@ -105,8 +105,8 @@ export default function TemplatesCarousel() {
 
                     {/* Popular Badge */}
                     {template.isPopular && !template.isPremium && (
-                      <div className="absolute top-3 right-3">
-                        <Badge variant="secondary" className="bg-orange-500 text-orange-900 border-0">
+                      <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+                        <Badge variant="secondary" className="bg-orange-500 text-orange-900 border-0 text-xs">
                           <Star className="w-3 h-3 mr-1" />
                           Popular
                         </Badge>
@@ -120,19 +120,20 @@ export default function TemplatesCarousel() {
                           e.stopPropagation();
                           setPreviewTemplateId(template.id);
                         }}
-                        className="bg-white text-gray-900 px-4 py-2 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0"
+                        className="bg-white text-gray-900 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium hover:bg-gray-100 transition-all duration-300 flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0"
                       >
-                        <Eye className="w-4 h-4" />
-                        Preview Template
+                        <Eye className="w-3 sm:w-4 h-3 sm:h-4" />
+                        <span className="hidden sm:inline">Preview Template</span>
+                        <span className="sm:hidden">Preview</span>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <CardContent className="p-4 flex-1 flex flex-col">
-                  <div className="space-y-3 flex-1 flex flex-col">
+                <CardContent className="p-3 sm:p-4 flex-1 flex flex-col">
+                  <div className="space-y-2 sm:space-y-3 flex-1 flex flex-col">
                     {/* Description */}
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                       {template.description}
                     </p>
 
@@ -168,9 +169,10 @@ export default function TemplatesCarousel() {
                         e.stopPropagation();
                         setPreviewTemplateId(template.id);
                       }}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm mt-auto"
+                      className="w-full bg-blue-600 text-white py-2 px-3 sm:px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-xs sm:text-sm mt-auto"
                     >
-                      Preview Template
+                      <span className="hidden sm:inline">Preview Template</span>
+                      <span className="sm:hidden">Preview</span>
                     </button>
                   </div>
                 </CardContent>
@@ -180,7 +182,7 @@ export default function TemplatesCarousel() {
           </div>
         </div>
         {/* View All Templates Button */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-10 sm:mt-12">
           <motion.button
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -188,7 +190,7 @@ export default function TemplatesCarousel() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push('/templates')}
-            className="bg-gray-900 text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors"
+            className="bg-gray-900 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-medium hover:bg-gray-800 transition-colors"
           >
             View All Templates →
           </motion.button>
