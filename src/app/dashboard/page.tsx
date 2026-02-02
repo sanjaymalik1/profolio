@@ -96,35 +96,37 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between h-14 sm:h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-blue-600">
+              <Link href="/" className="text-lg sm:text-xl font-bold text-blue-600">
                 ProFolio
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {session.user?.name || session.user?.email}</span>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-xs sm:text-sm text-gray-700 hidden md:inline max-w-[150px] lg:max-w-none truncate">Welcome, {session.user?.name || session.user?.email}</span>
               {(session.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin">
-                  <Button variant="secondary" size="sm">
-                    Admin Panel
+                  <Button variant="secondary" size="sm" className="text-xs sm:text-sm">
+                    <span className="hidden sm:inline">Admin Panel</span>
+                    <span className="sm:hidden">Admin</span>
                   </Button>
                 </Link>
               )}
-              <Button variant="destructive" size="sm" onClick={handleSignOut}>
-                Sign Out
+              <Button variant="destructive" size="sm" onClick={handleSignOut} className="text-xs sm:text-sm">
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div className="sm:px-0">
+          <div className="border-2 sm:border-4 border-dashed border-gray-200 rounded-lg p-4 sm:p-6 lg:p-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Dashboard</h1>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Profile Card */}
               <Card>
                 <CardHeader className="flex flex-row items-center space-y-0 pb-2">
@@ -196,9 +198,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="mt-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
-              <div className="flex flex-wrap gap-4">
+            <div className="mt-6 sm:mt-8">
+              <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Quick Actions</h2>
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
                 <Button 
                   onClick={() => {
                     // Clear all portfolio-related flags to start fresh with section palette
@@ -207,39 +209,41 @@ export default function DashboardPage() {
                     localStorage.removeItem('selected_template');
                     router.push('/editor-v2');
                   }}
+                  className="w-full sm:w-auto text-sm sm:text-base"
                 >
                   Create New Portfolio
                 </Button>
-                <Link href="/templates">
-                  <Button variant="outline">Browse Templates</Button>
+                <Link href="/templates" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full text-sm sm:text-base">Browse Templates</Button>
                 </Link>
               </div>
             </div>
 
             {/* Template Showcase */}
-            <div className="mt-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Popular Templates</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="mt-6 sm:mt-8">
+              <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Popular Templates</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-slate-900 to-blue-600 rounded-lg mb-3 flex items-center justify-center">
-                      <span className="text-white font-medium">Dark</span>
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="aspect-video bg-gradient-to-br from-slate-900 to-blue-600 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
+                      <span className="text-white text-sm sm:text-base font-medium">Dark</span>
                     </div>
-                    <h3 className="font-medium text-sm">Dark Professional</h3>
-                    <p className="text-xs text-gray-600 mt-1">Sleek dark theme for developers and tech professionals</p>
+                    <h3 className="font-medium text-xs sm:text-sm">Dark Professional</h3>
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Sleek dark theme for developers and tech professionals</p>
                     <Badge variant="outline" className="text-xs mt-2">Developer</Badge>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2 sm:mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('dark-professional')}
                       >
                         <Eye className="w-3 h-3 mr-1" />
-                        Preview
+                        <span className="hidden sm:inline">Preview</span>
+                        <span className="sm:hidden">View</span>
                       </Button>
                       <Button 
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => {
                           localStorage.setItem('apply_template', 'true');
@@ -248,32 +252,33 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use Template
+                        Use
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-300 rounded-lg mb-3 flex items-center justify-center">
-                      <span className="text-gray-800 font-medium">Elegant</span>
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-300 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
+                      <span className="text-gray-800 text-sm sm:text-base font-medium">Elegant</span>
                     </div>
-                    <h3 className="font-medium text-sm">Elegant Monochrome</h3>
-                    <p className="text-xs text-gray-600 mt-1">Sophisticated design for business professionals</p>
+                    <h3 className="font-medium text-xs sm:text-sm">Elegant Monochrome</h3>
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Sophisticated design for business professionals</p>
                     <Badge variant="outline" className="text-xs mt-2">Business</Badge>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2 sm:mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('elegant-monochrome')}
                       >
                         <Eye className="w-3 h-3 mr-1" />
-                        Preview
+                        <span className="hidden sm:inline">Preview</span>
+                        <span className="sm:hidden">View</span>
                       </Button>
                       <Button 
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => {
                           localStorage.setItem('apply_template', 'true');
@@ -282,32 +287,33 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use Template
+                        Use
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-red-200 rounded-lg mb-3 flex items-center justify-center">
-                      <span className="text-red-800 font-medium">Warm</span>
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-red-200 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
+                      <span className="text-red-800 text-sm sm:text-base font-medium">Warm</span>
                     </div>
-                    <h3 className="font-medium text-sm">Warm Minimalist</h3>
-                    <p className="text-xs text-gray-600 mt-1">Approachable design for freelancers and consultants</p>
+                    <h3 className="font-medium text-xs sm:text-sm">Warm Minimalist</h3>
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Approachable design for freelancers and consultants</p>
                     <Badge variant="outline" className="text-xs mt-2">Freelancer</Badge>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2 sm:mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('warm-minimalist')}
                       >
                         <Eye className="w-3 h-3 mr-1" />
-                        Preview
+                        <span className="hidden sm:inline">Preview</span>
+                        <span className="sm:hidden">View</span>
                       </Button>
                       <Button 
-                        className="flex-1" 
+                        className="flex-1 text-xs" 
                         size="sm"
                         onClick={() => {
                           localStorage.setItem('apply_template', 'true');
@@ -316,7 +322,7 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use Template
+                        Use
                       </Button>
                     </div>
                   </CardContent>
@@ -325,65 +331,66 @@ export default function DashboardPage() {
             </div>
 
             {/* Portfolio Management */}
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium text-gray-900">Your Portfolios</h2>
+            <div className="mt-6 sm:mt-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                <h2 className="text-base sm:text-lg font-medium text-gray-900">Your Portfolios</h2>
                 {portfolios.length > 0 && (
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="text-xs sm:text-sm w-fit">
                     {portfolios.length} portfolio{portfolios.length !== 1 ? 's' : ''}
                   </Badge>
                 )}
               </div>
               
               {portfoliosLoading ? (
-                <div className="text-center py-8">
+                <div className="text-center py-6 sm:py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-sm text-gray-600">Loading portfolios...</p>
+                  <p className="mt-2 text-xs sm:text-sm text-gray-600">Loading portfolios...</p>
                 </div>
               ) : portfolios.length === 0 ? (
-                <Card className="text-center py-8">
+                <Card className="text-center py-6 sm:py-8">
                   <CardContent>
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No portfolios yet</h3>
-                    <p className="text-gray-600 mb-4">Create your first portfolio to get started</p>
+                    <FileText className="h-10 sm:h-12 w-10 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                    <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No portfolios yet</h3>
+                    <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">Create your first portfolio to get started</p>
                     <Button 
                       onClick={() => {
                         // Clear any existing portfolio session to start fresh
                         localStorage.removeItem('current_portfolio');
                         router.push('/editor-v2');
                       }}
+                      className="text-sm sm:text-base"
                     >
                       Create Your First Portfolio
                     </Button>
                   </CardContent>
                 </Card>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {portfolios.map((portfolio) => (
                     <Card key={portfolio.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-base line-clamp-1">{portfolio.title}</CardTitle>
-                            <CardDescription className="flex items-center gap-1 mt-1">
-                              <Clock className="h-3 w-3" />
-                              {new Date(portfolio.updatedAt).toLocaleDateString()}
+                      <CardHeader className="pb-2 sm:pb-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-sm sm:text-base line-clamp-1">{portfolio.title}</CardTitle>
+                            <CardDescription className="flex items-center gap-1 mt-1 text-xs sm:text-sm">
+                              <Clock className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{new Date(portfolio.updatedAt).toLocaleDateString()}</span>
                             </CardDescription>
                           </div>
-                          <div className="flex flex-col gap-1 ml-2">
-                            <Badge variant="outline">
-                              {portfolio.content?.sections?.length || 0} sections
+                          <div className="flex flex-col gap-1 flex-shrink-0">
+                            <Badge variant="outline" className="text-xs">
+                              {portfolio.content?.sections?.length || 0}
                             </Badge>
                             {portfolio.isPublic && (
                               <>
-                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100 text-xs">
                                   <Globe className="h-3 w-3 mr-1" />
-                                  Live
+                                  <span className="hidden sm:inline">Live</span>
                                 </Badge>
                                 {portfolio.lastPublishedAt && portfolio.updatedAt && 
                                  new Date(portfolio.updatedAt) > new Date(portfolio.lastPublishedAt) && (
                                   <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
-                                    Updated
+                                    New
                                   </Badge>
                                 )}
                               </>
@@ -392,11 +399,11 @@ export default function DashboardPage() {
                         </div>
                       </CardHeader>
                       <CardContent className="pt-0">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="grid grid-cols-2 gap-2">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex-1"
+                            className="text-xs"
                             onClick={() => {
                               // Load portfolio into editor with proper structure
                               const portfolioForEditor = {
@@ -419,14 +426,17 @@ export default function DashboardPage() {
                           <Button
                             size="sm"
                             variant={portfolio.isPublic ? "default" : "outline"}
+                            className="text-xs"
                             onClick={() => setPublishDialogPortfolio(portfolio)}
                           >
                             <Globe className="h-3 w-3 mr-1" />
-                            {portfolio.isPublic ? 'Published' : 'Publish'}
+                            <span className="hidden sm:inline">{portfolio.isPublic ? 'Published' : 'Publish'}</span>
+                            <span className="sm:hidden">{portfolio.isPublic ? 'Live' : 'Pub'}</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
+                            className="text-xs"
                             onClick={() => {
                               // Export portfolio
                               const dataStr = JSON.stringify(portfolio.content, null, 2);
@@ -440,11 +450,12 @@ export default function DashboardPage() {
                             }}
                           >
                             <Download className="h-3 w-3" />
+                            <span className="ml-1 hidden sm:inline">Export</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-red-600 hover:text-red-700"
+                            className="text-red-600 hover:text-red-700 text-xs"
                             onClick={() => {
                               if (confirm(`Are you sure you want to delete "${portfolio.title}"?`)) {
                                 deletePortfolio(portfolio.id);
@@ -452,6 +463,7 @@ export default function DashboardPage() {
                             }}
                           >
                             <Trash className="h-3 w-3" />
+                            <span className="ml-1 hidden sm:inline">Delete</span>
                           </Button>
                         </div>
                       </CardContent>

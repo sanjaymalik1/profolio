@@ -132,14 +132,14 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+          <div className="flex justify-between h-14 sm:h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-blue-600">
+              <Link href="/" className="text-lg sm:text-xl font-bold text-blue-600">
                 ProFolio
               </Link>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/dashboard" className="text-xs sm:text-sm text-gray-700 hover:text-gray-900">
                 Dashboard
               </Link>
             </div>
@@ -147,14 +147,14 @@ export default function ProfilePage() {
         </div>
       </nav>
 
-      <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <main className="max-w-4xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+        <div className="sm:px-0">
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile Settings</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Profile Settings</h1>
               
               {message && (
-                <div className={`mb-4 p-4 rounded-md ${
+                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${
                   message.includes('success') 
                     ? 'bg-green-50 border border-green-200 text-green-600' 
                     : 'bg-red-50 border border-red-200 text-red-600'
@@ -163,10 +163,10 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="firstName" className="block text-xs sm:text-sm font-medium text-gray-700">
                       First Name
                     </label>
                     <input
@@ -175,12 +175,12 @@ export default function ProfilePage() {
                       id="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                    <label htmlFor="lastName" className="block text-xs sm:text-sm font-medium text-gray-700">
                       Last Name
                     </label>
                     <input
@@ -189,13 +189,13 @@ export default function ProfilePage() {
                       id="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="mt-1 block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="bio" className="block text-xs sm:text-sm font-medium text-gray-700">
                     Bio
                   </label>
                   <textarea

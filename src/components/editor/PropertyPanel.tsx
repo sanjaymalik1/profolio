@@ -78,25 +78,25 @@ export const PropertyPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full">
+    <div className="w-full sm:w-72 lg:w-80 bg-white border-l border-gray-200 flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-3 sm:p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Settings className="w-5 h-5" />
-            Properties
+          <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">Properties</span>
           </h2>
           <Badge variant="outline" className="text-xs">
             <Eye className="w-3 h-3 mr-1" />
-            Live Preview
+            <span className="hidden sm:inline">Live</span>
           </Badge>
         </div>
         {selectedSection && (
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="capitalize">
+            <Badge variant="secondary" className="capitalize text-xs">
               {selectedSection.type}
             </Badge>
-            <span className="text-sm text-gray-600">Section</span>
+            <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">Section</span>
           </div>
         )}
       </div>
