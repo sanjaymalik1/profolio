@@ -79,10 +79,10 @@ export default function DashboardPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-blue-600 mx-auto"></div>
+          <p className="mt-6 text-sm font-medium text-slate-700">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -93,26 +93,28 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-slate-50">
+      <nav className="bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-14 sm:h-16">
+          <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-lg sm:text-xl font-bold text-blue-600">
+              <Link href="/" className="text-xl font-bold text-blue-600 tracking-tight">
                 ProFolio
               </Link>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <span className="text-xs sm:text-sm text-gray-700 hidden md:inline max-w-[150px] lg:max-w-none truncate">Welcome, {session.user?.name || session.user?.email}</span>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <span className="text-sm text-slate-700 hidden md:inline max-w-[200px] truncate font-medium">
+                {session.user?.name || session.user?.email}
+              </span>
               {(session.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin">
-                  <Button variant="secondary" size="sm" className="text-xs sm:text-sm">
+                  <Button variant="secondary" size="sm" className="text-sm border-slate-200">
                     <span className="hidden sm:inline">Admin Panel</span>
                     <span className="sm:hidden">Admin</span>
                   </Button>
                 </Link>
               )}
-              <Button variant="destructive" size="sm" onClick={handleSignOut} className="text-xs sm:text-sm">
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="text-sm border-slate-200 hover:bg-slate-50">
                 <span className="hidden sm:inline">Sign Out</span>
                 <span className="sm:hidden">Out</span>
               </Button>
@@ -121,23 +123,26 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
-        <div className="sm:px-0">
-          <div className="border-2 sm:border-4 border-dashed border-gray-200 rounded-lg p-4 sm:p-6 lg:p-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Dashboard</h1>
+      <main className="max-w-7xl mx-auto py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="space-y-8">
+          {/* Header */}
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+            <p className="mt-2 text-sm text-slate-600">Manage your portfolios and profile</p>
+          </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Profile Card */}
-              <Card>
+              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <Avatar>
-                    <AvatarFallback>
+                  <Avatar className="h-12 w-12 border-2 border-slate-100">
+                    <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold text-lg">
                       {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="ml-4">
-                    <CardTitle className="text-sm font-medium">Profile</CardTitle>
-                    <CardDescription>
+                  <div className="ml-4 flex-1 min-w-0">
+                    <CardTitle className="text-sm font-semibold text-slate-900">Profile</CardTitle>
+                    <CardDescription className="text-xs truncate">
                       {profile?.firstName && profile?.lastName 
                         ? `${profile.firstName} ${profile.lastName}`
                         : session.user?.name || 'Complete your profile'
@@ -145,31 +150,31 @@ export default function DashboardPage() {
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-2">
                   <Link href="/profile">
-                    <Button variant="outline" size="sm" className="w-full">
-                      Edit profile
+                    <Button variant="outline" size="sm" className="w-full border-slate-200 hover:bg-slate-50">
+                      Edit Profile
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
 
               {/* Portfolios Card */}
-              <Card>
+              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-white" />
+                  <div className="h-12 w-12 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center">
+                    <FileText className="h-6 w-6 text-emerald-700" />
                   </div>
-                  <div className="ml-4">
-                    <CardTitle className="text-sm font-medium">Portfolios</CardTitle>
-                    <CardDescription>
+                  <div className="ml-4 flex-1 min-w-0">
+                    <CardTitle className="text-sm font-semibold text-slate-900">Portfolios</CardTitle>
+                    <CardDescription className="text-xs">
                       {portfoliosLoading ? 'Loading...' : `${getPortfolioStats().total} Created`}
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-2">
                   {portfolios.length > 0 && (
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-xs text-slate-600 text-center font-medium">
                       {getPortfolioStats().recentlyUpdated} updated recently
                     </p>
                   )}
@@ -177,20 +182,20 @@ export default function DashboardPage() {
               </Card>
 
               {/* Account Info Card */}
-              <Card>
+              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center">
-                    <span className="text-white text-lg font-medium">A</span>
+                  <div className="h-12 w-12 rounded-full bg-purple-100 border-2 border-purple-200 flex items-center justify-center">
+                    <span className="text-purple-700 text-xl font-bold">A</span>
                   </div>
-                  <div className="ml-4">
-                    <CardTitle className="text-sm font-medium">Account</CardTitle>
-                    <CardDescription>
+                  <div className="ml-4 flex-1 min-w-0">
+                    <CardTitle className="text-sm font-semibold text-slate-900">Account</CardTitle>
+                    <CardDescription className="text-xs">
                       {(session.user as any)?.role || 'USER'}
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
+                <CardContent className="pt-2">
+                  <p className="text-xs text-slate-600 truncate">
                     {session.user?.email}
                   </p>
                 </CardContent>
@@ -198,9 +203,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="mt-6 sm:mt-8">
-              <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Quick Actions</h2>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
                 <Button 
                   onClick={() => {
                     // Clear all portfolio-related flags to start fresh with section palette
@@ -209,38 +214,38 @@ export default function DashboardPage() {
                     localStorage.removeItem('selected_template');
                     router.push('/editor-v2');
                   }}
-                  className="w-full sm:w-auto text-sm sm:text-base"
+                  className="w-full sm:w-auto"
+                  size="default"
                 >
                   Create New Portfolio
                 </Button>
                 <Link href="/templates" className="w-full sm:w-auto">
-                  <Button variant="outline" className="w-full text-sm sm:text-base">Browse Templates</Button>
+                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50">Browse Templates</Button>
                 </Link>
               </div>
             </div>
 
             {/* Template Showcase */}
-            <div className="mt-6 sm:mt-8">
-              <h2 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Popular Templates</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="aspect-video bg-gradient-to-br from-slate-900 to-blue-600 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
-                      <span className="text-white text-sm sm:text-base font-medium">Dark</span>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Popular Templates</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <CardContent className="p-4">
+                    <div className="aspect-video bg-gradient-to-br from-slate-900 to-blue-600 rounded-lg mb-3 flex items-center justify-center shadow-inner">
+                      <span className="text-white font-semibold">Dark</span>
                     </div>
-                    <h3 className="font-medium text-xs sm:text-sm">Dark Professional</h3>
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Sleek dark theme for developers and tech professionals</p>
-                    <Badge variant="outline" className="text-xs mt-2">Developer</Badge>
-                    <div className="flex gap-2 mt-2 sm:mt-3">
+                    <h3 className="font-semibold text-sm text-slate-900">Dark Professional</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Sleek dark theme for developers and tech professionals</p>
+                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Developer</Badge>
+                    <div className="flex gap-2 mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1 text-xs" 
+                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('dark-professional')}
                       >
-                        <Eye className="w-3 h-3 mr-1" />
-                        <span className="hidden sm:inline">Preview</span>
-                        <span className="sm:hidden">View</span>
+                        <Eye className="w-3.5 h-3.5 mr-1.5" />
+                        Preview
                       </Button>
                       <Button 
                         className="flex-1 text-xs" 
@@ -252,30 +257,29 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use
+                        Use Template
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-300 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
-                      <span className="text-gray-800 text-sm sm:text-base font-medium">Elegant</span>
+                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <CardContent className="p-4">
+                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-300 rounded-lg mb-3 flex items-center justify-center shadow-inner">
+                      <span className="text-gray-800 font-semibold">Elegant</span>
                     </div>
-                    <h3 className="font-medium text-xs sm:text-sm">Elegant Monochrome</h3>
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Sophisticated design for business professionals</p>
-                    <Badge variant="outline" className="text-xs mt-2">Business</Badge>
-                    <div className="flex gap-2 mt-2 sm:mt-3">
+                    <h3 className="font-semibold text-sm text-slate-900">Elegant Monochrome</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Sophisticated design for business professionals</p>
+                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Business</Badge>
+                    <div className="flex gap-2 mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1 text-xs" 
+                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('elegant-monochrome')}
                       >
-                        <Eye className="w-3 h-3 mr-1" />
-                        <span className="hidden sm:inline">Preview</span>
-                        <span className="sm:hidden">View</span>
+                        <Eye className="w-3.5 h-3.5 mr-1.5" />
+                        Preview
                       </Button>
                       <Button 
                         className="flex-1 text-xs" 
@@ -287,30 +291,29 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use
+                        Use Template
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-red-200 rounded-lg mb-2 sm:mb-3 flex items-center justify-center">
-                      <span className="text-red-800 text-sm sm:text-base font-medium">Warm</span>
+                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <CardContent className="p-4">
+                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-red-200 rounded-lg mb-3 flex items-center justify-center shadow-inner">
+                      <span className="text-red-800 font-semibold">Warm</span>
                     </div>
-                    <h3 className="font-medium text-xs sm:text-sm">Warm Minimalist</h3>
-                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">Approachable design for freelancers and consultants</p>
-                    <Badge variant="outline" className="text-xs mt-2">Freelancer</Badge>
-                    <div className="flex gap-2 mt-2 sm:mt-3">
+                    <h3 className="font-semibold text-sm text-slate-900">Warm Minimalist</h3>
+                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Approachable design for freelancers and consultants</p>
+                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Freelancer</Badge>
+                    <div className="flex gap-2 mt-3">
                       <Button 
                         variant="outline"
-                        className="flex-1 text-xs" 
+                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
                         size="sm"
                         onClick={() => setPreviewTemplateId('warm-minimalist')}
                       >
-                        <Eye className="w-3 h-3 mr-1" />
-                        <span className="hidden sm:inline">Preview</span>
-                        <span className="sm:hidden">View</span>
+                        <Eye className="w-3.5 h-3.5 mr-1.5" />
+                        Preview
                       </Button>
                       <Button 
                         className="flex-1 text-xs" 
@@ -322,7 +325,7 @@ export default function DashboardPage() {
                           router.push('/editor-v2');
                         }}
                       >
-                        Use
+                        Use Template
                       </Button>
                     </div>
                   </CardContent>
@@ -331,34 +334,35 @@ export default function DashboardPage() {
             </div>
 
             {/* Portfolio Management */}
-            <div className="mt-6 sm:mt-8">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
-                <h2 className="text-base sm:text-lg font-medium text-gray-900">Your Portfolios</h2>
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                <h2 className="text-lg font-semibold text-slate-900">Your Portfolios</h2>
                 {portfolios.length > 0 && (
-                  <Badge variant="secondary" className="text-xs sm:text-sm w-fit">
+                  <Badge variant="secondary" className="text-sm w-fit bg-slate-100 text-slate-700 border border-slate-200">
                     {portfolios.length} portfolio{portfolios.length !== 1 ? 's' : ''}
                   </Badge>
                 )}
               </div>
               
               {portfoliosLoading ? (
-                <div className="text-center py-6 sm:py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-xs sm:text-sm text-gray-600">Loading portfolios...</p>
+                <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mx-auto"></div>
+                  <p className="mt-4 text-sm font-medium text-slate-700">Loading portfolios...</p>
                 </div>
               ) : portfolios.length === 0 ? (
-                <Card className="text-center py-6 sm:py-8">
+                <Card className="text-center py-12 border-slate-200 shadow-sm">
                   <CardContent>
-                    <FileText className="h-10 sm:h-12 w-10 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-                    <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No portfolios yet</h3>
-                    <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">Create your first portfolio to get started</p>
+                    <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <FileText className="h-10 w-10 text-slate-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No portfolios yet</h3>
+                    <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">Create your first portfolio to showcase your work and share it with the world</p>
                     <Button 
                       onClick={() => {
                         // Clear any existing portfolio session to start fresh
                         localStorage.removeItem('current_portfolio');
                         router.push('/editor-v2');
                       }}
-                      className="text-sm sm:text-base"
                     >
                       Create Your First Portfolio
                     </Button>
@@ -472,7 +476,6 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
-          </div>
         </div>
       </main>
 

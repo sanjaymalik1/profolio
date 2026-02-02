@@ -5,11 +5,11 @@ import { EditorSection } from '@/types/editor';
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
-import { HeroSection } from '@/components/portfolio/sections/HeroSection';
-import { AboutSection } from '@/components/portfolio/sections/AboutSection';
-import { SkillsSection } from '@/components/portfolio/sections/SkillsSection';
-import { ProjectsSection } from '@/components/portfolio/sections/ProjectsSection';
-import { ContactSection } from '@/components/portfolio/sections/ContactSection';
+import HeroSection from '@/components/portfolio/sections/HeroSection';
+import AboutSection from '@/components/portfolio/sections/AboutSection';
+import SkillsSection from '@/components/portfolio/sections/SkillsSection';
+import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
+import ContactSection from '@/components/portfolio/sections/ContactSection';
 
 interface PortfolioRendererProps {
   sections: EditorSection[];

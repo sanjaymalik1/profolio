@@ -23,11 +23,13 @@ export const PropertyPanel: React.FC = () => {
   const renderPropertyForm = () => {
     if (!selectedSection) {
       return (
-        <div className="flex flex-col items-center justify-center h-64 text-center text-gray-500">
-          <Settings className="w-12 h-12 mb-4 opacity-50" />
-          <h3 className="text-lg font-medium mb-2">No Section Selected</h3>
-          <p className="text-sm">
-            Select a section from the canvas to edit its properties
+        <div className="flex flex-col items-center justify-center h-80 text-center px-4">
+          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+            <Settings className="w-8 h-8 text-slate-400" />
+          </div>
+          <h3 className="text-base font-semibold text-slate-900 mb-2">No Section Selected</h3>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
+            Select a section from the canvas to edit its properties and customize content
           </p>
         </div>
       );
@@ -78,25 +80,25 @@ export const PropertyPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-full sm:w-72 lg:w-80 bg-white border-l border-gray-200 flex flex-col h-full">
+    <div className="w-full sm:w-72 lg:w-80 xl:w-96 bg-white border-l border-slate-200 flex flex-col h-full">
       {/* Header */}
-      <div className="p-3 sm:p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-base sm:text-lg font-semibold flex items-center gap-2">
-            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">Properties</span>
+      <div className="p-4 lg:p-5 border-b border-slate-200 bg-slate-50">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base lg:text-lg font-semibold flex items-center gap-2 text-slate-900">
+            <Settings className="w-4 h-4 lg:w-5 lg:h-5 text-slate-600" />
+            <span>Properties</span>
           </h2>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs border-slate-200 text-slate-700">
             <Eye className="w-3 h-3 mr-1" />
-            <span className="hidden sm:inline">Live</span>
+            Live
           </Badge>
         </div>
         {selectedSection && (
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="capitalize text-xs">
+            <Badge variant="secondary" className="capitalize text-xs bg-blue-50 text-blue-700 border border-blue-200 font-medium">
               {selectedSection.type}
             </Badge>
-            <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">Section</span>
+            <span className="text-xs text-slate-600">Section</span>
           </div>
         )}
       </div>
@@ -109,8 +111,8 @@ export const PropertyPanel: React.FC = () => {
       </div>
 
       {/* Footer Actions */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="text-xs text-gray-500 text-center">
+      <div className="p-4 border-t border-slate-200 bg-slate-50">
+        <div className="text-xs text-slate-600 text-center font-medium">
           Changes are applied in real-time
         </div>
       </div>

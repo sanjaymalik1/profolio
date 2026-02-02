@@ -54,48 +54,47 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <Card>
-          <CardHeader className="space-y-1 px-4 sm:px-6">
-            <CardTitle className="text-xl sm:text-2xl text-center">
-              Sign in to your account
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-blue-600 tracking-tight">ProFolio</h1>
+          </Link>
+        </div>
+        <Card className="border-slate-200 shadow-lg">
+          <CardHeader className="space-y-1 px-6 pt-8 pb-6">
+            <CardTitle className="text-2xl text-center font-bold text-slate-900">
+              Welcome back
             </CardTitle>
-            <CardDescription className="text-center text-sm sm:text-base">
-              Or{' '}
-              <Link
-                href="/auth/signup"
-                className="font-medium text-primary hover:underline"
-              >
-                create a new account
-              </Link>
+            <CardDescription className="text-center text-slate-600">
+              Sign in to your account to continue
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <form className="space-y-4" onSubmit={handleSubmit}>
+          <CardContent className="px-6 pb-8">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-medium">
                   {error}
                 </div>
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm sm:text-base">Email address</Label>
+                <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email address</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="Enter your email"
+                  placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -105,17 +104,17 @@ export default function SignInPage() {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="flex items-center justify-between">
-                <div className="text-xs sm:text-sm">
+                <div className="text-sm">
                   <Link
                     href="/auth/forgot-password"
-                    className="font-medium text-primary hover:underline"
+                    className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
                   >
-                    Forgot your password?
+                    Forgot password?
                   </Link>
                 </div>
               </div>
@@ -123,15 +122,38 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full text-sm sm:text-base"
+                className="w-full h-11 font-medium"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Signing in...
+                  </span>
+                ) : 'Sign in'}
               </Button>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-slate-500">New to ProFolio?</span>
+                </div>
+              </div>
 
               <div className="text-center">
                 <Link
+                  href="/auth/signup"
+                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Create an account
+                </Link>
+              </div>
+
+              <div className="text-center pt-2">
+                <Link
                   href="/"
-                  className="font-medium text-muted-foreground hover:text-foreground text-xs sm:text-sm"
+                  className="text-sm text-slate-600 hover:text-slate-900"
                 >
                   ← Back to home
                 </Link>

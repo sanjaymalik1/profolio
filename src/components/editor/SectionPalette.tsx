@@ -112,15 +112,15 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
         onDragStart={() => console.log(`Started dragging ${section.displayName}`)}
         onDragEnd={(result) => console.log('Drag ended:', result)}
       >
-        <Card className="cursor-grab hover:shadow-md transition-shadow border-2 hover:border-blue-300">
+        <Card className="cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 border border-slate-200 hover:border-blue-300 bg-white">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <IconComponent size={20} className="text-blue-600" />
+              <div className="p-2.5 bg-blue-50 rounded-lg border border-blue-100 flex-shrink-0">
+                <IconComponent className="w-5 h-5 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm mb-1">{section.displayName}</h4>
-                <p className="text-xs text-muted-foreground leading-tight">
+                <h4 className="font-semibold text-sm mb-1 text-slate-900">{section.displayName}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
                   {section.description}
                 </p>
               </div>
@@ -134,8 +134,8 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
   return (
     <div className={`space-y-6 ${className}`}>
       <div>
-        <h3 className="text-lg font-semibold mb-4">Section Palette</h3>
-        <p className="text-sm text-muted-foreground mb-6">
+        <h3 className="text-lg font-semibold mb-2 text-slate-900">Section Palette</h3>
+        <p className="text-sm text-slate-600 leading-relaxed">
           Drag sections to your portfolio canvas to build your page
         </p>
       </div>
@@ -143,12 +143,12 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Basic Sections */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <h4 className="font-medium text-sm">Essential Sections</h4>
-          <Badge variant="secondary" className="text-xs">
+          <h4 className="font-semibold text-sm text-slate-900">Essential Sections</h4>
+          <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-700 border border-slate-200">
             {basicSections.length}
           </Badge>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {basicSections.map(renderSection)}
         </div>
       </div>
@@ -156,23 +156,23 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Advanced Sections */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <h4 className="font-medium text-sm">Advanced Sections</h4>
-          <Badge variant="outline" className="text-xs">
+          <h4 className="font-semibold text-sm text-slate-900">Advanced Sections</h4>
+          <Badge variant="outline" className="text-xs border-slate-300 text-slate-700">
             {advancedSections.length}
           </Badge>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {advancedSections.map(renderSection)}
         </div>
       </div>
 
       {/* Tips */}
-      <div className="p-4 bg-muted/50 rounded-lg">
-        <h5 className="font-medium text-sm mb-2">💡 Quick Tips</h5>
-        <ul className="text-xs text-muted-foreground space-y-1">
+      <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
+        <h5 className="font-semibold text-sm mb-2 text-slate-900">Quick Tips</h5>
+        <ul className="text-xs text-slate-700 space-y-1.5 leading-relaxed">
           <li>• Drag sections to reorder them</li>
           <li>• Click on sections to edit content</li>
-          <li>• Use the properties panel to customize styling</li>
+          <li>• Use the properties panel to customize</li>
         </ul>
       </div>
     </div>

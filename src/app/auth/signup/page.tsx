@@ -61,13 +61,17 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full">
-          <Card>
-            <CardContent className="pt-6 px-4 sm:px-6">
-              <div className="bg-green-50 border border-green-200 text-green-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-md text-center text-xs sm:text-sm">
-                Account created successfully! Redirecting to sign in...
+          <Card className="border-slate-200 shadow-lg">
+            <CardContent className="pt-12 pb-12 px-8 text-center">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Account created!</h3>
+              <p className="text-sm text-slate-600">Redirecting you to sign in...</p>
             </CardContent>
           </Card>
         </div>
@@ -76,78 +80,77 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
-        <Card>
-          <CardHeader className="space-y-1 px-4 sm:px-6">
-            <CardTitle className="text-xl sm:text-2xl text-center">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-blue-600 tracking-tight">ProFolio</h1>
+          </Link>
+        </div>
+        <Card className="border-slate-200 shadow-lg">
+          <CardHeader className="space-y-1 px-6 pt-8 pb-6">
+            <CardTitle className="text-2xl text-center font-bold text-slate-900">
               Create your account
             </CardTitle>
-            <CardDescription className="text-center text-sm sm:text-base">
-              Or{' '}
-              <Link
-                href="/auth/signin"
-                className="font-medium text-primary hover:underline"
-              >
-                sign in to your existing account
-              </Link>
+            <CardDescription className="text-center text-slate-600">
+              Start building your professional portfolio today
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-4 sm:px-6">
-            <form className="space-y-4" onSubmit={handleSubmit}>
+          <CardContent className="px-6 pb-8">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-md text-xs sm:text-sm">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm font-medium">
                   {error}
                 </div>
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm sm:text-base">Full Name</Label>
+                <Label htmlFor="name" className="text-sm font-medium text-slate-700">Full Name</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
                   autoComplete="name"
                   required
-                  placeholder="Enter your full name"
+                  placeholder="John Doe"
                   value={formData.name}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm sm:text-base">Email address</Label>
+                <Label htmlFor="email" className="text-sm font-medium text-slate-700">Email address</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="Enter your email"
+                  placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium text-slate-700">Password</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
                   autoComplete="new-password"
                   required
-                  placeholder="Create a password"
+                  placeholder="Create a strong password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -157,26 +160,49 @@ export default function SignUpPage() {
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="text-sm sm:text-base"
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
-              <div className="text-xs sm:text-sm text-muted-foreground">
-                Password must contain at least 8 characters, including uppercase, lowercase, number, and special character.
+              <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <span className="font-medium">Password requirements:</span> At least 8 characters with uppercase, lowercase, number, and special character.
               </div>
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full text-sm sm:text-base"
+                className="w-full h-11 font-medium"
               >
-                {loading ? 'Creating account...' : 'Create account'}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Creating account...
+                  </span>
+                ) : 'Create account'}
               </Button>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-slate-500">Already have an account?</span>
+                </div>
+              </div>
 
               <div className="text-center">
                 <Link
+                  href="/auth/signin"
+                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Sign in instead
+                </Link>
+              </div>
+
+              <div className="text-center pt-2">
+                <Link
                   href="/"
-                  className="font-medium text-muted-foreground hover:text-foreground text-xs sm:text-sm"
+                  className="text-sm text-slate-600 hover:text-slate-900"
                 >
                   ← Back to home
                 </Link>

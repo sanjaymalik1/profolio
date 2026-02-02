@@ -137,30 +137,30 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
         {/* Section wrapper */}
         <div className={`
-          relative border-2 border-transparent transition-all duration-200
-          ${isSelected ? 'border-blue-500 ring-2 ring-blue-500 ring-opacity-20' : ''}
-          ${state.isDragging ? 'border-dashed border-gray-300' : ''}
+          relative border-2 rounded-lg transition-all duration-200
+          ${isSelected ? 'border-blue-500 ring-2 ring-blue-100 shadow-md' : 'border-transparent'}
+          ${state.isDragging ? 'border-dashed border-slate-300' : ''}
         `}>
           {/* Section controls overlay */}
           <div className={`
-            absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity
-            ${isSelected ? 'opacity-100' : ''}
+            absolute top-3 right-3 z-20 flex gap-2 transition-opacity
+            ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
           `}>
             <Button
               size="sm"
               variant="secondary"
               onClick={() => selectSection(section.id)}
-              className="bg-white/90 backdrop-blur-sm"
+              className="h-8 px-3 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm text-slate-700"
             >
-              <Edit size={14} />
+              <Edit className="h-3.5 w-3.5" />
             </Button>
             <Button
               size="sm"
               variant="destructive"
               onClick={() => removeSection(section.id)}
-              className="bg-white/90 backdrop-blur-sm text-red-600 hover:bg-red-50"
+              className="h-8 px-3 bg-white hover:bg-red-50 border border-red-200 shadow-sm text-red-600"
             >
-              <Trash2 size={14} />
+              <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
 
@@ -171,20 +171,20 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             onDragEnd={() => setDragging(false)}
           >
             <div className={`
-              absolute left-2 top-2 z-20 p-2 rounded bg-white/90 backdrop-blur-sm
-              opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing
-              ${isSelected ? 'opacity-100' : ''}
+              absolute left-3 top-3 z-20 p-2 rounded-md bg-white border border-slate-200 shadow-sm
+              cursor-grab active:cursor-grabbing transition-opacity
+              ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
             `}>
-              <GripVertical size={14} className="text-gray-600" />
+              <GripVertical className="h-4 w-4 text-slate-500" />
             </div>
           </Draggable>
 
           {/* Section type badge */}
           <div className={`
-            absolute top-2 left-16 z-20 opacity-0 group-hover:opacity-100 transition-opacity
-            ${isSelected ? 'opacity-100' : ''}
+            absolute top-3 left-14 z-20 transition-opacity
+            ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
           `}>
-            <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm text-xs">
+            <Badge variant="secondary" className="bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-sm capitalize">
               {section.type}
             </Badge>
           </div>
@@ -201,17 +201,17 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
   return (
     <div className={`relative ${className}`}>
       {/* Canvas header */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-muted/30 rounded-lg">
+      <div className="flex items-center justify-between mb-6 p-4 lg:p-5 bg-white rounded-lg border border-slate-200 shadow-sm">
         <div>
-          <h3 className="font-semibold">Portfolio Canvas</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-semibold text-slate-900 text-base">Portfolio Canvas</h3>
+          <p className="text-sm text-slate-600 mt-0.5">
             {state?.sections?.length || 0} section{(state?.sections?.length || 0) !== 1 ? 's' : ''}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Eye size={14} className="mr-1" />
-            Preview
+          <Button variant="outline" size="sm" className="hidden sm:flex items-center gap-2 border-slate-200 hover:bg-slate-50">
+            <Eye className="w-4 h-4" />
+            <span className="hidden md:inline">Preview</span>
           </Button>
         </div>
       </div>
@@ -221,20 +221,20 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
         accept={['palette-section', 'editor-section']}
         onDrop={handleDrop}
         className={`
-          min-h-[600px] border-2 border-dashed border-gray-300 rounded-lg
-          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center' : 'p-4'}
-          ${state?.isDragging ? 'border-blue-400 bg-blue-50/30' : ''}
+          min-h-[600px] border-2 border-dashed rounded-xl transition-all
+          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-white' : 'p-6 bg-white'}
+          ${state?.isDragging ? 'border-blue-400 bg-blue-50/50 shadow-lg' : 'border-slate-300 hover:border-slate-400'}
         `}
       >
         {(state?.sections?.length || 0) === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-muted-foreground mb-4">
-              <Plus size={48} className="mx-auto mb-4 opacity-50" />
-              <h4 className="text-lg font-medium">Start Building Your Portfolio</h4>
-              <p className="text-sm">
-                Drag sections from the palette to begin creating your portfolio
-              </p>
+          <div className="text-center py-16 px-4">
+            <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-10 h-10 text-slate-400" />
             </div>
+            <h4 className="text-lg font-semibold text-slate-900 mb-2">Start Building Your Portfolio</h4>
+            <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
+              Drag sections from the left panel to begin creating your portfolio, or choose a template to get started quickly.
+            </p>
           </div>
         ) : (
           <div className="space-y-0">
@@ -256,9 +256,9 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
       {/* Canvas footer */}
       {(state?.sections?.length || 0) > 0 && (
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg text-center">
-          <p className="text-sm text-muted-foreground">
-            💡 Click on sections to edit • Drag the grip handle to reorder • Use the trash icon to delete
+        <div className="mt-6 p-4 lg:p-5 bg-slate-50 rounded-lg border border-slate-200">
+          <p className="text-sm text-slate-600 text-center leading-relaxed">
+            <span className="font-medium text-slate-700">Tip:</span> Click sections to edit • Drag the grip handle to reorder • Use the trash icon to delete
           </p>
         </div>
       )}
