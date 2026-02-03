@@ -24,16 +24,32 @@ export const usePortfolios = () => {
   const loadPortfolios = async () => {
     try {
       const response = await fetch('/api/portfolios');
+      
+      // Handle auth errors gracefully
+      if (response.status === 401) {
+        console.warn('[usePortfolios] Unauthorized - user not signed in');
+        setPortfolios([]);
+        setLoading(false);
+        return;
+      }
+      
+      if (response.status === 403) {
+        console.warn('[usePortfolios] Forbidden - insufficient permissions');
+        setPortfolios([]);
+        setLoading(false);
+        return;
+      }
+      
       const result = await response.json();
       
-      if (result.success) {
+      if (result.success && result.data) {
         setPortfolios(result.data);
       } else {
-        console.error('Error loading portfolios:', result.error);
+        console.error('[usePortfolios] Error loading portfolios:', result.error || 'Unknown error');
         setPortfolios([]);
       }
     } catch (error) {
-      console.error('Error loading portfolios:', error);
+      console.error('[usePortfolios] Failed to fetch portfolios:', error);
       setPortfolios([]);
     } finally {
       setLoading(false);

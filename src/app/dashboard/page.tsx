@@ -337,8 +337,8 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <button
-                className="group bg-white border-2 border-slate-900/10 rounded-lg overflow-hidden hover:border-slate-900/20 hover:shadow-lg transition-all text-left relative"
+              <div
+                className="group bg-white border-2 border-slate-900/10 rounded-lg overflow-hidden hover:border-slate-900/20 hover:shadow-lg transition-all text-left relative cursor-pointer"
                 onClick={() => {
                   localStorage.setItem('apply_template', 'true');
                   localStorage.setItem('selected_template', 'dark-professional');
@@ -349,21 +349,20 @@ export default function DashboardPage() {
                 <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">Recommended</div>
                 <div className="aspect-[16/10] bg-slate-700 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors"></div>
-                  <Button 
-                    size="sm" 
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white text-slate-900 hover:bg-white shadow-lg"
+                  <span 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white text-slate-900 hover:bg-white shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
-                  </Button>
+                  </span>
                 </div>
                 <div className="p-2.5">
                   <h3 className="text-xs font-medium text-slate-700">Dark Professional</h3>
                   <p className="text-xs text-slate-500 mt-0.5">Best for developers</p>
                 </div>
-              </button>
+              </div>
 
-              <button
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+              <div
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
                 onClick={() => {
                   localStorage.setItem('apply_template', 'true');
                   localStorage.setItem('selected_template', 'elegant-monochrome');
@@ -373,21 +372,20 @@ export default function DashboardPage() {
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <Button 
-                    size="sm" 
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  <span 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
-                  </Button>
+                  </span>
                 </div>
                 <div className="p-2.5">
                   <h3 className="text-xs font-medium text-slate-700">Elegant Monochrome</h3>
                   <p className="text-xs text-slate-500 mt-0.5">Business & consulting</p>
                 </div>
-              </button>
+              </div>
 
-              <button
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+              <div
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
                 onClick={() => {
                   localStorage.setItem('apply_template', 'true');
                   localStorage.setItem('selected_template', 'warm-minimalist');
@@ -397,21 +395,20 @@ export default function DashboardPage() {
               >
                 <div className="aspect-[16/10] bg-amber-50/50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <Button 
-                    size="sm" 
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  <span 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
-                  </Button>
+                  </span>
                 </div>
                 <div className="p-2.5">
                   <h3 className="text-xs font-medium text-slate-700">Warm Minimalist</h3>
                   <p className="text-xs text-slate-500 mt-0.5">Freelancers & creators</p>
                 </div>
-              </button>
+              </div>
 
-              <button
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+              <div
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
                 onClick={() => {
                   localStorage.removeItem('current_portfolio');
                   localStorage.removeItem('apply_template');
@@ -421,18 +418,17 @@ export default function DashboardPage() {
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <Button 
-                    size="sm" 
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  <span 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Start Blank
-                  </Button>
+                  </span>
                 </div>
                 <div className="p-2.5">
                   <h3 className="text-xs font-medium text-slate-700">Blank Canvas</h3>
                   <p className="text-xs text-slate-500 mt-0.5">Full control</p>
                 </div>
-              </button>
+              </div>
             </div>
           </div>
         </div>

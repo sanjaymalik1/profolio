@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/user-helpers';
 
 // GET /api/portfolios - Get user's portfolios
 export async function GET() {
@@ -8,19 +9,25 @@ export async function GET() {
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Unauthorized - Please sign in' 
+      }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
+    // Ensure user exists in database
+    const user = await getOrCreateUser(userId);
+    
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
     }
 
+    // Query portfolios by Clerk userId
     const portfolios = await prisma.portfolio.findMany({
-      where: { userId: user.id },
+      where: { userId: userId }, // Direct Clerk userId
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true,
@@ -42,8 +49,11 @@ export async function GET() {
       data: portfolios 
     });
   } catch (error) {
-    console.error('Error fetching portfolios:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('[Portfolios API GET] Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to load portfolios' 
+    }, { status: 500 });
   }
 }
 
@@ -53,22 +63,30 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Unauthorized - Please sign in' 
+      }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    // Ensure user exists in database
+    const user = await getOrCreateUser(userId);
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
     }
 
     const body = await request.json();
     const { title, content, template = 'default', isPublic = false } = body;
 
     if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Title is required' 
+      }, { status: 400 });
     }
 
     // Generate slug from title
@@ -88,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     const portfolio = await prisma.portfolio.create({
       data: {
-        userId: user.id,
+        userId: userId, // Direct Clerk userId
         title,
         slug,
         template,
@@ -102,7 +120,10 @@ export async function POST(request: NextRequest) {
       data: portfolio 
     });
   } catch (error) {
-    console.error('Error creating portfolio:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('[Portfolios API POST] Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to create portfolio' 
+    }, { status: 500 });
   }
 }

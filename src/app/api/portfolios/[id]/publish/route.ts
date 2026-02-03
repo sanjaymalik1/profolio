@@ -11,15 +11,7 @@ export async function POST(
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ \n        success: false,\n        error: 'Unauthorized' \n      }, { status: 401 });
     }
 
     const { id } = params;
@@ -27,16 +19,15 @@ export async function POST(
     const { isPublic, customSlug } = body;
 
     // Verify portfolio belongs to user
-    const portfolio = await prisma.portfolio.findUnique({
-      where: { id },
+    const portfolio = await prisma.portfolio.findFirst({
+      where: { 
+        id,
+        userId: userId // Direct Clerk userId
+      },
     });
 
     if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
-    }
-
-    if (portfolio.userId !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ \n        success: false,\n        error: 'Portfolio not found' \n      }, { status: 404 });
     }
 
     // Prepare update data

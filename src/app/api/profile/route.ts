@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/user-helpers';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const profile = await prisma.profile.findUnique({
-      where: { userId },
+      where: { userId: userId }, // Direct Clerk userId
       include: {
         user: {
           select: {
@@ -76,7 +77,7 @@ export async function PUT(request: NextRequest) {
     } = body;
 
     const updatedProfile = await prisma.profile.update({
-      where: { userId },
+      where: { userId: userId }, // Direct Clerk userId
       data: {
         firstName,
         lastName,

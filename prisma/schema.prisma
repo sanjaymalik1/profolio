@@ -11,9 +11,9 @@ datasource db {
 }
 
 // User model - minimal app-level data (Clerk handles authentication)
-// The 'id' field should match Clerk's userId
+// Uses Clerk userId as the primary identifier
 model User {
-  id        String   @id @map("_id") // Clerk userId (not auto-generated)
+  id        String   @id @map("_id") // Clerk userId (e.g., user_xyz123)
   email     String   @unique
   name      String?
   image     String?
@@ -31,7 +31,7 @@ model User {
 // User profile information
 model Profile {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique // References Clerk userId
+  userId String @unique // Clerk userId
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   firstName String?
@@ -53,7 +53,7 @@ model Profile {
 // Portfolio model for user portfolios
 model Portfolio {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String // Clerk userId reference
+  userId String // Clerk userId
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   title           String

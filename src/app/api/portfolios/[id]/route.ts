@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/user-helpers';
 
 interface RouteParams {
   params: Promise<{
@@ -15,26 +16,24 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
     }
 
     const portfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: user.id 
+        userId: userId // Direct Clerk userId
       },
     });
 
     if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Portfolio not found' 
+      }, { status: 404 });
     }
 
     return NextResponse.json({ 
@@ -42,8 +41,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       data: portfolio 
     });
   } catch (error) {
-    console.error('Error fetching portfolio:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('[Portfolio API GET] Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to fetch portfolio' 
+    }, { status: 500 });
   }
 }
 
@@ -54,15 +56,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
     }
 
     const body = await request.json();
@@ -72,12 +69,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const existingPortfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: user.id 
+        userId: userId // Direct Clerk userId
       },
     });
 
     if (!existingPortfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Portfolio not found' 
+      }, { status: 404 });
     }
 
     // Update slug if title changed
@@ -128,8 +128,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       data: updatedPortfolio 
     });
   } catch (error) {
-    console.error('Error updating portfolio:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('[Portfolio API PUT] Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to update portfolio' 
+    }, { status: 500 });
   }
 }
 
@@ -140,27 +143,25 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
     }
 
     // Check if portfolio exists and belongs to user
     const existingPortfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: user.id 
+        userId: userId // Direct Clerk userId
       },
     });
 
     if (!existingPortfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+      return NextResponse.json({ 
+        success: false,
+        error: 'Portfolio not found' 
+      }, { status: 404 });
     }
 
     await prisma.portfolio.delete({
@@ -172,7 +173,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       message: 'Portfolio deleted successfully' 
     });
   } catch (error) {
-    console.error('Error deleting portfolio:', error);
+    console.error('[Portfolio API DELETE] Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to delete portfolio' 
+    }, { status: 500 });
+  }
+}
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
