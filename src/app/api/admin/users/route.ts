@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/nextauth';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 // Get all users (Admin only)
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId, sessionClaims } = await auth();
     
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!userId || (sessionClaims?.publicMetadata as { role?: string })?.role !== 'ADMIN') {
       return NextResponse.json(
         { success: false, message: 'Admin access required' },
         { status: 403 }
@@ -46,9 +45,9 @@ export async function GET(request: NextRequest) {
 // Update user role (Admin only)
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId, sessionClaims } = await auth();
     
-    if (!session?.user || (session.user as any).role !== 'ADMIN') {
+    if (!userId || (sessionClaims?.publicMetadata as { role?: string })?.role !== 'ADMIN') {
       return NextResponse.json(
         { success: false, message: 'Admin access required' },
         { status: 403 }

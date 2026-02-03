@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -27,7 +27,7 @@ interface User {
 }
 
 export default function AdminPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,10 +35,10 @@ export default function AdminPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    } else if (status === 'authenticated') {
-      if ((session.user as any)?.role !== 'ADMIN') {
+    if (isLoaded && !user) {
+      router.push('/sign-in');
+    } else if (isLoaded && user) {
+      if (user.publicMetadata?.role !== 'ADMIN') {
         router.push('/dashboard');
       } else {
         fetchUsers();

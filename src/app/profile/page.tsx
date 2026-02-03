@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ interface Profile {
 }
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,12 +45,12 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    } else if (status === 'authenticated') {
+    if (isLoaded && !user) {
+      router.push('/sign-in');
+    } else if (isLoaded && user) {
       fetchProfile();
     }
-  }, [status, router]);
+  }, [isLoaded, user, router]);
 
   const fetchProfile = async () => {
     try {

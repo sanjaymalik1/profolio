@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { EditorProvider, useEditor } from '@/contexts/EditorContext';
 import { SectionPalette } from '@/components/editor/SectionPalette';
@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 function EditorLayout() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = React.useState('canvas');
   const [isMounted, setIsMounted] = React.useState(false);
   const { state } = useEditor();
@@ -84,7 +84,7 @@ function EditorLayout() {
 
             <div className="flex items-center gap-3">
               {/* Back to Dashboard */}
-              {status === 'authenticated' && (
+              {isLoaded && user && (
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -99,10 +99,10 @@ function EditorLayout() {
               )}
               
               {/* Auth Status - Subtle */}
-              {status === 'unauthenticated' && (
+              {isLoaded && !user && (
                 <div className="text-xs text-slate-500 px-2 py-1 rounded-md hidden sm:flex items-center gap-1.5">
                   <LogIn className="h-3.5 w-3.5" />
-                  <Link href="/auth/signin" className="hover:text-slate-700">Sign in</Link>
+                  <Link href="/sign-in" className="hover:text-slate-700">Sign in</Link>
                 </div>
               )}
 

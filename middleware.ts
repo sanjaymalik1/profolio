@@ -1,81 +1,52 @@
-import { withAuth } from 'next-auth/middleware';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const pathname = req.nextUrl.pathname;
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/webhooks(.*)',
+  '/p/(.*)',
+  '/templates',
+]);
 
-    // Protect admin routes
-    if (pathname.startsWith('/admin') && token?.role !== 'ADMIN') {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
+const isAdminRoute = createRouteMatcher([
+  '/admin(.*)',
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  const { userId, sessionClaims } = await auth();
+  
+  // Protect admin routes - check if user has admin role
+  if (isAdminRoute(req)) {
+    if (!userId) {
+      const signInUrl = new URL('/sign-in', req.url);
+      signInUrl.searchParams.set('redirect_url', req.url);
+      return NextResponse.redirect(signInUrl);
     }
-
-    // Protect dashboard routes
-    if (pathname.startsWith('/dashboard') && !token) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    
+    // Check if user has admin role in public metadata
+    const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
+    if (role !== 'ADMIN') {
+      return NextResponse.redirect(new URL('/', req.url));
     }
-
-    // Protect editor routes
-    if (pathname.startsWith('/editor') && !token) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
-    }
-
-    // Protect profile routes
-    if (pathname.startsWith('/profile') && !token) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const pathname = req.nextUrl.pathname;
-        
-        // Public routes that don't require authentication
-        const publicRoutes = [
-          '/',
-          '/auth/signin',
-          '/auth/signup',
-          '/auth/forgot-password',
-          '/about',
-          '/contact',
-          '/templates',
-        ];
-
-        // API routes that don't require authentication
-        const publicApiRoutes = [
-          '/api/auth',
-          '/api/health',
-        ];
-
-        // Check if it's a public route
-        if (publicRoutes.some(route => pathname === route || pathname.startsWith(route))) {
-          return true;
-        }
-
-        // Check if it's a public API route
-        if (publicApiRoutes.some(route => pathname.startsWith(route))) {
-          return true;
-        }
-
-        // For all other routes, require authentication
-        return !!token;
-      },
-    },
   }
-);
+  
+  // Protect authenticated routes
+  if (!isPublicRoute(req) && !userId) {
+    const signInUrl = new URL('/sign-in', req.url);
+    signInUrl.searchParams.set('redirect_url', req.url);
+    return NextResponse.redirect(signInUrl);
+  }
+  
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    // Skip Next.js internals and all static files
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
 };

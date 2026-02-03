@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/nextauth';
+import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const profile = await prisma.profile.findUnique({
-      where: { userId: (session.user as any).id },
+      where: { userId },
       include: {
         user: {
           select: {
@@ -54,9 +53,9 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
         { status: 401 }
@@ -77,7 +76,7 @@ export async function PUT(request: NextRequest) {
     } = body;
 
     const updatedProfile = await prisma.profile.update({
-      where: { userId: (session.user as any).id },
+      where: { userId },
       data: {
         firstName,
         lastName,

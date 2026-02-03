@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSession } from 'next-auth/react';
+import { useUser } from '@clerk/nextjs';
 import { usePortfolioPersistence } from '@/hooks/usePortfolioPersistence';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,7 @@ import {
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
 
 export const PortfolioManager: React.FC = () => {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const {
     isSaving,
     lastSaved,
@@ -43,7 +43,7 @@ export const PortfolioManager: React.FC = () => {
   }, []);
 
   const handleSave = async () => {
-    if (status !== 'authenticated') {
+    if (!isLoaded || !user) {
       alert('Please sign in to save your portfolio');
       return;
     }

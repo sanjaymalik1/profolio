@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/nextauth';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/portfolios - Get user's portfolios
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user?.email) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { id: userId },
     });
 
     if (!user) {
@@ -27,9 +26,12 @@ export async function GET() {
         id: true,
         title: true,
         slug: true,
+        customSlug: true,
         template: true,
         isPublic: true,
         content: true,
+        viewCount: true,
+        lastPublishedAt: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -48,14 +50,14 @@ export async function GET() {
 // POST /api/portfolios - Create new portfolio
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
     
-    if (!session?.user?.email) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { id: userId },
     });
 
     if (!user) {

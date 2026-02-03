@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from 'next-auth/react';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -43,7 +43,8 @@ interface Profile {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,12 +53,10 @@ export default function DashboardPage() {
   const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<any | null>(null);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-    } else if (status === 'authenticated') {
+    if (isLoaded && user) {
       fetchProfile();
     }
-  }, [status, router]);
+  }, [isLoaded, user]);
 
   const fetchProfile = async () => {
     try {
@@ -74,10 +73,10 @@ export default function DashboardPage() {
   };
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
+    signOut(() => router.push('/'));
   };
 
-  if (status === 'loading' || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -86,10 +85,6 @@ export default function DashboardPage() {
         </div>
       </div>
     );
-  }
-
-  if (!session) {
-    return null;
   }
 
   return (
@@ -107,9 +102,9 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-sm text-slate-500 hidden sm:inline">
-                {session.user?.name || session.user?.email?.split('@')[0]}
+                {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}
               </span>
-              {(session.user as any)?.role === 'ADMIN' && (
+              {user?.publicMetadata?.role === 'ADMIN' && (
                 <Link href="/admin">
                   <Button variant="ghost" size="sm" className="text-xs">
                     Admin

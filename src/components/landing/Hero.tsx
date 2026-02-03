@@ -4,9 +4,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useUser } from '@clerk/nextjs';
 import InteractiveDemo from "./InteractiveDemo";
 
 export default function Hero() {
+  const { user, isLoaded } = useUser();
+  
   return (
     <section className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24 bg-gradient-to-b from-white via-gray-50/30 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,9 +51,9 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link href="/auth/signup">
+            <Link href={isLoaded && user ? "/dashboard" : "/sign-up"}>
               <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
-                Get Started Free
+                {isLoaded && user ? "Go to Dashboard" : "Get Started Free"}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>

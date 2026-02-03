@@ -3,9 +3,12 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useUser } from '@clerk/nextjs';
 import { motion } from "framer-motion";
 
 export default function CTA() {
+  const { user, isLoaded } = useUser();
+  
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden">
       {/* Background gradient */}
@@ -27,9 +30,9 @@ export default function CTA() {
             Start building your professional online presence with ProFolio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/signup">
+            <Link href={isLoaded && user ? "/dashboard" : "/sign-up"}>
               <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 bg-white text-blue-600 hover:bg-gray-50 shadow-xl hover:shadow-2xl transition-all duration-200 font-semibold">
-                Get Started Free
+                {isLoaded && user ? "Go to Dashboard" : "Get Started Free"}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>

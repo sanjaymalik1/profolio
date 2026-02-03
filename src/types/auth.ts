@@ -75,20 +75,3 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
 }
-
-// Session and JWT types
-export interface JWTPayload {
-  userId: string;
-  email: string;
-  role: 'USER' | 'ADMIN';
-  iat?: number;
-  exp?: number;
-}
-
-export interface SessionUser {
-  id: string;
-  email: string;
-  name?: string;
-  image?: string;
-  role: 'USER' | 'ADMIN';
-}
