@@ -93,323 +93,196 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <nav className="bg-white border-b border-slate-200 shadow-sm">
+    <div className="bg-slate-50/30">
+      {/* Top Bar */}
+      <nav className="bg-white border-b border-slate-200/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-blue-600 tracking-tight">
+          <div className="flex justify-between items-center h-14">
+            <div className="flex items-center gap-3">
+              <Link href="/" className="text-lg font-bold text-slate-900 tracking-tight">
                 ProFolio
               </Link>
+              <span className="text-slate-300">/</span>
+              <span className="text-sm font-semibold text-slate-900">Dashboard</span>
             </div>
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <span className="text-sm text-slate-700 hidden md:inline max-w-[200px] truncate font-medium">
-                {session.user?.name || session.user?.email}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-slate-500 hidden sm:inline">
+                {session.user?.name || session.user?.email?.split('@')[0]}
               </span>
               {(session.user as any)?.role === 'ADMIN' && (
                 <Link href="/admin">
-                  <Button variant="secondary" size="sm" className="text-sm border-slate-200">
-                    <span className="hidden sm:inline">Admin Panel</span>
-                    <span className="sm:hidden">Admin</span>
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    Admin
                   </Button>
                 </Link>
               )}
-              <Button variant="outline" size="sm" onClick={handleSignOut} className="text-sm border-slate-200 hover:bg-slate-50">
-                <span className="hidden sm:inline">Sign Out</span>
-                <span className="sm:hidden">Out</span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-xs text-slate-600 hover:text-slate-900">
+                Sign Out
               </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
-        <div className="space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-            <p className="mt-2 text-sm text-slate-600">Manage your portfolios and profile</p>
-          </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Profile Card */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <Avatar className="h-12 w-12 border-2 border-slate-100">
-                    <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold text-lg">
-                      {(session.user?.name || session.user?.email || 'U')[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="ml-4 flex-1 min-w-0">
-                    <CardTitle className="text-sm font-semibold text-slate-900">Profile</CardTitle>
-                    <CardDescription className="text-xs truncate">
-                      {profile?.firstName && profile?.lastName 
-                        ? `${profile.firstName} ${profile.lastName}`
-                        : session.user?.name || 'Complete your profile'
-                      }
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <Link href="/profile">
-                    <Button variant="outline" size="sm" className="w-full border-slate-200 hover:bg-slate-50">
-                      Edit Profile
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Portfolios Card */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="h-12 w-12 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-emerald-700" />
-                  </div>
-                  <div className="ml-4 flex-1 min-w-0">
-                    <CardTitle className="text-sm font-semibold text-slate-900">Portfolios</CardTitle>
-                    <CardDescription className="text-xs">
-                      {portfoliosLoading ? 'Loading...' : `${getPortfolioStats().total} Created`}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  {portfolios.length > 0 && (
-                    <p className="text-xs text-slate-600 text-center font-medium">
-                      {getPortfolioStats().recentlyUpdated} updated recently
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Account Info Card */}
-              <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="h-12 w-12 rounded-full bg-purple-100 border-2 border-purple-200 flex items-center justify-center">
-                    <span className="text-purple-700 text-xl font-bold">A</span>
-                  </div>
-                  <div className="ml-4 flex-1 min-w-0">
-                    <CardTitle className="text-sm font-semibold text-slate-900">Account</CardTitle>
-                    <CardDescription className="text-xs">
-                      {(session.user as any)?.role || 'USER'}
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-2">
-                  <p className="text-xs text-slate-600 truncate">
-                    {session.user?.email}
-                  </p>
-                </CardContent>
-              </Card>
+      <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="space-y-7">
+          {/* Active Portfolio Workspace Card */}
+          {portfoliosLoading ? (
+            <div className="flex justify-center py-16">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
             </div>
-
-            {/* Quick Actions */}
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-                <Button 
-                  onClick={() => {
-                    // Clear all portfolio-related flags to start fresh with section palette
-                    localStorage.removeItem('current_portfolio');
-                    localStorage.removeItem('apply_template');
-                    localStorage.removeItem('selected_template');
-                    router.push('/editor-v2');
-                  }}
-                  className="w-full sm:w-auto"
-                  size="default"
-                >
-                  Create New Portfolio
-                </Button>
-                <Link href="/templates" className="w-full sm:w-auto">
-                  <Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50">Browse Templates</Button>
-                </Link>
-              </div>
+          ) : portfolios.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-slate-200 rounded-xl bg-white">
+              <p className="text-slate-600 mb-6 text-sm">No portfolios yet. Create one to get started.</p>
+              <Button 
+                onClick={() => {
+                  localStorage.removeItem('current_portfolio');
+                  localStorage.removeItem('apply_template');
+                  localStorage.removeItem('selected_template');
+                  router.push('/editor-v2');
+                }}
+                size="lg"
+                className="bg-slate-900 hover:bg-slate-800 shadow-sm"
+              >
+                Create Portfolio
+              </Button>
             </div>
-
-            {/* Template Showcase */}
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Popular Templates</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-slate-900 to-blue-600 rounded-lg mb-3 flex items-center justify-center shadow-inner">
-                      <span className="text-white font-semibold">Dark</span>
-                    </div>
-                    <h3 className="font-semibold text-sm text-slate-900">Dark Professional</h3>
-                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Sleek dark theme for developers and tech professionals</p>
-                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Developer</Badge>
-                    <div className="flex gap-2 mt-3">
-                      <Button 
-                        variant="outline"
-                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
-                        size="sm"
-                        onClick={() => setPreviewTemplateId('dark-professional')}
-                      >
-                        <Eye className="w-3.5 h-3.5 mr-1.5" />
-                        Preview
-                      </Button>
-                      <Button 
-                        className="flex-1 text-xs" 
-                        size="sm"
-                        onClick={() => {
-                          localStorage.setItem('apply_template', 'true');
-                          localStorage.setItem('selected_template', 'dark-professional');
-                          localStorage.removeItem('current_portfolio');
-                          router.push('/editor-v2');
-                        }}
-                      >
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-300 rounded-lg mb-3 flex items-center justify-center shadow-inner">
-                      <span className="text-gray-800 font-semibold">Elegant</span>
-                    </div>
-                    <h3 className="font-semibold text-sm text-slate-900">Elegant Monochrome</h3>
-                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Sophisticated design for business professionals</p>
-                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Business</Badge>
-                    <div className="flex gap-2 mt-3">
-                      <Button 
-                        variant="outline"
-                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
-                        size="sm"
-                        onClick={() => setPreviewTemplateId('elegant-monochrome')}
-                      >
-                        <Eye className="w-3.5 h-3.5 mr-1.5" />
-                        Preview
-                      </Button>
-                      <Button 
-                        className="flex-1 text-xs" 
-                        size="sm"
-                        onClick={() => {
-                          localStorage.setItem('apply_template', 'true');
-                          localStorage.setItem('selected_template', 'elegant-monochrome');
-                          localStorage.removeItem('current_portfolio');
-                          router.push('/editor-v2');
-                        }}
-                      >
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gradient-to-br from-amber-100 to-red-200 rounded-lg mb-3 flex items-center justify-center shadow-inner">
-                      <span className="text-red-800 font-semibold">Warm</span>
-                    </div>
-                    <h3 className="font-semibold text-sm text-slate-900">Warm Minimalist</h3>
-                    <p className="text-xs text-slate-600 mt-1.5 line-clamp-2 leading-relaxed">Approachable design for freelancers and consultants</p>
-                    <Badge variant="outline" className="text-xs mt-2 border-slate-200">Freelancer</Badge>
-                    <div className="flex gap-2 mt-3">
-                      <Button 
-                        variant="outline"
-                        className="flex-1 text-xs border-slate-200 hover:bg-slate-50" 
-                        size="sm"
-                        onClick={() => setPreviewTemplateId('warm-minimalist')}
-                      >
-                        <Eye className="w-3.5 h-3.5 mr-1.5" />
-                        Preview
-                      </Button>
-                      <Button 
-                        className="flex-1 text-xs" 
-                        size="sm"
-                        onClick={() => {
-                          localStorage.setItem('apply_template', 'true');
-                          localStorage.setItem('selected_template', 'warm-minimalist');
-                          localStorage.removeItem('current_portfolio');
-                          router.push('/editor-v2');
-                        }}
-                      >
-                        Use Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
-            {/* Portfolio Management */}
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-                <h2 className="text-lg font-semibold text-slate-900">Your Portfolios</h2>
-                {portfolios.length > 0 && (
-                  <Badge variant="secondary" className="text-sm w-fit bg-slate-100 text-slate-700 border border-slate-200">
-                    {portfolios.length} portfolio{portfolios.length !== 1 ? 's' : ''}
-                  </Badge>
-                )}
-              </div>
-              
-              {portfoliosLoading ? (
-                <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
-                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-sm font-medium text-slate-700">Loading portfolios...</p>
-                </div>
-              ) : portfolios.length === 0 ? (
-                <Card className="text-center py-12 border-slate-200 shadow-sm">
-                  <CardContent>
-                    <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <FileText className="h-10 w-10 text-slate-400" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No portfolios yet</h3>
-                    <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">Create your first portfolio to showcase your work and share it with the world</p>
-                    <Button 
-                      onClick={() => {
-                        // Clear any existing portfolio session to start fresh
-                        localStorage.removeItem('current_portfolio');
-                        router.push('/editor-v2');
-                      }}
-                    >
-                      Create Your First Portfolio
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  {portfolios.map((portfolio) => (
-                    <Card key={portfolio.id} className="hover:shadow-md transition-shadow">
-                      <CardHeader className="pb-2 sm:pb-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-sm sm:text-base line-clamp-1">{portfolio.title}</CardTitle>
-                            <CardDescription className="flex items-center gap-1 mt-1 text-xs sm:text-sm">
-                              <Clock className="h-3 w-3 flex-shrink-0" />
-                              <span className="truncate">{new Date(portfolio.updatedAt).toLocaleDateString()}</span>
-                            </CardDescription>
-                          </div>
-                          <div className="flex flex-col gap-1 flex-shrink-0">
-                            <Badge variant="outline" className="text-xs">
-                              {portfolio.content?.sections?.length || 0}
+          ) : (
+            <>
+              {/* Active Portfolio Card */}
+              {(() => {
+                const activePortfolio = [...portfolios].sort((a, b) => 
+                  new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+                )[0];
+                
+                return (
+                  <div className="bg-gradient-to-br from-white to-slate-50/80 rounded-xl p-6 sm:p-8 shadow-md border border-slate-200/60">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">You're currently working on this</span>
+                          {activePortfolio.isPublic ? (
+                            <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-0 text-xs">
+                              Published
                             </Badge>
-                            {portfolio.isPublic && (
-                              <>
-                                <Badge className="bg-green-100 text-green-800 hover:bg-green-100 text-xs">
-                                  <Globe className="h-3 w-3 mr-1" />
-                                  <span className="hidden sm:inline">Live</span>
+                          ) : (
+                            <Badge variant="outline" className="text-xs text-slate-500 border-slate-200">
+                              Draft
+                            </Badge>
+                          )}
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-semibold text-slate-900 mb-2">
+                          {activePortfolio.title}
+                        </h2>
+                        <div className="flex items-center gap-4 text-sm text-slate-500 mb-1">
+                          <span className="flex items-center gap-1.5">
+                            <Clock className="h-4 w-4" />
+                            Updated {new Date(activePortfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className="font-medium text-slate-700">{activePortfolio.content?.sections?.length || 0} sections added</span>
+                        </div>
+                        <p className="text-xs text-slate-500">
+                          {activePortfolio.isPublic ? 'Live on the web' : 'Last edited by you'}
+                        </p>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <Button
+                          size="lg"
+                          className="bg-slate-900 hover:bg-slate-800 shadow-sm"
+                          onClick={() => {
+                            const portfolioForEditor = {
+                              id: activePortfolio.id,
+                              title: activePortfolio.title,
+                              data: {
+                                sections: activePortfolio.content?.sections || [],
+                                globalSettings: activePortfolio.content?.globalSettings || {}
+                              },
+                              createdAt: activePortfolio.createdAt,
+                              updatedAt: activePortfolio.updatedAt
+                            };
+                            localStorage.setItem('current_portfolio', JSON.stringify(portfolioForEditor));
+                            router.push('/editor-v2');
+                          }}
+                        >
+                          Continue Editing
+                        </Button>
+                        {activePortfolio.isPublic ? (
+                          <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() => setPublishDialogPortfolio(activePortfolio)}
+                          >
+                            <Globe className="h-4 w-4 mr-2" />
+                            View
+                          </Button>
+                        ) : (
+                          <Button
+                            size="lg"
+                            variant="outline"
+                            onClick={() => setPublishDialogPortfolio(activePortfolio)}
+                          >
+                            <Globe className="h-4 w-4 mr-2" />
+                            Publish
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* All Portfolios */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-medium text-slate-500">Recent portfolios</h2>
+                  <Button 
+                    onClick={() => {
+                      localStorage.removeItem('current_portfolio');
+                      localStorage.removeItem('apply_template');
+                      localStorage.removeItem('selected_template');
+                      router.push('/editor-v2');
+                    }}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Create New
+                  </Button>
+                </div>
+                <div className="bg-white border border-slate-200/60 rounded-lg divide-y divide-slate-100">
+                  {portfolios.map((portfolio) => (
+                    <div key={portfolio.id} className="group p-3.5 hover:bg-slate-50 transition-colors">
+                      <div className="flex items-center justify-between gap-4">
+                        {/* Portfolio Info */}
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2.5 mb-1">
+                              <h3 className="text-sm font-medium text-slate-900 truncate">
+                                {portfolio.title}
+                              </h3>
+                              {portfolio.isPublic ? (
+                                <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-0 text-xs px-2 py-0">
+                                  Published
                                 </Badge>
-                                {portfolio.lastPublishedAt && portfolio.updatedAt && 
-                                 new Date(portfolio.updatedAt) > new Date(portfolio.lastPublishedAt) && (
-                                  <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
-                                    New
-                                  </Badge>
-                                )}
-                              </>
-                            )}
+                              ) : (
+                                <Badge variant="outline" className="text-xs text-slate-400 border-slate-200 px-2 py-0">
+                                  Draft
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                              <span>Updated {new Date(portfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              <span>•</span>
+                              <span>{portfolio.content?.sections?.length || 0} sections</span>
+                            </div>
                           </div>
                         </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="grid grid-cols-2 gap-2">
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1.5">
                           <Button
                             size="sm"
-                            variant="outline"
-                            className="text-xs"
+                            className="bg-slate-900 hover:bg-slate-800 h-8 text-xs shadow-sm"
                             onClick={() => {
-                              // Load portfolio into editor with proper structure
                               const portfolioForEditor = {
                                 id: portfolio.id,
                                 title: portfolio.title,
@@ -424,58 +297,149 @@ export default function DashboardPage() {
                               router.push('/editor-v2');
                             }}
                           >
-                            <Edit className="h-3 w-3 mr-1" />
                             Edit
                           </Button>
                           <Button
                             size="sm"
-                            variant={portfolio.isPublic ? "default" : "outline"}
-                            className="text-xs"
+                            variant="ghost"
+                            className="h-8 text-xs text-slate-500"
                             onClick={() => setPublishDialogPortfolio(portfolio)}
                           >
-                            <Globe className="h-3 w-3 mr-1" />
-                            <span className="hidden sm:inline">{portfolio.isPublic ? 'Published' : 'Publish'}</span>
-                            <span className="sm:hidden">{portfolio.isPublic ? 'Live' : 'Pub'}</span>
+                            {portfolio.isPublic ? 'View' : 'Publish'}
                           </Button>
                           <Button
                             size="sm"
-                            variant="outline"
-                            className="text-xs"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
-                              // Export portfolio
-                              const dataStr = JSON.stringify(portfolio.content, null, 2);
-                              const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                              const url = URL.createObjectURL(dataBlob);
-                              const link = document.createElement('a');
-                              link.href = url;
-                              link.download = `${portfolio.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
-                              link.click();
-                              URL.revokeObjectURL(url);
-                            }}
-                          >
-                            <Download className="h-3 w-3" />
-                            <span className="ml-1 hidden sm:inline">Export</span>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 text-xs"
-                            onClick={() => {
-                              if (confirm(`Are you sure you want to delete "${portfolio.title}"?`)) {
+                              if (confirm(`Delete "${portfolio.title}"? This cannot be undone.`)) {
                                 deletePortfolio(portfolio.id);
                               }
                             }}
                           >
-                            <Trash className="h-3 w-3" />
-                            <span className="ml-1 hidden sm:inline">Delete</span>
+                            <Trash className="h-3.5 w-3.5" />
                           </Button>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              )}
+              </div>
+            </>
+          )}
+
+          {/* Templates Section - Secondary */}
+          <div className="pt-7 border-t border-slate-200/60">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-medium text-slate-600">Start something new</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Templates provide a starting point—customize them however you like</p>
+              </div>
+              <Link href="/templates">
+                <Button variant="ghost" size="sm" className="text-xs text-slate-500 hover:text-slate-900">
+                  View all
+                </Button>
+              </Link>
             </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <button
+                className="group bg-white border-2 border-slate-900/10 rounded-lg overflow-hidden hover:border-slate-900/20 hover:shadow-lg transition-all text-left relative"
+                onClick={() => {
+                  localStorage.setItem('apply_template', 'true');
+                  localStorage.setItem('selected_template', 'dark-professional');
+                  localStorage.removeItem('current_portfolio');
+                  router.push('/editor-v2');
+                }}
+              >
+                <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">Recommended</div>
+                <div className="aspect-[16/10] bg-slate-700 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors"></div>
+                  <Button 
+                    size="sm" 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white text-slate-900 hover:bg-white shadow-lg"
+                  >
+                    Use Template
+                  </Button>
+                </div>
+                <div className="p-2.5">
+                  <h3 className="text-xs font-medium text-slate-700">Dark Professional</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Best for developers</p>
+                </div>
+              </button>
+
+              <button
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+                onClick={() => {
+                  localStorage.setItem('apply_template', 'true');
+                  localStorage.setItem('selected_template', 'elegant-monochrome');
+                  localStorage.removeItem('current_portfolio');
+                  router.push('/editor-v2');
+                }}
+              >
+                <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
+                  <Button 
+                    size="sm" 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  >
+                    Use Template
+                  </Button>
+                </div>
+                <div className="p-2.5">
+                  <h3 className="text-xs font-medium text-slate-700">Elegant Monochrome</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Business & consulting</p>
+                </div>
+              </button>
+
+              <button
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+                onClick={() => {
+                  localStorage.setItem('apply_template', 'true');
+                  localStorage.setItem('selected_template', 'warm-minimalist');
+                  localStorage.removeItem('current_portfolio');
+                  router.push('/editor-v2');
+                }}
+              >
+                <div className="aspect-[16/10] bg-amber-50/50 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
+                  <Button 
+                    size="sm" 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  >
+                    Use Template
+                  </Button>
+                </div>
+                <div className="p-2.5">
+                  <h3 className="text-xs font-medium text-slate-700">Warm Minimalist</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Freelancers & creators</p>
+                </div>
+              </button>
+
+              <button
+                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left"
+                onClick={() => {
+                  localStorage.removeItem('current_portfolio');
+                  localStorage.removeItem('apply_template');
+                  localStorage.removeItem('selected_template');
+                  router.push('/editor-v2');
+                }}
+              >
+                <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
+                  <Button 
+                    size="sm" 
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg"
+                  >
+                    Start Blank
+                  </Button>
+                </div>
+                <div className="p-2.5">
+                  <h3 className="text-xs font-medium text-slate-700">Blank Canvas</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Full control</p>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </main>
 

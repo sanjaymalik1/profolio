@@ -8,7 +8,7 @@ import InteractiveDemo from "./InteractiveDemo";
 
 export default function Hero() {
   return (
-    <section className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24">
+    <section className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24 bg-gradient-to-b from-white via-gray-50/30 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Content */}
         <div className="text-center max-w-4xl mx-auto mb-12 sm:mb-16 lg:mb-20">
@@ -16,17 +16,17 @@ export default function Hero() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100/60 mb-8 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-900">No-code portfolio builder</span>
+            <span className="text-sm font-semibold text-blue-900 tracking-wide">No-code portfolio builder</span>
           </motion.div>
           
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 mb-6 leading-tight"
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 mb-8 leading-[1.1]"
           >
             Your portfolio.
             <br />
@@ -37,7 +37,7 @@ export default function Hero() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto"
+            className="text-lg sm:text-xl lg:text-2xl text-gray-600/90 mb-10 leading-[1.6] max-w-3xl mx-auto font-light"
           >
             Build a professional portfolio to showcase your work. Drag, drop, customize — then publish instantly.
           </motion.p>
@@ -49,13 +49,13 @@ export default function Hero() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Link href="/auth/signup">
-              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">
+              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-200">
                 Get Started Free
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Link href="#templates">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 border-2 hover:bg-gray-50">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 border-2 border-gray-300/80 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm transition-all duration-200">
                 View Templates
               </Button>
             </Link>

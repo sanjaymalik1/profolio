@@ -32,14 +32,14 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="py-20 lg:py-28 bg-white">
+    <section className="py-24 lg:py-32 bg-gradient-to-b from-white via-gray-50/40 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <div className="text-center mb-20 max-w-3xl mx-auto">
           <motion.h2 
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-5 leading-tight"
           >
             Built with real-world needs in mind
           </motion.h2>
@@ -48,7 +48,7 @@ export default function Testimonials() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600"
+            className="text-lg text-gray-600/90 leading-[1.7]"
           >
             ProFolio was created to solve a simple problem: building a portfolio shouldn't require coding skills or design expertise. This tool prioritizes simplicity, honesty, and quality.
           </motion.p>
@@ -66,12 +66,12 @@ export default function Testimonials() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="h-full p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                <div className="h-full p-7 rounded-2xl bg-white border border-slate-200/60 shadow-sm hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-md flex items-center justify-center mb-5 transition-shadow duration-300">
                     <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{principle.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{principle.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 leading-snug">{principle.title}</h3>
+                  <p className="text-sm text-gray-600/90 leading-relaxed">{principle.description}</p>
                 </div>
               </motion.div>
             );
