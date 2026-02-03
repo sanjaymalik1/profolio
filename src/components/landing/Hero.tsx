@@ -2,38 +2,75 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 import InteractiveDemo from "./InteractiveDemo";
 
 export default function Hero() {
   return (
-    <section className="pt-8 sm:pt-12 pb-12 sm:pb-16 lg:pb-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row items-center gap-8 sm:gap-10 lg:gap-12">
-        <div className="flex-1 w-full">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold leading-tight text-gray-900">Build a portfolio that gets you hired — without writing code.</h1>
-          <p className="mt-3 sm:mt-4 text-base sm:text-lg lg:text-xl text-gray-600">Drag, drop, and publish a professional portfolio in minutes. Export the code or deploy instantly to Vercel.</p>
-          <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Button onClick={() => {}} size="lg" className="w-full sm:w-auto text-sm sm:text-base">Get Started — It's Free</Button>
-            <Button onClick={() => {}} variant="secondary" size="lg" className="w-full sm:w-auto text-sm sm:text-base">Explore Templates</Button>
-          </div>
-          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
-            <span className="whitespace-nowrap">Trusted by students & freelancers</span>
-            <div className="h-px bg-gray-200 flex-1 hidden sm:block" />
-            <div className="flex gap-3 sm:gap-4">
-              <div className="w-8 sm:w-10 h-5 sm:h-6 bg-gray-100 rounded" />
-              <div className="w-8 sm:w-10 h-5 sm:h-6 bg-gray-100 rounded" />
-              <div className="w-8 sm:w-10 h-5 sm:h-6 bg-gray-100 rounded" />
-            </div>
-          </div>
-        </div>
-        <div className="w-full lg:w-1/2">
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }} 
-            animate={{ y: 0, opacity: 1 }} 
+    <section className="pt-20 sm:pt-24 lg:pt-32 pb-16 sm:pb-20 lg:pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Content */}
+        <div className="text-center max-w-4xl mx-auto mb-12 sm:mb-16 lg:mb-20">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full border border-blue-100 mb-6"
           >
-            <InteractiveDemo />
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-900">No-code portfolio builder</span>
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 mb-6 leading-tight"
+          >
+            Your portfolio.
+            <br />
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">Without the code.</span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto"
+          >
+            Build a professional portfolio to showcase your work. Drag, drop, customize — then publish instantly.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
+            <Link href="/auth/signup">
+              <Button size="lg" className="w-full sm:w-auto text-base px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">
+                Get Started Free
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="#templates">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto text-base px-8 py-6 border-2 hover:bg-gray-50">
+                View Templates
+              </Button>
+            </Link>
           </motion.div>
         </div>
+
+        {/* Editor Preview Mock */}
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="max-w-5xl mx-auto"
+        >
+          <InteractiveDemo />
+        </motion.div>
       </div>
     </section>
   );

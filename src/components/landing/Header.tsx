@@ -19,7 +19,6 @@ export default function Header() {
           <nav className="hidden md:flex gap-4 lg:gap-6 text-sm lg:text-base text-gray-700">
             <a className="hover:text-gray-900 transition-colors" href="#templates">Templates</a>
             <a className="hover:text-gray-900 transition-colors" href="#features">Features</a>
-            <a className="hover:text-gray-900 transition-colors" href="#pricing">Pricing</a>
             {/* <Link href="/test" className="hover:text-gray-900 text-blue-600 font-medium">
               Test Components
             </Link>

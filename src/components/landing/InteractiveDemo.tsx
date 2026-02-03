@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 const DragComponent = ({ children, isDragging }: { children: React.ReactNode; isDragging: boolean }) => (
   <motion.div
     animate={{ 
-      scale: isDragging ? 0.8 : 1,
-      opacity: isDragging ? 0.6 : 1
+      scale: isDragging ? 0.95 : 1,
+      opacity: isDragging ? 0.5 : 1
     }}
-    className="bg-blue-100 border border-blue-300 rounded p-1 sm:p-2 text-[10px] sm:text-xs text-blue-700 cursor-pointer"
+    className="bg-white border border-slate-200 rounded-lg p-2.5 text-xs text-slate-700 font-medium cursor-pointer hover:border-slate-300 hover:shadow-sm transition-all"
   >
     {children}
   </motion.div>
@@ -16,10 +16,10 @@ const DragComponent = ({ children, isDragging }: { children: React.ReactNode; is
 
 const CanvasComponent = ({ children }: { children: React.ReactNode }) => (
   <motion.div
-    initial={{ scale: 0.8, opacity: 0 }}
+    initial={{ scale: 0.95, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
-    transition={{ duration: 0.5, ease: "easeOut" }}
-    className="bg-white border rounded p-2 sm:p-3 mb-1 sm:mb-2 shadow-sm"
+    transition={{ duration: 0.3, ease: "easeOut" }}
+    className="bg-white border border-slate-200 rounded-lg p-3 mb-2 shadow-sm"
   >
     {children}
   </motion.div>
@@ -30,7 +30,7 @@ export default function InteractiveDemo() {
   const [canvasItems, setCanvasItems] = useState<string[]>([]);
   
   const steps = [
-    { title: "Drag & Drop", description: "Add components to your portfolio" },
+    { title: "Drag & Drop", description: "Add sections to your portfolio" },
     { title: "Customize", description: "Edit content and styling" },
     { title: "Publish", description: "Deploy instantly to the web" }
   ];
@@ -40,115 +40,125 @@ export default function InteractiveDemo() {
       setStep((prev) => {
         const nextStep = (prev + 1) % 3;
         
-        // Reset demo state when starting over
         if (nextStep === 0) {
           setCanvasItems([]);
         }
-        // Add components during drag step
         else if (nextStep === 1 && canvasItems.length === 0) {
-          setTimeout(() => setCanvasItems(["About", "Projects"]), 800);
+          setTimeout(() => setCanvasItems(["Hero", "About", "Projects"]), 600);
         }
         
         return nextStep;
       });
-    }, 3000);
+    }, 3500);
 
     return () => clearInterval(interval);
   }, [canvasItems.length]);
 
   return (
-    <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white shadow-2xl">
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <div className="text-xs sm:text-sm font-semibold">Profolio Editor</div>
-        <div className="flex gap-1">
-          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full"></div>
-          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full"></div>
-          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full"></div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 h-36 sm:h-48">
-        {/* Sidebar */}
-        <div className="bg-white/10 rounded-md sm:rounded-lg p-2 sm:p-3">
-          <div className="text-xs font-medium mb-1 sm:mb-2 opacity-80 hidden sm:block">Components</div>
-          <div className="space-y-1 sm:space-y-2">
-            <DragComponent isDragging={step === 0}>About Me</DragComponent>
-            <DragComponent isDragging={step === 0}>Projects</DragComponent>
-            <DragComponent isDragging={false}>Skills</DragComponent>
-            <DragComponent isDragging={false}>Contact</DragComponent>
+    <div className="relative">
+      {/* Product Window */}
+      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+        {/* Browser Chrome */}
+        <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           </div>
+          <div className="text-xs font-medium text-slate-600">ProFolio Editor</div>
+          <div className="w-16"></div>
         </div>
 
-        {/* Canvas */}
-        <div className="col-span-2 bg-white/5 rounded-md sm:rounded-lg p-2 sm:p-3 border border-dashed sm:border-2 border-white/20">
-          <div className="text-xs font-medium mb-1 sm:mb-2 opacity-80 hidden sm:block">Canvas</div>
-          <div className="space-y-1 sm:space-y-2">
-            <AnimatePresence>
-              {canvasItems.map((item, index) => (
-                <CanvasComponent key={item}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] sm:text-xs text-gray-700 font-medium">{item}</span>
-                    {step === 1 && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full animate-pulse"
-                      />
-                    )}
-                  </div>
-                  {step === 1 && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="mt-1 sm:mt-2 space-y-1"
-                    >
-                      <div className="h-0.5 sm:h-1 bg-gray-200 rounded w-full"></div>
-                      <div className="h-0.5 sm:h-1 bg-gray-200 rounded w-3/4"></div>
-                    </motion.div>
-                  )}
-                </CanvasComponent>
-              ))}
-            </AnimatePresence>
-            
-            {canvasItems.length === 0 && (
-              <div className="text-[10px] sm:text-xs text-white/50 text-center py-6 sm:py-8">
-                Drag components here
+        {/* Editor Interface */}
+        <div className="p-6 bg-slate-50">
+          <div className="grid grid-cols-4 gap-4 h-72">
+            {/* Sidebar */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4">
+              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Sections</div>
+              <div className="space-y-2">
+                <DragComponent isDragging={step === 0}>Hero</DragComponent>
+                <DragComponent isDragging={step === 0}>About</DragComponent>
+                <DragComponent isDragging={step === 0}>Projects</DragComponent>
+                <DragComponent isDragging={false}>Skills</DragComponent>
+                <DragComponent isDragging={false}>Contact</DragComponent>
               </div>
-            )}
+            </div>
+
+            {/* Canvas */}
+            <div className="col-span-3 bg-white rounded-xl border border-slate-200 p-4">
+              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Canvas</div>
+              <div className="space-y-2">
+                <AnimatePresence>
+                  {canvasItems.map((item, index) => (
+                    <CanvasComponent key={item}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-700 font-medium">{item}</span>
+                        {step === 1 && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-2 h-2 bg-blue-500 rounded-full"
+                          />
+                        )}
+                      </div>
+                      {step === 1 && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          className="mt-2 pt-2 border-t border-slate-200"
+                        >
+                          <div className="flex gap-2">
+                            <div className="h-1.5 bg-slate-200 rounded flex-1"></div>
+                            <div className="h-1.5 bg-slate-200 rounded flex-1"></div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </CanvasComponent>
+                  ))}
+                </AnimatePresence>
+                
+                {canvasItems.length === 0 && (
+                  <div className="h-full flex items-center justify-center text-slate-400 text-sm">
+                    Drop sections here to start building
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Status Bar */}
+        <div className="px-4 py-2 bg-white border-t border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {steps.map((s, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-2 text-xs ${
+                  i === step ? 'text-blue-600 font-medium' : 'text-slate-400'
+                }`}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  i === step ? 'bg-blue-600' : 'bg-slate-300'
+                }`}></div>
+                <span className="hidden sm:inline">{s.title}</span>
+              </div>
+            ))}
+          </div>
+          {step === 2 && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-xs font-medium text-green-600 flex items-center gap-1"
+            >
+              <div className="w-1.5 h-1.5 bg-green-600 rounded-full animate-pulse"></div>
+              Published
+            </motion.div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Action Bar */}
-      <div className="mt-3 sm:mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${step === 0 ? 'bg-blue-400' : 'bg-white/30'}`}></div>
-          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${step === 1 ? 'bg-blue-400' : 'bg-white/30'}`}></div>
-          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${step === 2 ? 'bg-blue-400' : 'bg-white/30'}`}></div>
-        </div>
-        
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-right"
-        >
-          <div className="text-xs sm:text-sm font-medium">{steps[step].title}</div>
-          <div className="text-[10px] sm:text-xs opacity-80 hidden sm:block">{steps[step].description}</div>
-        </motion.div>
-        
-        {step === 2 && (
-          <motion.button
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="bg-green-500 hover:bg-green-600 text-white text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full font-medium transition-colors"
-          >
-            🚀 Live
-          </motion.button>
-        )}
-      </div>
+      {/* Subtle glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-blue-500/5 rounded-2xl blur-3xl -z-10"></div>
     </div>
   );
 }

@@ -1,48 +1,81 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import { Target, Pencil, Shield, Sparkles } from "lucide-react";
 
 export default function Testimonials() {
-  const items = [
-    { id: 1, name: 'Alex Chen', role: 'Frontend Developer', quote: 'I built my portfolio in 20 minutes and landed an interview the next week!' },
-    { id: 2, name: 'Priya Patel', role: 'UX Designer', quote: 'Profolio helped me showcase projects professionally with zero coding.' },
-    { id: 3, name: 'Miguel Rodriguez', role: 'Full Stack Developer', quote: 'Exporting the code made it easy to customize further and host anywhere.' }
+  const principles = [
+    { 
+      id: 1, 
+      icon: Target, 
+      title: "Clarity over complexity", 
+      description: "A focused editor that removes distractions. Build portfolios without learning code or wrestling with complicated tools." 
+    },
+    { 
+      id: 2, 
+      icon: Pencil, 
+      title: "Editor-first experience", 
+      description: "Real-time visual editing with instant feedback. What you see in the editor is what your visitors see on the web." 
+    },
+    { 
+      id: 3, 
+      icon: Shield, 
+      title: "Academically honest", 
+      description: "Designed as a final-year project with production-grade attention to detail. No false claims, no inflated metrics." 
+    },
+    { 
+      id: 4, 
+      icon: Sparkles, 
+      title: "Production-ready output", 
+      description: "Fully responsive portfolios built with modern web standards. Clean URLs, fast loading, and mobile-optimized." 
+    }
   ];
 
   return (
-    <section className="py-10 sm:py-12 lg:py-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.h2 
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 lg:mb-10 text-center lg:text-left"
-        >
-          Trusted by creators worldwide
-        </motion.h2>
-        <div className="grid gap-5 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, index) => (
-            <motion.div 
-              key={item.id}
-              initial={{ y: 30, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border relative"
-            >
-              <div className="text-3xl sm:text-4xl text-blue-500 mb-2">"</div>
-              <p className="text-sm sm:text-base text-gray-700 mb-4 italic leading-relaxed">{item.quote}</p>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm flex-shrink-0">
-                  {item.name.split(' ').map(n => n[0]).join('')}
+    <section className="py-20 lg:py-28 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <motion.h2 
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Built with real-world needs in mind
+          </motion.h2>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-gray-600"
+          >
+            ProFolio was created to solve a simple problem: building a portfolio shouldn't require coding skills or design expertise. This tool prioritizes simplicity, honesty, and quality.
+          </motion.p>
+        </div>
+
+        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+          {principles.map((principle, index) => {
+            const Icon = principle.icon;
+            return (
+              <motion.div 
+                key={principle.id}
+                initial={{ y: 30, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group"
+              >
+                <div className="h-full p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{principle.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{principle.description}</p>
                 </div>
-                <div className="min-w-0">
-                  <div className="text-sm sm:text-base font-semibold truncate">{item.name}</div>
-                  <div className="text-xs sm:text-sm text-gray-500 truncate">{item.role}</div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

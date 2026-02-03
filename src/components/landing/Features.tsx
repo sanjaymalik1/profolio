@@ -1,44 +1,67 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import { Zap, Globe, Palette, Download } from "lucide-react";
 
-const FeatureCard = ({ title, desc, icon, index }: { title: string; desc: string; icon: string; index: number }) => (
+const FeatureCard = ({ title, desc, icon: Icon, index }: { title: string; desc: string; icon: React.ElementType; index: number }) => (
   <motion.div 
     initial={{ y: 30, opacity: 0 }}
     whileInView={{ y: 0, opacity: 1 }}
     viewport={{ once: true }}
     transition={{ duration: 0.5, delay: index * 0.1 }}
-    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-    className="bg-white p-5 sm:p-6 lg:p-7 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+    className="group"
   >
-    <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{icon}</div>
-    <h3 className="text-base sm:text-lg lg:text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{desc}</p>
+    <div className="h-full p-8 rounded-2xl border border-slate-200 bg-white hover:shadow-xl hover:border-slate-300 transition-all duration-300">
+      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+        <Icon className="w-6 h-6 text-white" />
+      </div>
+      <h3 className="text-xl font-semibold mb-3 text-gray-900">{title}</h3>
+      <p className="text-gray-600 leading-relaxed">{desc}</p>
+    </div>
   </motion.div>
 );
 
 export default function Features() {
   return (
-    <section id="features" className="py-10 sm:py-12 lg:py-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8 lg:mb-10 text-center lg:text-left">What you can do with Profolio</h2>
-        <div className="grid gap-5 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <section id="features" className="py-20 lg:py-28 bg-gradient-to-b from-white via-slate-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <motion.h2 
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Built for professionals
+          </motion.h2>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-gray-600"
+          >
+            Create and publish portfolios with a visual editor
+          </motion.p>
+        </div>
+
+        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           <FeatureCard 
-            title="Drag & Drop Editor" 
-            desc="Visually build pages using an intuitive canvas. Add About, Projects, Skills, and more." 
-            icon="🎨"
+            title="Visual editor" 
+            desc="Drag, drop, and customize sections with an intuitive interface. See changes update in real-time." 
+            icon={Palette}
             index={0}
           />
           <FeatureCard 
-            title="Resume → Portfolio" 
-            desc="Upload your resume and automatically generate About & Experience sections." 
-            icon="📄"
+            title="Instant publishing" 
+            desc="Publish your portfolio with a custom URL. Share your work without managing deployment." 
+            icon={Globe}
             index={1}
           />
           <FeatureCard 
-            title="One-click Deploy" 
-            desc="Deploy instantly to Vercel/Netlify or download code for self-hosting." 
-            icon="🚀"
+            title="Ready-made templates" 
+            desc="Start with pre-designed templates for common portfolio layouts. Customize to match your needs." 
+            icon={Zap}
             index={2}
           />
         </div>
