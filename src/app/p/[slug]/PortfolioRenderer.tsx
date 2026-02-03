@@ -44,17 +44,18 @@ export function PortfolioRenderer({ sections }: PortfolioRendererProps) {
   return (
     <div className="min-h-screen bg-white">
       {sections.map((section) => {
+        // isEditing is NOT passed here, defaults to false to enable animations on public page
         switch (section.type) {
           case 'hero':
-            return <HeroSection key={section.id} data={section.data} styling={section.styling} />;
+            return <HeroSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
           case 'about':
-            return <AboutSection key={section.id} data={section.data} styling={section.styling} />;
+            return <AboutSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
           case 'skills':
-            return <SkillsSection key={section.id} data={section.data} styling={section.styling} />;
+            return <SkillsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
           case 'projects':
-            return <ProjectsSection key={section.id} data={section.data} styling={section.styling} />;
+            return <ProjectsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
           case 'contact':
-            return <ContactSection key={section.id} data={section.data} styling={section.styling} />;
+            return <ContactSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
           default:
             return null;
         }

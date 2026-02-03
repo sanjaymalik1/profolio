@@ -92,30 +92,21 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
     <motion.section 
       className="relative py-16"
       style={containerStyle}
-      initial={styling.animation?.type !== 'none' ? "hidden" : "visible"}
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      variants={animationVariants}
+      initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
+      whileInView={!isEditing ? "visible" : undefined}
+      viewport={!isEditing ? { once: true, margin: "-100px" } : undefined}
+      variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      {/* Edit Overlay */}
-      {isEditing && (
-        <div className="absolute inset-0 bg-teal-500/10 border-2 border-teal-500 border-dashed rounded-lg flex items-center justify-center z-10">
-          <Badge variant="secondary" className="bg-teal-500 text-white">
-            Click to edit Contact section
-          </Badge>
-        </div>
-      )}
-
       <div className="max-w-6xl mx-auto px-4 relative z-0">
         
         {/* Section Header */}
         <motion.div 
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1, duration: 0.6 }}
+          initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
+          whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
+          viewport={!isEditing ? { once: true } : undefined}
+          transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             {data.heading || 'Get In Touch'}

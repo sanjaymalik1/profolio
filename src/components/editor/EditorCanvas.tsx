@@ -84,7 +84,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
       const commonProps = {
         data: section.data,
         styling: section.styling,
-        isEditing: false,
+        isEditing: true,  // Always true in editor to disable animations
         onEdit: () => selectSection(section.id)
       };
 
@@ -126,31 +126,31 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
     return (
       <div key={section.id} className="relative group">
-        {/* Drop zone above section */}
+        {/* Drop zone above section - subtle */}
         <Droppable
           accept={['palette-section', 'editor-section']}
           onDrop={(item) => handleSectionDrop(item, index)}
-          className="h-2 -mb-2 relative z-10 opacity-0 group-hover:opacity-100"
+          className="h-1.5 -mb-1.5 relative z-10 opacity-0 group-hover:opacity-100"
         >
-          <div className="h-full bg-blue-500 rounded-full mx-4" />
+          <div className="h-full bg-blue-400 rounded-full mx-4" />
         </Droppable>
 
-        {/* Section wrapper */}
+        {/* Section wrapper - Webflow-style subtle borders */}
         <div className={`
-          relative border-2 rounded-lg transition-all duration-200
-          ${isSelected ? 'border-blue-500 ring-2 ring-blue-100 shadow-md' : 'border-transparent'}
+          relative border rounded-md transition-all duration-200 cursor-pointer
+          ${isSelected ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-transparent hover:border-slate-300'}
           ${state.isDragging ? 'border-dashed border-slate-300' : ''}
         `}>
-          {/* Section controls overlay */}
+          {/* Section controls - minimal and subtle */}
           <div className={`
-            absolute top-3 right-3 z-20 flex gap-2 transition-opacity
+            absolute top-2 right-2 z-20 flex gap-1 transition-opacity
             ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
           `}>
             <Button
               size="sm"
               variant="secondary"
               onClick={() => selectSection(section.id)}
-              className="h-8 px-3 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm text-slate-700"
+              className="h-7 px-2.5 bg-white/95 hover:bg-white border border-slate-200/60 shadow-sm text-slate-600 backdrop-blur-sm"
             >
               <Edit className="h-3.5 w-3.5" />
             </Button>
@@ -158,24 +158,24 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
               size="sm"
               variant="destructive"
               onClick={() => removeSection(section.id)}
-              className="h-8 px-3 bg-white hover:bg-red-50 border border-red-200 shadow-sm text-red-600"
+              className="h-7 px-2.5 bg-white/95 hover:bg-red-50 border border-slate-200/60 shadow-sm text-red-600 backdrop-blur-sm"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
 
-          {/* Drag handle */}
+          {/* Drag handle - minimal */}
           <Draggable
             dragItem={dragItem}
             onDragStart={() => setDragging(true)}
             onDragEnd={() => setDragging(false)}
           >
             <div className={`
-              absolute left-3 top-3 z-20 p-2 rounded-md bg-white border border-slate-200 shadow-sm
+              absolute left-2 top-2 z-20 p-1.5 rounded-md bg-white/95 border border-slate-200/60 shadow-sm backdrop-blur-sm
               cursor-grab active:cursor-grabbing transition-opacity
               ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
             `}>
-              <GripVertical className="h-4 w-4 text-slate-500" />
+              <GripVertical className="h-4 w-4 text-slate-400" />
             </div>
           </Draggable>
 
@@ -189,8 +189,8 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             </Badge>
           </div>
 
-          {/* Section content */}
-          <div onClick={() => selectSection(section.id)}>
+          {/* Section content - Static editor rendering, no animations */}
+          <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
             <SectionComponent />
           </div>
         </div>
@@ -216,24 +216,24 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
         </div>
       </div>
 
-      {/* Canvas content */}
+      {/* Canvas content - minimal design */}
       <Droppable
         accept={['palette-section', 'editor-section']}
         onDrop={handleDrop}
         className={`
-          min-h-[600px] border-2 border-dashed rounded-xl transition-all
-          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-white' : 'p-6 bg-white'}
-          ${state?.isDragging ? 'border-blue-400 bg-blue-50/50 shadow-lg' : 'border-slate-300 hover:border-slate-400'}
+          min-h-[600px] border border-dashed rounded-lg transition-all
+          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-slate-50/30' : 'p-6 bg-white'}
+          ${state?.isDragging ? 'border-blue-400 bg-blue-50/30' : 'border-slate-300'}
         `}
       >
         {(state?.sections?.length || 0) === 0 ? (
-          <div className="text-center py-16 px-4">
-            <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <div className="text-center py-12 px-4">
+            <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4">
               <Plus className="w-10 h-10 text-slate-400" />
             </div>
-            <h4 className="text-lg font-semibold text-slate-900 mb-2">Start Building Your Portfolio</h4>
-            <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-              Drag sections from the left panel to begin creating your portfolio, or choose a template to get started quickly.
+            <h4 className="text-base font-medium text-slate-700 mb-1">Start building your portfolio</h4>
+            <p className="text-sm text-slate-500 max-w-sm mx-auto">
+              Drag sections from the left panel to begin
             </p>
           </div>
         ) : (

@@ -112,15 +112,15 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
         onDragStart={() => console.log(`Started dragging ${section.displayName}`)}
         onDragEnd={(result) => console.log('Drag ended:', result)}
       >
-        <Card className="cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 border border-slate-200 hover:border-blue-300 bg-white">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-blue-50 rounded-lg border border-blue-100 flex-shrink-0">
-                <IconComponent className="w-5 h-5 text-blue-600" />
+        <Card className="cursor-grab active:cursor-grabbing hover:shadow-sm transition-all duration-200 border border-slate-200/60 hover:border-slate-300 bg-white">
+          <CardContent className="p-3.5">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 bg-slate-50 rounded-md border border-slate-200/50 flex-shrink-0">
+                <IconComponent className="w-4 h-4 text-slate-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-sm mb-1 text-slate-900">{section.displayName}</h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <h4 className="font-medium text-sm mb-0.5 text-slate-700">{section.displayName}</h4>
+                <p className="text-xs text-slate-500 leading-snug">
                   {section.description}
                 </p>
               </div>
@@ -132,48 +132,39 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
   };
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`space-y-5 ${className}`}>
       <div>
-        <h3 className="text-lg font-semibold mb-2 text-slate-900">Section Palette</h3>
-        <p className="text-sm text-slate-600 leading-relaxed">
-          Drag sections to your portfolio canvas to build your page
+        <h3 className="text-sm font-medium mb-1 text-slate-700">Sections</h3>
+        <p className="text-xs text-slate-500">
+          Drag to canvas to build your portfolio
         </p>
       </div>
 
       {/* Basic Sections */}
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <h4 className="font-semibold text-sm text-slate-900">Essential Sections</h4>
-          <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-700 border border-slate-200">
-            {basicSections.length}
-          </Badge>
+        <div className="flex items-center gap-2 mb-2.5">
+          <h4 className="font-medium text-xs text-slate-600">Essential</h4>
         </div>
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {basicSections.map(renderSection)}
         </div>
       </div>
 
       {/* Advanced Sections */}
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <h4 className="font-semibold text-sm text-slate-900">Advanced Sections</h4>
-          <Badge variant="outline" className="text-xs border-slate-300 text-slate-700">
-            {advancedSections.length}
-          </Badge>
+        <div className="flex items-center gap-2 mb-2.5">
+          <h4 className="font-medium text-xs text-slate-600">Advanced</h4>
         </div>
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {advancedSections.map(renderSection)}
         </div>
       </div>
 
-      {/* Tips */}
-      <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
-        <h5 className="font-semibold text-sm mb-2 text-slate-900">Quick Tips</h5>
-        <ul className="text-xs text-slate-700 space-y-1.5 leading-relaxed">
-          <li>• Drag sections to reorder them</li>
-          <li>• Click on sections to edit content</li>
-          <li>• Use the properties panel to customize</li>
-        </ul>
+      {/* Tips - subtle */}
+      <div className="p-3 bg-slate-50/50 border border-slate-200/50 rounded-md">
+        <p className="text-xs text-slate-500 leading-relaxed">
+          Drag sections to canvas, click to edit, reorder anytime
+        </p>
       </div>
     </div>
   );

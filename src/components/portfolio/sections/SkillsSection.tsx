@@ -70,21 +70,12 @@ export default function SkillsSection({ data, styling, isEditing = false, onEdit
     <motion.section 
       className="relative py-16"
       style={containerStyle}
-      initial={styling.animation?.type !== 'none' ? "hidden" : "visible"}
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
-      variants={animationVariants}
+      initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
+      whileInView={!isEditing ? "visible" : undefined}
+      viewport={!isEditing ? { once: true, margin: "-100px" } : undefined}
+      variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      {/* Edit Overlay */}
-      {isEditing && (
-        <div className="absolute inset-0 bg-blue-500/10 border-2 border-blue-500 border-dashed rounded-lg flex items-center justify-center z-10">
-          <Badge variant="secondary" className="bg-blue-500 text-white">
-            Click to edit Skills section
-          </Badge>
-        </div>
-      )}
-
       <div className="max-w-6xl mx-auto px-4 relative z-0">
         
         {/* Section Header */}

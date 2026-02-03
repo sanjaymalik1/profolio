@@ -99,7 +99,7 @@ export const PortfolioPreview: React.FC = () => {
         layout: 'default' as const,
         animation: { type: 'fade' as const, delay: 0, duration: 800 }
       },
-      isEditing: false
+      isEditing: true  // Set to true to disable animations in editor preview
     };
 
     switch (section.type) {
@@ -237,9 +237,9 @@ export const PortfolioPreview: React.FC = () => {
               previewDevice !== 'desktop' ? 'border rounded-lg' : ''
             }`}
           >
-            {/* Portfolio Sections */}
+            {/* Portfolio Sections - Static preview with no interactions */}
             {state.sections.length > 0 ? (
-              <div className="w-full">
+              <div className="w-full [&_*]:pointer-events-none [&_*]:!transition-none [&_*]:!animation-none">
                 {state.sections.map((section) => renderSection(section))}
               </div>
             ) : (

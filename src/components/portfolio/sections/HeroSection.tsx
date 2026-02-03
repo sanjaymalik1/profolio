@@ -50,9 +50,9 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
     <motion.section 
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={containerStyle}
-      initial={styling.animation?.type !== 'none' ? "hidden" : "visible"}
-      animate="visible"
-      variants={animationVariants}
+      initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
+      animate={!isEditing ? "visible" : undefined}
+      variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
       {/* Background Image */}
@@ -66,15 +66,6 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
-        </div>
-      )}
-
-      {/* Edit Overlay */}
-      {isEditing && (
-        <div className="absolute inset-0 bg-blue-500/10 border-2 border-blue-500 border-dashed rounded-lg flex items-center justify-center z-10">
-          <Badge variant="secondary" className="bg-blue-500 text-white">
-            Click to edit Hero section
-          </Badge>
         </div>
       )}
 
@@ -219,28 +210,30 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          <div className="flex flex-col items-center gap-2 text-current/50">
-            <span className="text-sm">Scroll to explore</span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-6 h-10 border-2 border-current/30 rounded-full flex justify-center"
-            >
+        {/* Scroll Indicator - Hidden in editor preview */}
+        {!isEditing && (
+          <motion.div 
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+          >
+            <div className="flex flex-col items-center gap-2 text-current/50">
+              <span className="text-sm">Scroll to explore</span>
               <motion.div
-                animate={{ y: [0, 12, 0] }}
+                animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="w-1 h-3 bg-current/50 rounded-full mt-2"
-              />
-            </motion.div>
-          </div>
-        </motion.div>
+                className="w-6 h-10 border-2 border-current/30 rounded-full flex justify-center"
+              >
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-1 h-3 bg-current/50 rounded-full mt-2"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </motion.section>
   );
