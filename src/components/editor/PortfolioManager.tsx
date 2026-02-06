@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { useEditor } from '@/contexts/EditorContext';
+import { useEditorActions } from '@/contexts/EditorContext';
 import { usePortfolioPersistence } from '@/hooks/usePortfolioPersistence';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,17 +20,29 @@ import {
 import { 
   Save, 
   Globe,
-  CheckCircle
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Undo2,
+  Redo2,
+  Edit2,
+  Check,
+  X
 } from 'lucide-react';
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
 
 export const PortfolioManager: React.FC = () => {
   const { user, isLoaded } = useUser();
+  const { state } = useEditor();
+  const { undo, redo, updateTitle } = useEditorActions();
   const {
+    saveState,
     isSaving,
     lastSaved,
+    saveError,
+    portfolioId,
     saveToDatabase,
-    getCurrentPortfolio
+    clearSaveError
   } = usePortfolioPersistence();
 
   const [saveTitle, setSaveTitle] = useState('');
@@ -36,11 +50,63 @@ export const PortfolioManager: React.FC = () => {
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [portfolioDetails, setPortfolioDetails] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
+  
+  // Title editing state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleInput, setTitleInput] = useState(state.portfolioTitle);
 
   // Track if component is mounted (client-side)
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Sync titleInput with state when state changes
+  useEffect(() => {
+    if (!isEditingTitle) {
+      setTitleInput(state.portfolioTitle);
+    }
+  }, [state.portfolioTitle, isEditingTitle]);
+
+  // Title editing handlers
+  const handleTitleEdit = () => {
+    setIsEditingTitle(true);
+    setTitleInput(state.portfolioTitle);
+  };
+
+  const handleTitleSave = () => {
+    const newTitle = titleInput.trim() || 'Untitled Portfolio';
+    updateTitle(newTitle);
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleCancel = () => {
+    setTitleInput(state.portfolioTitle);
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleTitleSave();
+    } else if (e.key === 'Escape') {
+      handleTitleCancel();
+    }
+  };
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      } else if ((e.metaKey || e.ctrlKey) && (e.shiftKey && e.key === 'z' || e.key === 'y')) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const handleSave = async () => {
     if (!isLoaded || !user) {
@@ -48,15 +114,17 @@ export const PortfolioManager: React.FC = () => {
       return;
     }
     
-    const currentPortfolio = getCurrentPortfolio();
-    
-    // If portfolio exists and has a title, save directly without prompting
-    if (currentPortfolio?.title) {
+    if (!portfolioId) {
+      alert('No portfolio loaded');
+      return;
+    }
+
+    // Check if portfolio has a title
+    if (portfolioDetails?.title && portfolioDetails.title !== 'Untitled Portfolio') {
       try {
-        await saveToDatabase(currentPortfolio.title);
+        await saveToDatabase();
       } catch (error) {
-        console.error('Save failed:', error);
-        alert('Failed to save portfolio: ' + (error as Error).message);
+        // Error already displayed by saveError state
       }
       return;
     }
@@ -71,36 +139,35 @@ export const PortfolioManager: React.FC = () => {
       await saveToDatabase(title);
       setSaveTitle('');
       setShowSaveDialog(false);
+      
+      // Reload portfolio details
+      fetchPortfolioDetails();
     } catch (error) {
-      console.error('Save failed:', error);
-      alert('Failed to save portfolio: ' + (error as Error).message);
+      // Error already displayed by saveError state
     }
   };
 
-  const currentPortfolio = getCurrentPortfolio();
-
   // Fetch portfolio details for publishing
-  React.useEffect(() => {
-    const fetchPortfolioDetails = async () => {
-      const portfolio = getCurrentPortfolio();
-      if (portfolio?.id && /^[0-9a-fA-F]{24}$/.test(portfolio.id)) {
-        try {
-          const response = await fetch(`/api/portfolios/${portfolio.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setPortfolioDetails(data.data);
-          }
-        } catch (error) {
-          console.error('Failed to fetch portfolio details:', error);
+  const fetchPortfolioDetails = useCallback(async () => {
+    if (portfolioId) {
+      try {
+        const response = await fetch(`/api/portfolios/${portfolioId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPortfolioDetails(data.data);
         }
+      } catch (error) {
+        console.error('Failed to fetch portfolio details:', error);
       }
-    };
+    }
+  }, [portfolioId]);
 
+  useEffect(() => {
     fetchPortfolioDetails();
-  }, [currentPortfolio?.id]);
+  }, [fetchPortfolioDetails]);
 
   const handlePublishClick = () => {
-    if (!currentPortfolio?.id || !/^[0-9a-fA-F]{24}$/.test(currentPortfolio.id)) {
+    if (!portfolioId) {
       alert('Please save your portfolio first before publishing');
       setShowSaveDialog(true);
       return;
@@ -127,30 +194,110 @@ export const PortfolioManager: React.FC = () => {
   return (
     <div className="flex items-center gap-3">
       
-      {/* Subtle Save Status Indicator - Webflow style */}
-      {status === 'authenticated' && (
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 px-2 py-1">
-          {isSaving ? (
+      {/* Portfolio Title */}
+      <div className="flex items-center gap-2">
+        {isEditingTitle ? (
+          <div className="flex items-center gap-1">
+            <Input
+              value={titleInput}
+              onChange={(e) => setTitleInput(e.target.value)}
+              onKeyDown={handleTitleKeyDown}
+              onBlur={handleTitleSave}
+              className="h-8 w-48 text-sm"
+              autoFocus
+              placeholder="Portfolio title"
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+              onClick={handleTitleSave}
+            >
+              <Check className="h-3.5 w-3.5 text-emerald-600" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+              onClick={handleTitleCancel}
+            >
+              <X className="h-3.5 w-3.5 text-slate-500" />
+            </Button>
+          </div>
+        ) : (
+          <button
+            onClick={handleTitleEdit}
+            className="flex items-center gap-1.5 px-2 py-1 hover:bg-slate-100 rounded-md transition-colors group"
+          >
+            <span className="text-sm font-medium text-slate-700">
+              {state.portfolioTitle}
+            </span>
+            <Edit2 className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        )}
+      </div>
+
+      {/* Undo / Redo */}
+      <div className="flex items-center gap-1 border-l pl-3">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={undo}
+          disabled={state.past.length === 0}
+          className="h-8 w-8 p-0"
+          title="Undo (⌘Z)"
+        >
+          <Undo2 className="h-4 w-4" />
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={redo}
+          disabled={state.future.length === 0}
+          className="h-8 w-8 p-0"
+          title="Redo (⌘⇧Z)"
+        >
+          <Redo2 className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      {/* Save Status Indicator */}
+      {isLoaded && user && (
+        <div className="flex items-center gap-1.5 text-xs px-2 py-1 border-l pl-3">{saveState === 'saving' ? (
             <>
-              <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse" />
-              <span className="hidden sm:inline">Saving...</span>
+              <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
+              <span className="hidden sm:inline text-slate-500">Saving...</span>
             </>
-          ) : lastSaved ? (
+          ) : saveState === 'error' ? (
             <>
-              <CheckCircle className="w-3.5 h-3.5 text-slate-400" />
-              <span className="hidden sm:inline">Saved</span>
+              <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+              <span className="hidden sm:inline text-red-600">Error</span>
+            </>
+          ) : state.hasUnsavedChanges ? (
+            <>
+              <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+              <span className="hidden sm:inline text-slate-600">Unsaved</span>
             </>
           ) : (
             <>
-              <div className="w-1.5 h-1.5 bg-slate-300 rounded-full" />
-              <span className="hidden sm:inline">Unsaved</span>
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="hidden sm:inline text-emerald-600">Saved</span>
             </>
           )}
         </div>
       )}
 
-      {/* Hidden trigger for save dialog when portfolio has no title */}
-      {status === 'authenticated' && (
+      {/* Error Display */}
+      {saveError && (
+        <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-md">
+          <AlertCircle className="w-3.5 h-3.5" />
+          <span className="max-w-[200px] truncate">{saveError}</span>
+          <button onClick={clearSaveError} className="hover:text-red-800">×</button>
+        </div>
+      )}
+
+      {/* Save Dialog */}
+      {isLoaded && user && (
         <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
@@ -186,7 +333,7 @@ export const PortfolioManager: React.FC = () => {
       )}
 
       {/* Publish Button */}
-      {currentPortfolio?.id && /^[0-9a-fA-F]{24}$/.test(currentPortfolio.id) && (
+      {portfolioId && (
         <>
           <Button 
             variant={portfolioDetails?.isPublic ? "default" : "outline"} 
@@ -216,14 +363,7 @@ export const PortfolioManager: React.FC = () => {
           viewCount={portfolioDetails.viewCount || 0}
           isOpen={showPublishDialog}
           onClose={() => setShowPublishDialog(false)}
-          onPublishSuccess={async () => {
-            // Refetch portfolio details
-            const response = await fetch(`/api/portfolios/${portfolioDetails.id}`);
-            if (response.ok) {
-              const data = await response.json();
-              setPortfolioDetails(data.data);
-            }
-          }}
+          onPublishSuccess={fetchPortfolioDetails}
         />
       )}
     </div>

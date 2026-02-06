@@ -44,18 +44,18 @@ export function PortfolioRenderer({ sections }: PortfolioRendererProps) {
   return (
     <div className="min-h-screen bg-white">
       {sections.map((section) => {
-        // isEditing is NOT passed here, defaults to false to enable animations on public page
+        // isPublicView is set to true to hide all editor-only UI elements
         switch (section.type) {
           case 'hero':
-            return <HeroSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
+            return <HeroSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'about':
-            return <AboutSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
+            return <AboutSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'skills':
-            return <SkillsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
+            return <SkillsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'projects':
-            return <ProjectsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
+            return <ProjectsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'contact':
-            return <ContactSection key={section.id} data={section.data} styling={section.styling} isEditing={false} />;
+            return <ContactSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
           default:
             return null;
         }

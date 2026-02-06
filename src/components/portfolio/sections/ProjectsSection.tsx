@@ -4,20 +4,36 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ProjectsData, SectionStyling } from '@/types/portfolio';
+import { ProjectsData, SectionStyling, Project } from '@/types/portfolio';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github, Calendar, User, Star } from 'lucide-react';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableImage } from '@/components/editor/inline/EditableImage';
 
 interface ProjectsSectionProps {
   data: ProjectsData;
   styling: SectionStyling;
   isEditing?: boolean;
+  isPublicView?: boolean;
   onEdit?: () => void;
+  onDataChange?: (newData: Partial<ProjectsData>) => void;
+  onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function ProjectsSection({ data, styling, isEditing = false, onEdit }: ProjectsSectionProps) {
+export default function ProjectsSection({ 
+  data, 
+  styling, 
+  isEditing = false, 
+  isPublicView = false,
+  onEdit,
+  onDataChange,
+  onStylingChange 
+}: ProjectsSectionProps) {
+  // Inline editing mode detection
+  const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
+
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
@@ -63,7 +79,17 @@ export default function ProjectsSection({ data, styling, isEditing = false, onEd
           transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            {data.heading || 'Featured Projects'}
+            {inlineEditMode ? (
+              <EditableText
+                value={data.heading || ''}
+                onChange={(value) => onDataChange?.({ heading: value })}
+                placeholder="Featured Projects"
+                className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                as="span"
+              />
+            ) : (
+              data.heading || 'Featured Projects'
+            )}
           </h2>
           <p className="text-lg text-current/70 max-w-2xl mx-auto mb-6">
             A showcase of my recent work and contributions
@@ -94,16 +120,24 @@ export default function ProjectsSection({ data, styling, isEditing = false, onEd
               <Card className="border-2 hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
                 
                 {/* Project Image */}
-                {project.images && project.images.length > 0 && (
-                  <div className="relative overflow-hidden aspect-video">
-                    <Image
-                      src={project.images[0]}
-                      alt={project.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                {inlineEditMode ? (
+                  <div className="relative aspect-video">
+                    <EditableImage
+                      value={project.images?.[0] || ''}
+                      onChange={(value) => {
+                        const updatedProjects = [...data.projects];
+                        const projectIndex = data.projects.findIndex(p => p.id === project.id);
+                        updatedProjects[projectIndex] = {
+                          ...project,
+                          images: [value, ...(project.images?.slice(1) || [])]
+                        };
+                        onDataChange?.({ projects: updatedProjects });
+                      }}
+                      aspectRatio="video"
+                      containerClassName="w-full h-full"
                     />
                     {project.featured && (
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-4 right-4 pointer-events-none">
                         <Badge className="bg-yellow-500 text-white">
                           <Star size={14} className="mr-1" />
                           Featured
@@ -111,6 +145,25 @@ export default function ProjectsSection({ data, styling, isEditing = false, onEd
                       </div>
                     )}
                   </div>
+                ) : (
+                  project.images && project.images.length > 0 && (
+                    <div className="relative overflow-hidden aspect-video">
+                      <Image
+                        src={project.images[0]}
+                        alt={project.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {project.featured && (
+                        <div className="absolute top-4 right-4">
+                          <Badge className="bg-yellow-500 text-white">
+                            <Star size={14} className="mr-1" />
+                            Featured
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  )
                 )}
 
                 <CardContent className="p-6">
@@ -118,7 +171,22 @@ export default function ProjectsSection({ data, styling, isEditing = false, onEd
                   <div className="mb-4">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-xl font-bold group-hover:text-blue-600 transition-colors">
-                        {project.title}
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={project.title}
+                            onChange={(value) => {
+                              const updatedProjects = [...data.projects];
+                              const projectIndex = data.projects.findIndex(p => p.id === project.id);
+                              updatedProjects[projectIndex] = { ...project, title: value };
+                              onDataChange?.({ projects: updatedProjects });
+                            }}
+                            placeholder="Project title"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          project.title
+                        )}
                       </h3>
                       {project.status && (
                         <Badge 
@@ -130,7 +198,23 @@ export default function ProjectsSection({ data, styling, isEditing = false, onEd
                       )}
                     </div>
                     <p className="text-current/70 leading-relaxed">
-                      {project.description}
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={project.description}
+                          onChange={(value) => {
+                            const updatedProjects = [...data.projects];
+                            const projectIndex = data.projects.findIndex(p => p.id === project.id);
+                            updatedProjects[projectIndex] = { ...project, description: value };
+                            onDataChange?.({ projects: updatedProjects });
+                          }}
+                          placeholder="Project description"
+                          className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 text-current/70"
+                          multiline
+                          as="span"
+                        />
+                      ) : (
+                        project.description
+                      )}
                     </p>
                   </div>
 

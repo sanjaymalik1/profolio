@@ -3,6 +3,7 @@
 import React from 'react';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { EditorProvider, useEditor } from '@/contexts/EditorContext';
 import { SectionPalette } from '@/components/editor/SectionPalette';
 import { EditorCanvas } from '@/components/editor/EditorCanvas';
@@ -31,10 +32,22 @@ function EditorLayout() {
     setIsMounted(true);
   }, []);
 
-  // Client-only rendering guard to prevent hydration mismatches
+  // Unsaved changes protection
   React.useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (state.hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [state.hasUnsavedChanges]);
 
   // Determine if section palette should be visible
   // Hide it if there's a template section in the portfolio
@@ -158,8 +171,12 @@ function EditorLayout() {
 }
 
 export default function EditorPage() {
+  const searchParams = useSearchParams();
+  const portfolioId = searchParams.get('id');
+  const templateId = searchParams.get('template');
+
   return (
-    <EditorProvider>
+    <EditorProvider portfolioId={portfolioId || undefined} templateId={templateId || undefined}>
       <EditorLayout />
     </EditorProvider>
   );

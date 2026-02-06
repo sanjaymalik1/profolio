@@ -7,12 +7,16 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Star, Code, Palette, Wrench, Globe, Database } from 'lucide-react';
+import { EditableText } from '@/components/editor/inline/EditableText';
 
 interface SkillsSectionProps {
   data: SkillsData;
   styling: SectionStyling;
   isEditing?: boolean;
+  isPublicView?: boolean;
   onEdit?: () => void;
+  onDataChange?: (newData: Partial<SkillsData>) => void;
+  onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
 const categoryIcons = {
@@ -22,7 +26,18 @@ const categoryIcons = {
   language: Globe
 } as const;
 
-export default function SkillsSection({ data, styling, isEditing = false, onEdit }: SkillsSectionProps) {
+export default function SkillsSection({ 
+  data, 
+  styling, 
+  isEditing = false, 
+  isPublicView = false,
+  onEdit,
+  onDataChange,
+  onStylingChange 
+}: SkillsSectionProps) {
+  // Inline editing mode detection
+  const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
+
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
@@ -87,7 +102,17 @@ export default function SkillsSection({ data, styling, isEditing = false, onEdit
           transition={{ delay: 0.1, duration: 0.6 }}
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            {data.heading || 'Skills & Expertise'}
+            {inlineEditMode ? (
+              <EditableText
+                value={data.heading || ''}
+                onChange={(value) => onDataChange?.({ heading: value })}
+                placeholder="Skills & Expertise"
+                className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                as="span"
+              />
+            ) : (
+              data.heading || 'Skills & Expertise'
+            )}
           </h2>
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
@@ -138,7 +163,26 @@ export default function SkillsSection({ data, styling, isEditing = false, onEdit
                             }}
                           >
                             <div className="flex items-center justify-between mb-2">
-                              <span className="font-medium">{skill.name}</span>
+                              {inlineEditMode ? (
+                                <EditableText
+                                  value={skill.name}
+                                  onChange={(value) => {
+                                    const updatedSkills = [...categorySkills];
+                                    updatedSkills[skillIndex] = { ...skill, name: value };
+                                    onDataChange?.({
+                                      skillCategories: {
+                                        ...data.skillCategories,
+                                        [categoryKey]: updatedSkills
+                                      }
+                                    });
+                                  }}
+                                  placeholder="Skill name"
+                                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 font-medium"
+                                  as="span"
+                                />
+                              ) : (
+                                <span className="font-medium">{skill.name}</span>
+                              )}
                               <span className={`text-sm font-semibold ${getSkillLevelColor(skill.level)}`}>
                                 {skill.level}%
                               </span>
@@ -189,7 +233,26 @@ export default function SkillsSection({ data, styling, isEditing = false, onEdit
                                 ${skill.level < 60 ? 'border-gray-200 bg-gray-50 text-gray-700' : ''}
                               `}
                             >
-                              <span className="truncate">{skill.name}</span>
+                              {inlineEditMode ? (
+                                <EditableText
+                                  value={skill.name}
+                                  onChange={(value) => {
+                                    const updatedSkills = [...categorySkills];
+                                    updatedSkills[skillIndex] = { ...skill, name: value };
+                                    onDataChange?.({
+                                      skillCategories: {
+                                        ...data.skillCategories,
+                                        [categoryKey]: updatedSkills
+                                      }
+                                    });
+                                  }}
+                                  placeholder="Skill name"
+                                  className="outline-none focus:ring-1 focus:ring-blue-400/50 rounded px-1 -mx-1 truncate"
+                                  as="span"
+                                />
+                              ) : (
+                                <span className="truncate">{skill.name}</span>
+                              )}
                               <span className="ml-2 text-xs font-bold">
                                 {skill.level}%
                               </span>

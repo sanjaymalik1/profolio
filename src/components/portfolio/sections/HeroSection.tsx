@@ -8,12 +8,17 @@ import { HeroData, SectionStyling } from '@/types/portfolio';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Github, Linkedin, Twitter, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableImage } from '@/components/editor/inline/EditableImage';
 
 interface HeroSectionProps {
   data: HeroData;
   styling: SectionStyling;
   isEditing?: boolean;
+  isPublicView?: boolean;
   onEdit?: () => void;
+  onDataChange?: (newData: Partial<HeroData>) => void;
+  onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
 const socialIcons = {
@@ -24,7 +29,19 @@ const socialIcons = {
   website: ExternalLink
 } as const;
 
-export default function HeroSection({ data, styling, isEditing = false, onEdit }: HeroSectionProps) {
+export default function HeroSection({ 
+  data, 
+  styling, 
+  isEditing = false, 
+  isPublicView = false, 
+  onEdit,
+  onDataChange,
+  onStylingChange 
+}: HeroSectionProps) {
+  // Determine if inline editing is active
+  const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
+
+
   const animationVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { 
@@ -73,26 +90,37 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           
           {/* Profile Image */}
-          {data.profileImage && (
+          {(data.profileImage || inlineEditMode) && (
             <motion.div 
               className="flex-shrink-0"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              <div className="relative">
-                <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                  <Image
-                    src={data.profileImage}
-                    alt={data.fullName}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+              {inlineEditMode ? (
+                <EditableImage
+                  value={data.profileImage || ''}
+                  onChange={(url) => onDataChange?.({ profileImage: url })}
+                  alt={data.fullName}
+                  containerClassName="w-48 h-48 lg:w-64 lg:h-64"
+                  className="rounded-full border-4 border-white shadow-2xl"
+                  aspectRatio="square"
+                />
+              ) : (
+                <div className="relative">
+                  <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                    <Image
+                      src={data.profileImage!}
+                      alt={data.fullName}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                  {/* Decorative ring */}
+                  <div className="absolute -inset-4 rounded-full border-2 border-current opacity-20 animate-pulse" />
                 </div>
-                {/* Decorative ring */}
-                <div className="absolute -inset-4 rounded-full border-2 border-current opacity-20 animate-pulse" />
-              </div>
+              )}
             </motion.div>
           )}
 
@@ -106,7 +134,17 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
             >
-              {data.fullName || 'Your Name'}
+              {inlineEditMode ? (
+                <EditableText
+                  value={data.fullName || ''}
+                  onChange={(value) => onDataChange?.({ fullName: value })}
+                  placeholder="Your Name"
+                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                  as="span"
+                />
+              ) : (
+                data.fullName || 'Your Name'
+              )}
             </motion.h1>
 
             {/* Title */}
@@ -116,18 +154,38 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
             >
-              {data.title || 'Your Professional Title'}
+              {inlineEditMode ? (
+                <EditableText
+                  value={data.title || ''}
+                  onChange={(value) => onDataChange?.({ title: value })}
+                  placeholder="Your Professional Title"
+                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                  as="span"
+                />
+              ) : (
+                data.title || 'Your Professional Title'
+              )}
             </motion.h2>
 
             {/* Subtitle */}
-            {data.subtitle && (
+            {(data.subtitle || inlineEditMode) && (
               <motion.p 
                 className="text-lg lg:text-xl mb-6 text-current/70"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               >
-                {data.subtitle}
+                {inlineEditMode ? (
+                  <EditableText
+                    value={data.subtitle || ''}
+                    onChange={(value) => onDataChange?.({ subtitle: value })}
+                    placeholder="Optional subtitle"
+                    className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                    as="span"
+                  />
+                ) : (
+                  data.subtitle
+                )}
               </motion.p>
             )}
 
@@ -138,7 +196,18 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
             >
-              {data.bio || 'Brief introduction about yourself and what you do.'}
+              {inlineEditMode ? (
+                <EditableText
+                  value={data.bio || ''}
+                  onChange={(value) => onDataChange?.({ bio: value })}
+                  placeholder="Brief introduction about yourself and what you do."
+                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                  as="span"
+                  multiline
+                />
+              ) : (
+                data.bio || 'Brief introduction about yourself and what you do.'
+              )}
             </motion.p>
 
             {/* Location & Contact */}
@@ -210,8 +279,8 @@ export default function HeroSection({ data, styling, isEditing = false, onEdit }
           </div>
         </div>
 
-        {/* Scroll Indicator - Hidden in editor preview */}
-        {!isEditing && (
+        {/* Scroll Indicator - Hidden in editor preview and public view */}
+        {!isEditing && !isPublicView && (
           <motion.div 
             className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
             initial={{ opacity: 0 }}

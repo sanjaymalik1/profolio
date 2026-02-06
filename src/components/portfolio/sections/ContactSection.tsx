@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableField } from '@/components/editor/inline/EditableField';
 import { 
   Mail, 
   Phone, 
@@ -26,10 +28,24 @@ interface ContactSectionProps {
   data: ContactData;
   styling: SectionStyling;
   isEditing?: boolean;
+  isPublicView?: boolean;
   onEdit?: () => void;
+  onDataChange?: (newData: Partial<ContactData>) => void;
+  onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function ContactSection({ data, styling, isEditing = false, onEdit }: ContactSectionProps) {
+export default function ContactSection({ 
+  data, 
+  styling, 
+  isEditing = false, 
+  isPublicView = false,
+  onEdit,
+  onDataChange,
+  onStylingChange 
+}: ContactSectionProps) {
+  // Inline editing mode detection
+  const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -109,7 +125,17 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
           transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            {data.heading || 'Get In Touch'}
+            {inlineEditMode ? (
+              <EditableText
+                value={data.heading || ''}
+                onChange={(value) => onDataChange?.({ heading: value })}
+                placeholder="Get In Touch"
+                className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                as="span"
+              />
+            ) : (
+              data.heading || 'Get In Touch'
+            )}
           </h2>
           <p className="text-lg text-current/70 max-w-2xl mx-auto mb-6">
             I'm always open to discussing new opportunities and interesting projects.
@@ -150,12 +176,22 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
                   </div>
                   <div>
                     <p className="font-medium">Email</p>
-                    <a 
-                      href={`mailto:${data.email}`} 
-                      className="text-current/70 hover:text-current transition-colors"
-                    >
-                      {data.email}
-                    </a>
+                    {inlineEditMode ? (
+                      <EditableField
+                        value={data.email}
+                        onChange={(value) => onDataChange?.({ email: value })}
+                        placeholder="email@example.com"
+                        type="email"
+                        className="text-current/70"
+                      />
+                    ) : (
+                      <a 
+                        href={`mailto:${data.email}`} 
+                        className="text-current/70 hover:text-current transition-colors"
+                      >
+                        {data.email}
+                      </a>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -173,12 +209,22 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
                   </div>
                   <div>
                     <p className="font-medium">Phone</p>
-                    <a 
-                      href={`tel:${data.phone}`} 
-                      className="text-current/70 hover:text-current transition-colors"
-                    >
-                      {data.phone}
-                    </a>
+                    {inlineEditMode ? (
+                      <EditableField
+                        value={data.phone}
+                        onChange={(value) => onDataChange?.({ phone: value })}
+                        placeholder="+1 (555) 123-4567"
+                        type="tel"
+                        className="text-current/70"
+                      />
+                    ) : (
+                      <a 
+                        href={`tel:${data.phone}`} 
+                        className="text-current/70 hover:text-current transition-colors"
+                      >
+                        {data.phone}
+                      </a>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -196,7 +242,16 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
                   </div>
                   <div>
                     <p className="font-medium">Location</p>
-                    <p className="text-current/70">{data.location}</p>
+                    {inlineEditMode ? (
+                      <EditableField
+                        value={data.location}
+                        onChange={(value) => onDataChange?.({ location: value })}
+                        placeholder="San Francisco, CA"
+                        className="text-current/70"
+                      />
+                    ) : (
+                      <p className="text-current/70">{data.location}</p>
+                    )}
                   </div>
                 </motion.div>
               )}
@@ -214,7 +269,16 @@ export default function ContactSection({ data, styling, isEditing = false, onEdi
                   </div>
                   <div>
                     <p className="font-medium">Availability</p>
-                    <p className="text-current/70">{data.availability}</p>
+                    {inlineEditMode ? (
+                      <EditableField
+                        value={data.availability}
+                        onChange={(value) => onDataChange?.({ availability: value })}
+                        placeholder="Available for freelance"
+                        className="text-current/70"
+                      />
+                    ) : (
+                      <p className="text-current/70">{data.availability}</p>
+                    )}
                   </div>
                 </motion.div>
               )}

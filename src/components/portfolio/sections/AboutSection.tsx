@@ -7,15 +7,33 @@ import { AboutData, SectionStyling } from '@/types/portfolio';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle, User, Globe, Heart } from 'lucide-react';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableImage } from '@/components/editor/inline/EditableImage';
+import { EditableList } from '@/components/editor/inline/EditableList';
+import { EditableField } from '@/components/editor/inline/EditableField';
 
 interface AboutSectionProps {
   data: AboutData;
   styling: SectionStyling;
   isEditing?: boolean;
+  isPublicView?: boolean;
   onEdit?: () => void;
+  onDataChange?: (newData: Partial<AboutData>) => void;
+  onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function AboutSection({ data, styling, isEditing = false, onEdit }: AboutSectionProps) {
+export default function AboutSection({ 
+  data, 
+  styling, 
+  isEditing = false, 
+  isPublicView = false,
+  onEdit,
+  onDataChange,
+  onStylingChange 
+}: AboutSectionProps) {
+  // Inline editing mode detection
+  const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
+
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
@@ -60,7 +78,17 @@ export default function AboutSection({ data, styling, isEditing = false, onEdit 
           transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            {data.heading || 'About Me'}
+            {inlineEditMode ? (
+              <EditableText
+                value={data.heading || ''}
+                onChange={(value) => onDataChange?.({ heading: value })}
+                placeholder="About Me"
+                className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                as="span"
+              />
+            ) : (
+              data.heading || 'About Me'
+            )}
           </h2>
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
@@ -68,7 +96,7 @@ export default function AboutSection({ data, styling, isEditing = false, onEdit 
         <div className={`grid gap-12 ${isGridLayout ? 'lg:grid-cols-2' : 'lg:grid-cols-1'} items-center`}>
           
           {/* Profile Image */}
-          {data.profileImage && (
+          {(data.profileImage || inlineEditMode) && (
             <motion.div 
               className={`${isGridLayout ? 'order-1 lg:order-1' : 'float-left mr-8 mb-4'} ${isGridLayout ? 'justify-self-center' : ''}`}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -76,19 +104,30 @@ export default function AboutSection({ data, styling, isEditing = false, onEdit 
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              <div className="relative">
-                <div className={`${isGridLayout ? 'w-80 h-80' : 'w-48 h-48'} rounded-2xl overflow-hidden shadow-2xl`}>
-                  <Image
-                    src={data.profileImage}
-                    alt="Profile"
-                    fill
-                    className="object-cover"
-                  />
+              {inlineEditMode ? (
+                <EditableImage
+                  value={data.profileImage || ''}
+                  onChange={(url) => onDataChange?.({ profileImage: url })}
+                  alt="Profile"
+                  containerClassName={`${isGridLayout ? 'w-80 h-80' : 'w-48 h-48'}`}
+                  className="rounded-2xl shadow-2xl"
+                  aspectRatio="square"
+                />
+              ) : (
+                <div className="relative">
+                  <div className={`${isGridLayout ? 'w-80 h-80' : 'w-48 h-48'} rounded-2xl overflow-hidden shadow-2xl`}>
+                    <Image
+                      src={data.profileImage!}
+                      alt="Profile"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  {/* Decorative elements */}
+                  <div className="absolute -top-4 -right-4 w-20 h-20 bg-current/10 rounded-full -z-10" />
+                  <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-current/5 rounded-full -z-10" />
                 </div>
-                {/* Decorative elements */}
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-current/10 rounded-full -z-10" />
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-current/5 rounded-full -z-10" />
-              </div>
+              )}
             </motion.div>
           )}
 
@@ -104,29 +143,85 @@ export default function AboutSection({ data, styling, isEditing = false, onEdit 
             {/* Main Content */}
             <div className="prose prose-lg max-w-none">
               <p className="text-lg leading-relaxed text-current/80">
-                {data.content || 'Tell your story here. Share your background, experience, and what drives you.'}
+                {inlineEditMode ? (
+                  <EditableText
+                    value={data.content || ''}
+                    onChange={(value) => onDataChange?.({ content: value })}
+                    placeholder="Tell your story here. Share your background, experience, and what drives you."
+                    className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2 block min-h-[100px]"
+                    as="span"
+                    multiline
+                  />
+                ) : (
+                  data.content || 'Tell your story here. Share your background, experience, and what drives you.'
+                )}
               </p>
             </div>
 
             {/* Highlights */}
-            {data.highlights && data.highlights.length > 0 && (
+            {(data.highlights && data.highlights.length > 0) || inlineEditMode ? (
               <div className="space-y-3">
                 <h3 className="text-xl font-semibold mb-4">Key Highlights</h3>
-                {data.highlights.map((highlight, index) => (
-                  <motion.div
-                    key={index}
-                    className="flex items-start gap-3"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
-                  >
-                    <CheckCircle className="text-green-500 mt-1 flex-shrink-0" size={20} />
-                    <span className="text-current/80">{highlight}</span>
-                  </motion.div>
-                ))}
+                {inlineEditMode ? (
+                  <EditableList
+                    items={data.highlights || []}
+                    onChange={(items) => onDataChange?.({ highlights: items })}
+                    placeholder="Enter a highlight..."
+                    addButtonText="Add highlight"
+                    emptyMessage="No highlights yet. Click 'Add highlight' to get started."
+                    renderItem={(item, index, onEdit, onDelete) => (
+                      <motion.div
+                        key={index}
+                        className="flex items-start gap-3 group"
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                      >
+                        <CheckCircle className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                        <input
+                          type="text"
+                          value={item}
+                          onChange={(e) => onEdit(e.target.value)}
+                          onBlur={() => {
+                            if (!item.trim()) onDelete();
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          placeholder="Enter a highlight..."
+                          className="flex-1 bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2 text-current/80"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete();
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-red-50 text-red-500 hover:text-red-700"
+                          title="Delete"
+                        >
+                          <span className="text-xs">×</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  />
+                ) : (
+                  data.highlights.map((highlight, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-start gap-3"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                    >
+                      <CheckCircle className="text-green-500 mt-1 flex-shrink-0" size={20} />
+                      <span className="text-current/80">{highlight}</span>
+                    </motion.div>
+                  ))
+                )}
               </div>
-            )}
+            ) : null}
           </motion.div>
         </div>
 
@@ -142,49 +237,116 @@ export default function AboutSection({ data, styling, isEditing = false, onEdit 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
               {/* Age & Location */}
-              {(data.personalInfo.age || data.personalInfo.location) && (
+              {((data.personalInfo.age || data.personalInfo.location) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
                     <User className="mx-auto mb-4 text-current/60" size={32} />
                     <h4 className="font-semibold mb-2">Personal</h4>
-                    <div className="space-y-1 text-sm text-current/70">
-                      {data.personalInfo.age && <p>Age: {data.personalInfo.age}</p>}
-                      {data.personalInfo.location && <p>{data.personalInfo.location}</p>}
-                    </div>
+                    {inlineEditMode ? (
+                      <div className="space-y-2 text-sm text-current/70">
+                        <div className="flex items-center justify-center gap-2">
+                          <span>Age:</span>
+                          <EditableField
+                            value={data.personalInfo?.age?.toString() || ''}
+                            onChange={(value) => onDataChange?.({ 
+                              personalInfo: { 
+                                ...data.personalInfo, 
+                                age: value ? parseInt(value) : undefined 
+                              } 
+                            })}
+                            placeholder="25"
+                            type="text"
+                            className="w-16 text-center"
+                          />
+                        </div>
+                        <EditableField
+                          value={data.personalInfo?.location || ''}
+                          onChange={(value) => onDataChange?.({ 
+                            personalInfo: { 
+                              ...data.personalInfo, 
+                              location: value 
+                            } 
+                          })}
+                          placeholder="City, Country"
+                          className="text-center"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-1 text-sm text-current/70">
+                        {data.personalInfo.age && <p>Age: {data.personalInfo.age}</p>}
+                        {data.personalInfo.location && <p>{data.personalInfo.location}</p>}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
 
               {/* Languages */}
-              {data.personalInfo.languages && data.personalInfo.languages.length > 0 && (
+              {((data.personalInfo.languages && data.personalInfo.languages.length > 0) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
                     <Globe className="mx-auto mb-4 text-current/60" size={32} />
                     <h4 className="font-semibold mb-2">Languages</h4>
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {data.personalInfo.languages.map((language, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {language}
-                        </Badge>
-                      ))}
-                    </div>
+                    {inlineEditMode ? (
+                      <div className="mt-4">
+                        <EditableList
+                          items={data.personalInfo?.languages || []}
+                          onChange={(items) => onDataChange?.({ 
+                            personalInfo: { 
+                              ...data.personalInfo, 
+                              languages: items 
+                            } 
+                          })}
+                          placeholder="Enter language..."
+                          addButtonText="Add language"
+                          emptyMessage="No languages listed"
+                          itemClassName="text-sm"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {data.personalInfo.languages.map((language, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {language}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )}
 
               {/* Interests */}
-              {data.personalInfo.interests && data.personalInfo.interests.length > 0 && (
+              {((data.personalInfo?.interests && data.personalInfo.interests.length > 0) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
                   <CardContent className="p-6 text-center">
                     <Heart className="mx-auto mb-4 text-current/60" size={32} />
                     <h4 className="font-semibold mb-2">Interests</h4>
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {data.personalInfo.interests.map((interest, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {interest}
-                        </Badge>
-                      ))}
-                    </div>
+                    {inlineEditMode ? (
+                      <div className="mt-4">
+                        <EditableList
+                          items={data.personalInfo?.interests || []}
+                          onChange={(items) => onDataChange?.({ 
+                            personalInfo: { 
+                              ...data.personalInfo, 
+                              interests: items 
+                            } 
+                          })}
+                          placeholder="Enter interest..."
+                          addButtonText="Add interest"
+                          emptyMessage="No interests listed"
+                          itemClassName="text-sm"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-1 justify-center">
+                        {data.personalInfo.interests.map((interest, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {interest}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               )}

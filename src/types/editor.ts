@@ -50,6 +50,16 @@ export interface EditorSection {
   order: number;
 }
 
+// History state for undo/redo (excludes history fields to avoid nested history)
+export interface EditorStateSnapshot {
+  sections: EditorSection[];
+  selectedSectionId: string | null;
+  isDragging: boolean;
+  isPreviewMode: boolean;
+  previewDevice: 'desktop' | 'tablet' | 'mobile';
+  portfolioTitle: string;
+}
+
 // Editor context state
 export interface EditorState {
   sections: EditorSection[];
@@ -58,6 +68,9 @@ export interface EditorState {
   isPreviewMode: boolean;
   previewDevice: 'desktop' | 'tablet' | 'mobile';
   hasUnsavedChanges: boolean;
+  portfolioTitle: string;
+  past: EditorStateSnapshot[];
+  future: EditorStateSnapshot[];
 }
 
 // Editor actions
@@ -73,6 +86,10 @@ export type EditorAction =
   | { type: 'SET_PREVIEW_DEVICE'; payload: { device: 'desktop' | 'tablet' | 'mobile' } }
   | { type: 'SET_UNSAVED_CHANGES'; payload: { hasUnsavedChanges: boolean } }
   | { type: 'LOAD_SECTIONS'; payload: { sections: EditorSection[] } }
+  | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string } }
+  | { type: 'UPDATE_TITLE'; payload: { title: string } }
+  | { type: 'UNDO' }
+  | { type: 'REDO' }
   | { type: 'RESET_EDITOR' };
 
 // Component props for drag and drop

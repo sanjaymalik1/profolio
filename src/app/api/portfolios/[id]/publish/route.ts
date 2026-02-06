@@ -11,7 +11,10 @@ export async function POST(
     const { userId } = await auth();
     
     if (!userId) {
-      return NextResponse.json({ \n        success: false,\n        error: 'Unauthorized' \n      }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
     }
 
     const { id } = params;
@@ -27,7 +30,10 @@ export async function POST(
     });
 
     if (!portfolio) {
-      return NextResponse.json({ \n        success: false,\n        error: 'Portfolio not found' \n      }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: 'Portfolio not found' },
+        { status: 404 }
+      );
     }
 
     // Prepare update data

@@ -7,6 +7,7 @@ import {
   EditorState, 
   EditorAction, 
   EditorSection, 
+  EditorStateSnapshot,
   DraggableSectionType 
 } from '@/types/editor';
 import { 
@@ -26,6 +27,9 @@ const initialState: EditorState = {
   isPreviewMode: false,
   previewDevice: 'desktop',
   hasUnsavedChanges: false,
+  portfolioTitle: 'Untitled Portfolio',
+  past: [],
+  future: [],
 };
 
 // Default section data generators
@@ -125,6 +129,28 @@ const deepClone = (obj: any): any => {
   return obj;
 };
 
+// Helper to create state snapshot (excludes history fields)
+const createSnapshot = (state: EditorState): EditorStateSnapshot => ({
+  sections: deepClone(state.sections),
+  selectedSectionId: state.selectedSectionId,
+  isDragging: state.isDragging,
+  isPreviewMode: state.isPreviewMode,
+  previewDevice: state.previewDevice,
+  portfolioTitle: state.portfolioTitle,
+});
+
+// Helper to restore from snapshot
+const restoreFromSnapshot = (state: EditorState, snapshot: EditorStateSnapshot): EditorState => ({
+  ...state,
+  sections: deepClone(snapshot.sections),
+  selectedSectionId: snapshot.selectedSectionId,
+  isDragging: snapshot.isDragging,
+  isPreviewMode: snapshot.isPreviewMode,
+  previewDevice: snapshot.previewDevice,
+  portfolioTitle: snapshot.portfolioTitle,
+  hasUnsavedChanges: true, // Undo/redo marks as unsaved
+});
+
 // Reducer function
 const editorReducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
@@ -164,7 +190,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         sections: newSections,
         selectedSectionId: newSection.id,
-        hasUnsavedChanges: true
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [], // Clear redo stack
       };
     }
 
@@ -178,7 +206,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         sections: newSections,
         selectedSectionId: state.selectedSectionId === sectionId ? null : state.selectedSectionId,
-        hasUnsavedChanges: true
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
       };
     }
 
@@ -199,7 +229,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       return {
         ...state,
         sections: newSections,
-        hasUnsavedChanges: true
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
       };
     }
 
@@ -217,7 +249,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       return {
         ...state,
         sections: newSections,
-        hasUnsavedChanges: true
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
       };
     }
 
@@ -235,7 +269,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       return {
         ...state,
         sections: newSections,
-        hasUnsavedChanges: true
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
       };
     }
 
@@ -278,7 +314,56 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       return {
         ...state,
         sections: deepClone(action.payload.sections),
-        hasUnsavedChanges: false
+        hasUnsavedChanges: false,
+        past: [], // Clear history on load
+        future: [],
+      };
+    }
+
+    case 'LOAD_PORTFOLIO': {
+      return {
+        ...state,
+        sections: deepClone(action.payload.sections),
+        portfolioTitle: action.payload.title,
+        hasUnsavedChanges: false,
+        past: [],
+        future: [],
+      };
+    }
+
+    case 'UPDATE_TITLE': {
+      return {
+        ...state,
+        portfolioTitle: action.payload.title,
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
+      };
+    }
+
+    case 'UNDO': {
+      if (state.past.length === 0) return state;
+      
+      const previous = state.past[state.past.length - 1];
+      const newPast = state.past.slice(0, -1);
+      
+      return {
+        ...restoreFromSnapshot(state, previous),
+        past: newPast,
+        future: [createSnapshot(state), ...state.future],
+      };
+    }
+
+    case 'REDO': {
+      if (state.future.length === 0) return state;
+      
+      const next = state.future[0];
+      const newFuture = state.future.slice(1);
+      
+      return {
+        ...restoreFromSnapshot(state, next),
+        past: [...state.past, createSnapshot(state)],
+        future: newFuture,
       };
     }
 
@@ -363,6 +448,26 @@ export const useEditorActions = () => {
     }
   };
 
+  const setUnsavedChanges = (hasUnsavedChanges: boolean) => {
+    dispatch({ type: 'SET_UNSAVED_CHANGES', payload: { hasUnsavedChanges } });
+  };
+
+  const updateTitle = (title: string) => {
+    dispatch({ type: 'UPDATE_TITLE', payload: { title } });
+  };
+
+  const loadPortfolio = (sections: EditorSection[], title: string) => {
+    dispatch({ type: 'LOAD_PORTFOLIO', payload: { sections, title } });
+  };
+
+  const undo = () => {
+    dispatch({ type: 'UNDO' });
+  };
+
+  const redo = () => {
+    dispatch({ type: 'REDO' });
+  };
+
   return {
     addSection,
     removeSection,
@@ -375,68 +480,77 @@ export const useEditorActions = () => {
     setPreviewDevice,
     loadSections,
     resetEditor,
-    loadPortfolioData
+    loadPortfolioData,
+    setUnsavedChanges,
+    updateTitle,
+    loadPortfolio,
+    undo,
+    redo,
   };
 };
 
 // Provider component
 interface EditorProviderProps {
   children: ReactNode;
+  portfolioId?: string;
+  templateId?: string;
 }
 
-export const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
+export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfolioId, templateId }) => {
   const [state, dispatch] = useReducer(editorReducer, initialState);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Wait for hydration before accessing localStorage
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  // Load portfolio from localStorage after hydration
+  // Load portfolio from API based on portfolioId
   useEffect(() => {
     if (!isHydrated) return;
     
-    try {
-      // Check if we need to apply a template
-      const applyTemplate = localStorage.getItem('apply_template');
-      const selectedTemplate = localStorage.getItem('selected_template');
-      if (applyTemplate && selectedTemplate) {
-        // Import and apply template
-        import('@/lib/templateConverter').then(({ convertTemplateToSections }) => {
-          try {
-            const sections = convertTemplateToSections(selectedTemplate);
-            dispatch({ 
-              type: 'LOAD_SECTIONS', 
-              payload: { sections }
-            });
-            // Clear the flags
-            localStorage.removeItem('apply_template');
-            localStorage.removeItem('selected_template');
-          } catch (error) {
-            console.error('Error applying template:', error);
-            localStorage.removeItem('apply_template');
-            localStorage.removeItem('selected_template');
-          }
-        });
-        return;
-      }
+    const loadPortfolio = async () => {
+      try {
+        setIsLoading(true);
 
-      // Otherwise load existing portfolio
-      const currentPortfolio = localStorage.getItem('current_portfolio');
-      if (currentPortfolio) {
-        const portfolio = JSON.parse(currentPortfolio);
-        if (portfolio?.data?.sections && Array.isArray(portfolio.data.sections)) {
+        // If template is specified, apply it
+        if (templateId) {
+          const { convertTemplateToSections } = await import('@/lib/templateConverter');
+          const sections = convertTemplateToSections(templateId);
           dispatch({ 
             type: 'LOAD_SECTIONS', 
-            payload: { sections: portfolio.data.sections }
+            payload: { sections }
           });
+          setIsLoading(false);
+          return;
         }
+
+        // If portfolioId exists, load from API
+        if (portfolioId) {
+          const response = await fetch(`/api/portfolios/${portfolioId}`);
+          const result = await response.json();
+          
+          if (result.success && result.data.content?.sections) {
+            dispatch({ 
+              type: 'LOAD_PORTFOLIO', 
+              payload: { 
+                sections: result.data.content.sections,
+                title: result.data.title || 'Untitled Portfolio'
+              }
+            });
+          }
+        }
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading portfolio:', error);
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error loading portfolio from localStorage:', error);
-    }
-  }, [isHydrated]);
+    };
+
+    loadPortfolio();
+  }, [isHydrated, portfolioId, templateId]);
 
   return (
     <DndProvider backend={HTML5Backend}>

@@ -1,8 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Droppable } from './Droppable';
 import { Draggable } from './Draggable';
+import { EditorBlock } from './EditorBlock';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
 import { DragItem, PaletteDragItem, EditorSectionDragItem } from '@/types/editor';
 
@@ -41,8 +42,13 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     removeSection, 
     moveSection, 
     selectSection,
-    setDragging 
+    setDragging,
+    updateSectionData,
+    updateSectionStyling 
   } = useEditorActions();
+
+  // Block selection state (separate from section selection for PropertyPanel)
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   const handleDrop = (item: DragItem, monitor: any) => {
     const targetIndex = state?.sections?.length || 0;
@@ -85,7 +91,10 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
         data: section.data,
         styling: section.styling,
         isEditing: true,  // Always true in editor to disable animations
-        onEdit: () => selectSection(section.id)
+        isPublicView: false,  // Explicitly false in editor to enable inline editing
+        onEdit: () => selectSection(section.id),
+        onDataChange: (newData: any) => updateSectionData(section.id, newData),
+        onStylingChange: (newStyling: any) => updateSectionStyling(section.id, newStyling),
       };
 
       switch (section.type) {
@@ -135,12 +144,18 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           <div className="h-full bg-blue-400 rounded-full mx-4" />
         </Droppable>
 
-        {/* Section wrapper - Webflow-style subtle borders */}
-        <div className={`
-          relative border rounded-md transition-all duration-200 cursor-pointer
-          ${isSelected ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-transparent hover:border-slate-300'}
-          ${state.isDragging ? 'border-dashed border-slate-300' : ''}
-        `}>
+        {/* EditorBlock wrapper for block-level interactions */}
+        <EditorBlock
+          blockId={section.id}
+          isSelected={selectedBlockId === section.id}
+          onSelect={() => setSelectedBlockId(section.id)}
+        >
+          {/* Section wrapper - Webflow-style subtle borders */}
+          <div className={`
+            relative border rounded-md transition-all duration-200
+            ${isSelected ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-transparent hover:border-slate-300'}
+            ${state.isDragging ? 'border-dashed border-slate-300' : ''}
+          `}>
           {/* Section controls - minimal and subtle */}
           <div className={`
             absolute top-2 right-2 z-20 flex gap-1 transition-opacity
@@ -189,11 +204,12 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             </Badge>
           </div>
 
-          {/* Section content - Static editor rendering, no animations */}
-          <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
-            <SectionComponent />
+            {/* Section content - Static editor rendering, no animations */}
+            <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
+              <SectionComponent />
+            </div>
           </div>
-        </div>
+        </EditorBlock>
       </div>
     );
   };
@@ -225,6 +241,12 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-slate-50/30' : 'p-6 bg-white'}
           ${state?.isDragging ? 'border-blue-400 bg-blue-50/30' : 'border-slate-300'}
         `}
+        onClick={(e) => {
+          // Deselect block when clicking canvas background
+          if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.space-y-0') === null) {
+            setSelectedBlockId(null);
+          }
+        }}
       >
         {(state?.sections?.length || 0) === 0 ? (
           <div className="text-center py-12 px-4">

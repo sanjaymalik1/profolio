@@ -130,11 +130,27 @@ export default function DashboardPage() {
             <div className="text-center py-20 border border-dashed border-slate-200 rounded-xl bg-white">
               <p className="text-slate-600 mb-6 text-sm">No portfolios yet. Create one to get started.</p>
               <Button 
-                onClick={() => {
-                  localStorage.removeItem('current_portfolio');
-                  localStorage.removeItem('apply_template');
-                  localStorage.removeItem('selected_template');
-                  router.push('/editor-v2');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        title: 'Untitled Portfolio',
+                        content: { sections: [] },
+                        template: 'blank',
+                        isPublic: false,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      router.push(`/editor-v2?id=${result.data.id}`);
+                    } else {
+                      alert('Failed to create portfolio: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Failed to create portfolio. Please try again.');
+                  }
                 }}
                 size="lg"
                 className="bg-slate-900 hover:bg-slate-800 shadow-sm"
@@ -185,18 +201,7 @@ export default function DashboardPage() {
                           size="lg"
                           className="bg-slate-900 hover:bg-slate-800 shadow-sm"
                           onClick={() => {
-                            const portfolioForEditor = {
-                              id: activePortfolio.id,
-                              title: activePortfolio.title,
-                              data: {
-                                sections: activePortfolio.content?.sections || [],
-                                globalSettings: activePortfolio.content?.globalSettings || {}
-                              },
-                              createdAt: activePortfolio.createdAt,
-                              updatedAt: activePortfolio.updatedAt
-                            };
-                            localStorage.setItem('current_portfolio', JSON.stringify(portfolioForEditor));
-                            router.push('/editor-v2');
+                            router.push(`/editor-v2?id=${activePortfolio.id}`);
                           }}
                         >
                           Continue Editing
@@ -231,11 +236,27 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-medium text-slate-500">Recent portfolios</h2>
                   <Button 
-                    onClick={() => {
-                      localStorage.removeItem('current_portfolio');
-                      localStorage.removeItem('apply_template');
-                      localStorage.removeItem('selected_template');
-                      router.push('/editor-v2');
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/portfolios', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            title: 'Untitled Portfolio',
+                            content: { sections: [] },
+                            template: 'blank',
+                            isPublic: false,
+                          }),
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                          router.push(`/editor-v2?id=${result.data.id}`);
+                        } else {
+                          alert('Failed to create portfolio: ' + result.error);
+                        }
+                      } catch (error) {
+                        alert('Failed to create portfolio. Please try again.');
+                      }
                     }}
                     variant="outline"
                     size="sm"
@@ -278,18 +299,7 @@ export default function DashboardPage() {
                             size="sm"
                             className="bg-slate-900 hover:bg-slate-800 h-8 text-xs shadow-sm"
                             onClick={() => {
-                              const portfolioForEditor = {
-                                id: portfolio.id,
-                                title: portfolio.title,
-                                data: {
-                                  sections: portfolio.content?.sections || [],
-                                  globalSettings: portfolio.content?.globalSettings || {}
-                                },
-                                createdAt: portfolio.createdAt,
-                                updatedAt: portfolio.updatedAt
-                              };
-                              localStorage.setItem('current_portfolio', JSON.stringify(portfolioForEditor));
-                              router.push('/editor-v2');
+                              router.push(`/editor-v2?id=${portfolio.id}`);
                             }}
                           >
                             Edit
@@ -339,11 +349,27 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <div
                 className="group bg-white border-2 border-slate-900/10 rounded-lg overflow-hidden hover:border-slate-900/20 hover:shadow-lg transition-all text-left relative cursor-pointer"
-                onClick={() => {
-                  localStorage.setItem('apply_template', 'true');
-                  localStorage.setItem('selected_template', 'dark-professional');
-                  localStorage.removeItem('current_portfolio');
-                  router.push('/editor-v2');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        title: 'Dark Professional Portfolio',
+                        content: { sections: [] },
+                        template: 'dark-professional',
+                        isPublic: false,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      router.push(`/editor-v2?id=${result.data.id}&template=dark-professional`);
+                    } else {
+                      alert('Failed to create portfolio: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Failed to create portfolio. Please try again.');
+                  }
                 }}
               >
                 <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">Recommended</div>
@@ -363,11 +389,27 @@ export default function DashboardPage() {
 
               <div
                 className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={() => {
-                  localStorage.setItem('apply_template', 'true');
-                  localStorage.setItem('selected_template', 'elegant-monochrome');
-                  localStorage.removeItem('current_portfolio');
-                  router.push('/editor-v2');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        title: 'Elegant Monochrome Portfolio',
+                        content: { sections: [] },
+                        template: 'elegant-monochrome',
+                        isPublic: false,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      router.push(`/editor-v2?id=${result.data.id}&template=elegant-monochrome`);
+                    } else {
+                      alert('Failed to create portfolio: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Failed to create portfolio. Please try again.');
+                  }
                 }}
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
@@ -386,11 +428,27 @@ export default function DashboardPage() {
 
               <div
                 className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={() => {
-                  localStorage.setItem('apply_template', 'true');
-                  localStorage.setItem('selected_template', 'warm-minimalist');
-                  localStorage.removeItem('current_portfolio');
-                  router.push('/editor-v2');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        title: 'Warm Minimalist Portfolio',
+                        content: { sections: [] },
+                        template: 'warm-minimalist',
+                        isPublic: false,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      router.push(`/editor-v2?id=${result.data.id}&template=warm-minimalist`);
+                    } else {
+                      alert('Failed to create portfolio: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Failed to create portfolio. Please try again.');
+                  }
                 }}
               >
                 <div className="aspect-[16/10] bg-amber-50/50 flex items-center justify-center relative">
@@ -409,11 +467,27 @@ export default function DashboardPage() {
 
               <div
                 className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={() => {
-                  localStorage.removeItem('current_portfolio');
-                  localStorage.removeItem('apply_template');
-                  localStorage.removeItem('selected_template');
-                  router.push('/editor-v2');
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/portfolios', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        title: 'Untitled Portfolio',
+                        content: { sections: [] },
+                        template: 'blank',
+                        isPublic: false,
+                      }),
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      router.push(`/editor-v2?id=${result.data.id}`);
+                    } else {
+                      alert('Failed to create portfolio: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Failed to create portfolio. Please try again.');
+                  }
                 }}
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
@@ -439,11 +513,32 @@ export default function DashboardPage() {
         templateId={previewTemplateId}
         isOpen={!!previewTemplateId}
         onClose={() => setPreviewTemplateId(null)}
-        onUseTemplate={(templateId) => {
-          localStorage.setItem('apply_template', 'true');
-          localStorage.setItem('selected_template', templateId);
-          localStorage.removeItem('current_portfolio');
-          router.push('/editor-v2');
+        onUseTemplate={async (templateId) => {
+          try {
+            const templateNames: Record<string, string> = {
+              'dark-professional': 'Dark Professional Portfolio',
+              'elegant-monochrome': 'Elegant Monochrome Portfolio',
+              'warm-minimalist': 'Warm Minimalist Portfolio',
+            };
+            const response = await fetch('/api/portfolios', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title: templateNames[templateId] || 'Untitled Portfolio',
+                content: { sections: [] },
+                template: templateId,
+                isPublic: false,
+              }),
+            });
+            const result = await response.json();
+            if (result.success) {
+              router.push(`/editor-v2?id=${result.data.id}&template=${templateId}`);
+            } else {
+              alert('Failed to create portfolio: ' + result.error);
+            }
+          } catch (error) {
+            alert('Failed to create portfolio. Please try again.');
+          }
         }}
       />
 
