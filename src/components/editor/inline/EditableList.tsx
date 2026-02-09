@@ -47,11 +47,31 @@ export const EditableList: React.FC<EditableListProps> = ({
 }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  // Local state for the item being edited (prevents parent re-renders on every keystroke)
+  const [editingValue, setEditingValue] = useState<string>('');
+  const [originalValue, setOriginalValue] = useState<string>('');
 
-  const handleEdit = (index: number, value: string) => {
-    const newItems = [...items];
-    newItems[index] = value;
-    onChange(newItems);
+  const startEditing = (index: number) => {
+    setEditingIndex(index);
+    setEditingValue(items[index]);
+    setOriginalValue(items[index]);
+  };
+
+  const commitEdit = (index: number) => {
+    if (editingValue !== originalValue) {
+      const newItems = [...items];
+      newItems[index] = editingValue;
+      onChange(newItems);
+    }
+    setEditingIndex(null);
+    setEditingValue('');
+    setOriginalValue('');
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditingValue('');
+    setOriginalValue('');
   };
 
   const handleDelete = (index: number) => {
@@ -65,19 +85,21 @@ export const EditableList: React.FC<EditableListProps> = ({
     onChange(newItems);
     // Focus on the new item
     setEditingIndex(newItems.length - 1);
+    setEditingValue('');
+    setOriginalValue('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      setEditingIndex(null);
+      commitEdit(index);
       // Add new item if it's the last one and has content
-      if (index === items.length - 1 && items[index].trim()) {
+      if (index === items.length - 1 && editingValue.trim()) {
         handleAdd();
       }
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      setEditingIndex(null);
+      cancelEdit();
     }
   };
 
@@ -119,9 +141,9 @@ export const EditableList: React.FC<EditableListProps> = ({
           {isEditing ? (
             <input
               type="text"
-              value={item}
-              onChange={(e) => handleEdit(index, e.target.value)}
-              onBlur={() => setEditingIndex(null)}
+              value={editingValue}
+              onChange={(e) => setEditingValue(e.target.value)}
+              onBlur={() => commitEdit(index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               placeholder={placeholder}
               autoFocus
@@ -132,7 +154,7 @@ export const EditableList: React.FC<EditableListProps> = ({
             />
           ) : (
             <div
-              onClick={() => setEditingIndex(index)}
+              onClick={() => startEditing(index)}
               className="cursor-text px-2 -mx-2 min-h-[24px]"
             >
               {item || <span className="text-gray-400 italic">{placeholder}</span>}
@@ -173,7 +195,12 @@ export const EditableList: React.FC<EditableListProps> = ({
               renderItem(
                 item,
                 index,
-                (value) => handleEdit(index, value),
+                (value) => {
+                  // For custom renderItem, commit immediately
+                  const newItems = [...items];
+                  newItems[index] = value;
+                  onChange(newItems);
+                },
                 () => handleDelete(index)
               )
             ) : (

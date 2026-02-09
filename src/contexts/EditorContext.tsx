@@ -63,6 +63,7 @@ const createDefaultSectionData = (type: DraggableSectionType): any => {
         content: 'Tell your story here. Share your background, experience, and what drives you.',
         profileImage: '',
         highlights: ['Add your key highlights here'],
+        quote: 'The best way to predict the future is to create it.',
         personalInfo: {
           location: 'Your Location',
           languages: ['English'],
@@ -341,6 +342,39 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       };
     }
 
+    case 'DUPLICATE_SECTION': {
+      const { sectionId } = action.payload;
+      const section = state.sections.find(s => s.id === sectionId);
+      if (!section) return state;
+      
+      const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
+      
+      // Create duplicated section with new ID but identical data/styling
+      const duplicatedSection: EditorSection = {
+        ...deepClone(section),
+        id: `${section.type}-${Date.now()}`,
+        order: sectionIndex + 1
+      };
+
+      // Insert the duplicated section right after the original
+      const newSections = [...state.sections];
+      newSections.splice(sectionIndex + 1, 0, duplicatedSection);
+      
+      // Update order for all sections
+      newSections.forEach((s, idx) => {
+        s.order = idx;
+      });
+
+      return {
+        ...state,
+        sections: newSections,
+        selectedSectionId: duplicatedSection.id,
+        hasUnsavedChanges: true,
+        past: [...state.past, createSnapshot(state)],
+        future: [],
+      };
+    }
+
     case 'UNDO': {
       if (state.past.length === 0) return state;
       
@@ -382,6 +416,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 const EditorContext = createContext<{
   state: EditorState;
   dispatch: React.Dispatch<EditorAction>;
+  isLoading: boolean;
 } | null>(null);
 
 // Hook to use editor context
@@ -395,7 +430,7 @@ export const useEditor = () => {
 
 // Helper hooks for common operations
 export const useEditorActions = () => {
-  const { dispatch } = useEditor();
+  const { dispatch, state } = useEditor();
 
   const addSection = (sectionType: DraggableSectionType, index?: number) => {
     dispatch({ type: 'ADD_SECTION', payload: { sectionType, index } });
@@ -407,6 +442,28 @@ export const useEditorActions = () => {
 
   const moveSection = (sectionId: string, newIndex: number) => {
     dispatch({ type: 'MOVE_SECTION', payload: { sectionId, newIndex } });
+  };
+
+  const duplicateSection = (sectionId: string) => {
+    // Use proper DUPLICATE_SECTION action that sets hasUnsavedChanges: true
+    dispatch({ 
+      type: 'DUPLICATE_SECTION', 
+      payload: { sectionId } 
+    });
+  };
+
+  const moveSectionUp = (sectionId: string) => {
+    const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
+    if (sectionIndex > 0) {
+      moveSection(sectionId, sectionIndex - 1);
+    }
+  };
+
+  const moveSectionDown = (sectionId: string) => {
+    const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
+    if (sectionIndex < state.sections.length - 1) {
+      moveSection(sectionId, sectionIndex + 1);
+    }
   };
 
   const updateSectionData = (sectionId: string, data: any) => {
@@ -472,6 +529,9 @@ export const useEditorActions = () => {
     addSection,
     removeSection,
     moveSection,
+    duplicateSection,
+    moveSectionUp,
+    moveSectionDown,
     updateSectionData,
     updateSectionStyling,
     selectSection,
@@ -554,7 +614,7 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <EditorContext.Provider value={{ state, dispatch }}>
+      <EditorContext.Provider value={{ state, dispatch, isLoading }}>
         {children}
       </EditorContext.Provider>
     </DndProvider>

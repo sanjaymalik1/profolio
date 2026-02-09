@@ -40,7 +40,10 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
   const { 
     addSection, 
     removeSection, 
-    moveSection, 
+    moveSection,
+    duplicateSection,
+    moveSectionUp,
+    moveSectionDown,
     selectSection,
     setDragging,
     updateSectionData,
@@ -49,6 +52,13 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
   // Block selection state (separate from section selection for PropertyPanel)
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+
+  // Get selected section info for orientation feedback
+  const selectedSection = state.sections.find(s => s.id === selectedBlockId);
+  const formatSectionName = (type?: string) => {
+    if (!type) return '';
+    return type.charAt(0).toUpperCase() + type.slice(1) + ' Section';
+  };
 
   const handleDrop = (item: DragItem, monitor: any) => {
     const targetIndex = state?.sections?.length || 0;
@@ -147,8 +157,15 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
         {/* EditorBlock wrapper for block-level interactions */}
         <EditorBlock
           blockId={section.id}
+          sectionType={section.type}
           isSelected={selectedBlockId === section.id}
           onSelect={() => setSelectedBlockId(section.id)}
+          onDuplicate={() => duplicateSection(section.id)}
+          onDelete={() => removeSection(section.id)}
+          onMoveUp={() => moveSectionUp(section.id)}
+          onMoveDown={() => moveSectionDown(section.id)}
+          canMoveUp={index > 0}
+          canMoveDown={index < state.sections.length - 1}
         >
           {/* Section wrapper - Webflow-style subtle borders */}
           <div className={`
@@ -156,28 +173,6 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             ${isSelected ? 'border-blue-500 ring-1 ring-blue-500/20' : 'border-transparent hover:border-slate-300'}
             ${state.isDragging ? 'border-dashed border-slate-300' : ''}
           `}>
-          {/* Section controls - minimal and subtle */}
-          <div className={`
-            absolute top-2 right-2 z-20 flex gap-1 transition-opacity
-            ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
-          `}>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => selectSection(section.id)}
-              className="h-7 px-2.5 bg-white/95 hover:bg-white border border-slate-200/60 shadow-sm text-slate-600 backdrop-blur-sm"
-            >
-              <Edit className="h-3.5 w-3.5" />
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => removeSection(section.id)}
-              className="h-7 px-2.5 bg-white/95 hover:bg-red-50 border border-slate-200/60 shadow-sm text-red-600 backdrop-blur-sm"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
 
           {/* Drag handle - minimal */}
           <Draggable
@@ -216,6 +211,18 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
   return (
     <div className={`relative ${className}`}>
+      {/* Editor Orientation Feedback - Sticky at top */}
+      {selectedBlockId && selectedSection && (
+        <div className="sticky top-0 z-30 mb-4 px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-lg shadow-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-sm font-medium text-blue-900">
+              Editing: {formatSectionName(selectedSection.type)}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Canvas header */}
       <div className="flex items-center justify-between mb-6 p-4 lg:p-5 bg-white rounded-lg border border-slate-200 shadow-sm">
         <div>

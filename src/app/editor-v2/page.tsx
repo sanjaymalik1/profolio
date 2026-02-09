@@ -14,8 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Settings, 
-  Undo, 
-  Redo,
   Eye,
   LogIn,
   ArrowLeft
@@ -25,7 +23,7 @@ function EditorLayout() {
   const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = React.useState('canvas');
   const [isMounted, setIsMounted] = React.useState(false);
-  const { state } = useEditor();
+  const { state, isLoading } = useEditor();
 
   // Client-only rendering guard to prevent hydration mismatches
   React.useEffect(() => {
@@ -54,25 +52,75 @@ function EditorLayout() {
   const showSectionPalette = !state.sections.some(section => section.type === 'template');
 
   // Don't render toolbar buttons until mounted to prevent hydration errors
-  if (!isMounted) {
+  // Show loading skeleton while portfolio data is loading
+  if (!isMounted || isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        {/* Editor Header - Simplified for SSR */}
-        <header className="border-b border-slate-200 bg-white shadow-sm">
-          <div className="flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-              <h1 className="text-base sm:text-lg lg:text-xl font-semibold tracking-tight text-slate-900 truncate">Portfolio Editor</h1>
+        {/* Editor Header - Simplified for loading state */}
+        <header className="border-b border-slate-200/60 bg-white">
+          <div className="flex h-14 items-center justify-between px-6">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                  <span className="text-white font-bold text-sm">P</span>
+                </div>
+                <div>
+                  <h1 className="text-sm font-semibold text-slate-900 tracking-tight">Profolio</h1>
+                  <p className="text-xs text-slate-500">Design your professional portfolio</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {/* Loading skeleton for header buttons */}
+              <div className="w-20 h-8 bg-slate-200 rounded-md animate-pulse" />
+              <div className="w-32 h-8 bg-slate-200 rounded-md animate-pulse" />
+              <div className="w-24 h-8 bg-slate-200 rounded-md animate-pulse" />
             </div>
           </div>
         </header>
 
-        {/* Editor Layout - Simplified for SSR */}
-        <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]">
-          <main className="flex-1 overflow-hidden bg-slate-50">
-            <div className="h-full p-6 lg:p-8 flex items-center justify-center">
-              <div className="text-slate-400">Loading editor...</div>
+        {/* Editor Layout - Loading skeleton */}
+        <div className="flex h-[calc(100vh-3.5rem)]">
+          {/* Left Sidebar Skeleton */}
+          <aside className="w-64 lg:w-72 xl:w-80 border-r border-slate-200/50 bg-white overflow-y-auto hidden md:block">
+            <div className="p-5 space-y-4">
+              <div className="h-6 bg-slate-200 rounded animate-pulse" />
+              <div className="space-y-3">
+                <div className="h-20 bg-slate-100 rounded-lg animate-pulse" />
+                <div className="h-20 bg-slate-100 rounded-lg animate-pulse" />
+                <div className="h-20 bg-slate-100 rounded-lg animate-pulse" />
+                <div className="h-20 bg-slate-100 rounded-lg animate-pulse" />
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content Area Skeleton */}
+          <main className="flex-1 overflow-hidden bg-slate-50/50">
+            <div className="h-full p-8 space-y-6">
+              <div className="bg-white rounded-lg border border-slate-200 p-8 space-y-4">
+                <div className="h-8 bg-slate-200 rounded w-1/3 animate-pulse" />
+                <div className="h-4 bg-slate-100 rounded w-2/3 animate-pulse" />
+                <div className="h-4 bg-slate-100 rounded w-1/2 animate-pulse" />
+              </div>
+              <div className="bg-white rounded-lg border border-slate-200 p-8 space-y-4">
+                <div className="h-6 bg-slate-200 rounded w-1/4 animate-pulse" />
+                <div className="h-4 bg-slate-100 rounded animate-pulse" />
+                <div className="h-4 bg-slate-100 rounded w-5/6 animate-pulse" />
+              </div>
             </div>
           </main>
+
+          {/* Right Sidebar Skeleton */}
+          <aside className="w-80 border-l border-slate-200/50 bg-white overflow-y-auto hidden lg:block">
+            <div className="p-5 space-y-4">
+              <div className="h-6 bg-slate-200 rounded animate-pulse" />
+              <div className="space-y-3">
+                <div className="h-10 bg-slate-100 rounded animate-pulse" />
+                <div className="h-10 bg-slate-100 rounded animate-pulse" />
+                <div className="h-10 bg-slate-100 rounded animate-pulse" />
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     );
@@ -84,14 +132,14 @@ function EditorLayout() {
         <header className="border-b border-slate-200/60 bg-white">
           <div className="flex h-14 items-center justify-between px-6">
             <div className="flex items-center gap-4 min-w-0 flex-1">
-              <h1 className="text-sm font-medium text-slate-700 tracking-tight truncate">Portfolio Editor</h1>
-              <div className="items-center gap-0.5 hidden md:flex">
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-50 text-slate-500 hover:text-slate-700 rounded-md">
-                  <Undo className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-slate-50 text-slate-500 hover:text-slate-700 rounded-md">
-                  <Redo className="h-3.5 w-3.5" />
-                </Button>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                  <span className="text-white font-bold text-sm">P</span>
+                </div>
+                <div>
+                  <h1 className="text-sm font-semibold text-slate-900 tracking-tight">Profolio</h1>
+                  <p className="text-xs text-slate-500">Design your professional portfolio</p>
+                </div>
               </div>
             </div>
 

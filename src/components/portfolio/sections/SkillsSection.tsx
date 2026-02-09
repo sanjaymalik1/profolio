@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Star, Code, Palette, Wrench, Globe, Database } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
+import { typography, textColors } from '@/design/typography';
+import { spacing, grid } from '@/design/spacing';
 
 interface SkillsSectionProps {
   data: SkillsData;
@@ -83,7 +85,7 @@ export default function SkillsSection({
 
   return (
     <motion.section 
-      className="relative py-16"
+      className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
       whileInView={!isEditing ? "visible" : undefined}
@@ -91,11 +93,11 @@ export default function SkillsSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className="max-w-6xl mx-auto px-4 relative z-0">
+      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
-          className="text-center mb-12"
+          className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -118,8 +120,23 @@ export default function SkillsSection({
         </motion.div>
 
         {/* Skills by Category */}
-        <div className="space-y-12">
-          {Object.entries(skillsByCategory).map(([categoryKey, categorySkills], categoryIndex) => {
+        {inlineEditMode && Object.values(skillsByCategory).every(arr => !arr || arr.length === 0) ? (
+          <div className="text-center py-16 px-4">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-4">
+                <Star className="w-8 h-8 text-purple-500" />
+              </div>
+              <p className="text-slate-500 text-sm mb-4">
+                Add skills to showcase your expertise
+              </p>
+              <p className="text-xs text-slate-400">
+                Add skills through the Properties panel on the right
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-12">
+            {Object.entries(skillsByCategory).map(([categoryKey, categorySkills], categoryIndex) => {
             const Icon = categoryIcons[categoryKey as keyof typeof categoryIcons] || Star;
             
             return (
@@ -265,8 +282,9 @@ export default function SkillsSection({
                 </Card>
               </motion.div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
 
         {/* Skills Summary Stats */}
         <motion.div 

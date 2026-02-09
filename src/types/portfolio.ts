@@ -19,6 +19,7 @@ export interface AboutData {
   content: string;
   profileImage?: string;
   highlights: string[];
+  quote?: string;
   personalInfo?: {
     age?: number;
     location?: string;

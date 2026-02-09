@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Github, Linkedin, Twitter, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
+import { typography, textColors } from '@/design/typography';
+import { spacing } from '@/design/spacing';
 
 interface HeroSectionProps {
   data: HeroData;
@@ -92,35 +94,35 @@ export default function HeroSection({
           {/* Profile Image */}
           {(data.profileImage || inlineEditMode) && (
             <motion.div 
-              className="flex-shrink-0"
+              className="flex-shrink-0 relative"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
             >
-              {inlineEditMode ? (
-                <EditableImage
-                  value={data.profileImage || ''}
-                  onChange={(url) => onDataChange?.({ profileImage: url })}
-                  alt={data.fullName}
-                  containerClassName="w-48 h-48 lg:w-64 lg:h-64"
-                  className="rounded-full border-4 border-white shadow-2xl"
-                  aspectRatio="square"
-                />
-              ) : (
-                <div className="relative">
-                  <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                    <Image
-                      src={data.profileImage!}
-                      alt={data.fullName}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                  {/* Decorative ring */}
-                  <div className="absolute -inset-4 rounded-full border-2 border-current opacity-20 animate-pulse" />
-                </div>
-              )}
+              {/* Subtle decorative ring - thin and lightweight */}
+              <div className="absolute -inset-2 rounded-full border border-current opacity-15 pointer-events-none" />
+              
+              {/* Circular clipping container with soft shadow */}
+              <div className="relative w-48 h-48 lg:w-64 lg:h-64 rounded-full overflow-hidden shadow-lg">
+                {inlineEditMode ? (
+                  <EditableImage
+                    value={data.profileImage || ''}
+                    onChange={(url) => onDataChange?.({ profileImage: url })}
+                    alt={data.fullName}
+                    containerClassName="w-full h-full"
+                    className="object-cover"
+                    aspectRatio="square"
+                  />
+                ) : (
+                  <Image
+                    src={data.profileImage!}
+                    alt={data.fullName}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                )}
+              </div>
             </motion.div>
           )}
 
@@ -129,7 +131,7 @@ export default function HeroSection({
             
             {/* Name */}
             <motion.h1 
-              className="text-4xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-current to-current/70 bg-clip-text"
+              className={`${typography.heroTitle} mb-4 bg-gradient-to-r from-current to-current/70 bg-clip-text`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
@@ -149,7 +151,7 @@ export default function HeroSection({
 
             {/* Title */}
             <motion.h2 
-              className="text-xl lg:text-3xl font-medium mb-2 text-current/80"
+              className={`${typography.subtitle} mb-2 ${textColors.secondary}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
@@ -170,7 +172,7 @@ export default function HeroSection({
             {/* Subtitle */}
             {(data.subtitle || inlineEditMode) && (
               <motion.p 
-                className="text-lg lg:text-xl mb-6 text-current/70"
+                className={`${typography.body} ${spacing.marginBottom.medium} ${textColors.muted}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
@@ -191,7 +193,7 @@ export default function HeroSection({
 
             {/* Bio */}
             <motion.p 
-              className="text-base lg:text-lg mb-8 text-current/80 max-w-2xl leading-relaxed"
+              className={`${typography.body} ${spacing.marginBottom.large} ${textColors.secondary} max-w-2xl`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
@@ -212,7 +214,7 @@ export default function HeroSection({
 
             {/* Location & Contact */}
             <motion.div 
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-8 text-sm text-current/70"
+              className={`flex flex-wrap items-center justify-center lg:justify-start ${spacing.inlineGap} ${spacing.marginBottom.large} ${typography.muted}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7, duration: 0.6 }}
@@ -234,7 +236,7 @@ export default function HeroSection({
             {/* Social Links */}
             {data.socialLinks && data.socialLinks.length > 0 && (
               <motion.div 
-                className="flex items-center justify-center lg:justify-start gap-4 mb-8"
+                className={`flex items-center justify-center lg:justify-start ${spacing.inlineGap} ${spacing.marginBottom.large}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.6 }}

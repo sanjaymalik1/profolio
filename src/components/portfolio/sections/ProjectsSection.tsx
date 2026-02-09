@@ -8,9 +8,11 @@ import { ProjectsData, SectionStyling, Project } from '@/types/portfolio';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Github, Calendar, User, Star } from 'lucide-react';
+import { ExternalLink, Github, Calendar, User, Star, Plus } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
+import { typography, textColors } from '@/design/typography';
+import { spacing, grid } from '@/design/spacing';
 
 interface ProjectsSectionProps {
   data: ProjectsData;
@@ -60,7 +62,7 @@ export default function ProjectsSection({
 
   return (
     <motion.section 
-      className="relative py-16"
+      className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
       whileInView={!isEditing ? "visible" : undefined}
@@ -68,17 +70,17 @@ export default function ProjectsSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className="max-w-6xl mx-auto px-4 relative z-0">
+      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
-          className="text-center mb-16"
+          className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
           whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
           viewport={!isEditing ? { once: true } : undefined}
           transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+          <h2 className={`${typography.sectionTitle} ${spacing.marginBottom.small}`}>
             {inlineEditMode ? (
               <EditableText
                 value={data.heading || ''}
@@ -91,19 +93,34 @@ export default function ProjectsSection({
               data.heading || 'Featured Projects'
             )}
           </h2>
-          <p className="text-lg text-current/70 max-w-2xl mx-auto mb-6">
+          <p className={`${typography.body} ${textColors.muted} max-w-2xl mx-auto ${spacing.marginBottom.medium}`}>
             A showcase of my recent work and contributions
           </p>
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
 
         {/* Projects Grid */}
-        <div className={`
-          grid gap-8
-          ${isGridLayout ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}
-          ${isMasonryLayout ? 'md:grid-cols-2 lg:grid-cols-3' : ''}
-        `}>
-          {data.projects.map((project, index) => (
+        {inlineEditMode && (!data.projects || data.projects.length === 0) ? (
+          <div className="text-center py-16 px-4">
+            <div className="max-w-md mx-auto">
+              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+                <Plus className="w-8 h-8 text-blue-500" />
+              </div>
+              <p className="text-slate-500 text-sm mb-4">
+                Click to add your first project
+              </p>
+              <p className="text-xs text-slate-400">
+                Add projects through the Properties panel on the right
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className={`
+            grid gap-8
+            ${isGridLayout ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}
+            ${isMasonryLayout ? 'md:grid-cols-2 lg:grid-cols-3' : ''}
+          `}>
+            {data.projects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 30 }}
@@ -300,8 +317,9 @@ export default function ProjectsSection({
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* View All Projects CTA */}
         <motion.div 

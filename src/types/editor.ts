@@ -88,6 +88,7 @@ export type EditorAction =
   | { type: 'LOAD_SECTIONS'; payload: { sections: EditorSection[] } }
   | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string } }
   | { type: 'UPDATE_TITLE'; payload: { title: string } }
+  | { type: 'DUPLICATE_SECTION'; payload: { sectionId: string } }
   | { type: 'UNDO' }
   | { type: 'REDO' }
   | { type: 'RESET_EDITOR' };

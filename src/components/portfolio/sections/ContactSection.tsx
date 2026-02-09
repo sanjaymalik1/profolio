@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableField } from '@/components/editor/inline/EditableField';
+import { typography, textColors } from '@/design/typography';
+import { spacing, grid } from '@/design/spacing';
 import { 
   Mail, 
   Phone, 
@@ -106,7 +108,7 @@ export default function ContactSection({
 
   return (
     <motion.section 
-      className="relative py-16"
+      className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
       whileInView={!isEditing ? "visible" : undefined}
@@ -114,17 +116,17 @@ export default function ContactSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className="max-w-6xl mx-auto px-4 relative z-0">
+      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
-          className="text-center mb-16"
+          className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
           whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
           viewport={!isEditing ? { once: true } : undefined}
           transition={!isEditing ? { delay: 0.1, duration: 0.6 } : undefined}
         >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+          <h2 className={`${typography.sectionTitle} ${spacing.marginBottom.small}`}>
             {inlineEditMode ? (
               <EditableText
                 value={data.heading || ''}
@@ -137,13 +139,13 @@ export default function ContactSection({
               data.heading || 'Get In Touch'
             )}
           </h2>
-          <p className="text-lg text-current/70 max-w-2xl mx-auto mb-6">
+          <p className={`${typography.body} ${textColors.muted} max-w-2xl mx-auto ${spacing.marginBottom.medium}`}>
             I'm always open to discussing new opportunities and interesting projects.
           </p>
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className={`${grid.cols2} ${grid.gapLarge}`}>
           
           {/* Contact Information */}
           <motion.div 
@@ -154,8 +156,8 @@ export default function ContactSection({
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <div>
-              <h3 className="text-2xl font-bold mb-6">Let's Talk</h3>
-              <p className="text-current/70 mb-8">
+              <h3 className={`${typography.subsectionTitle} ${spacing.marginBottom.medium}`}>Let's Talk</h3>
+              <p className={`${typography.muted} ${spacing.marginBottom.large}`}>
                 Feel free to reach out if you're looking for a developer, have a question, 
                 or just want to connect.
               </p>

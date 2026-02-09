@@ -97,7 +97,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   return (
     <div
       className={cn(
-        'relative group overflow-hidden rounded-lg',
+        'relative group',
         aspectRatioClasses[aspectRatio],
         containerClassName
       )}
@@ -143,7 +143,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
         <div
           onClick={handleClick}
           className={cn(
-            'w-full h-full min-h-[200px] border-2 border-dashed border-slate-300 rounded-lg',
+            'w-full h-full min-h-[200px] border-2 border-dashed border-slate-300',
             'flex flex-col items-center justify-center gap-2',
             'cursor-pointer hover:border-slate-400 hover:bg-slate-50 transition-colors',
             disabled && 'cursor-not-allowed opacity-50',
