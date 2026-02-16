@@ -69,7 +69,7 @@ export default function AboutSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
+      <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
@@ -111,13 +111,13 @@ export default function AboutSection({
                   value={data.profileImage || ''}
                   onChange={(url) => onDataChange?.({ profileImage: url })}
                   alt="Profile"
-                  containerClassName={`${isGridLayout ? 'w-80 h-80' : 'w-48 h-48'}`}
+                  containerClassName={`${isGridLayout ? 'w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80' : 'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48'}`}
                   className="rounded-2xl shadow-2xl"
                   aspectRatio="square"
                 />
               ) : (
                 <div className="relative">
-                  <div className={`${isGridLayout ? 'w-80 h-80' : 'w-48 h-48'} rounded-2xl overflow-hidden shadow-2xl`}>
+                  <div className={`${isGridLayout ? 'w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80' : 'w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48'} rounded-2xl overflow-hidden shadow-2xl`}>
                     <Image
                       src={data.profileImage!}
                       alt="Profile"
@@ -135,7 +135,7 @@ export default function AboutSection({
 
           {/* Content */}
           <motion.div 
-            className={`${isGridLayout ? 'order-2 lg:order-2' : ''} space-y-6`}
+            className={`${isGridLayout ? 'order-2 lg:order-2' : ''} space-y-4 sm:space-y-6`}
             initial={{ opacity: 0, x: isGridLayout ? 30 : 0, y: isGridLayout ? 0 : 20 }}
             whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: true }}
@@ -283,17 +283,17 @@ export default function AboutSection({
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            {/* Grid with items-stretch for equal height cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            {/* Grid with items-stretch for equal height cards - responsive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 items-stretch">
               
               {/* Personal Card */}
               {((data.personalInfo.age || data.personalInfo.location) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6 flex flex-col h-full">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex flex-col h-full">
                     {/* Header - Fixed */}
-                    <div className="mb-6">
-                      <User className="mx-auto mb-3 text-current/60" size={32} />
-                      <h4 className="font-semibold text-base text-center">Personal</h4>
+                    <div className="mb-4 sm:mb-5 md:mb-6">
+                      <User className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
+                      <h4 className="font-semibold text-sm sm:text-base text-center">Personal</h4>
                     </div>
                     
                     {/* Content - Flexible, no overflow, natural wrapping */}
@@ -352,11 +352,11 @@ export default function AboutSection({
               {/* Languages Card */}
               {((data.personalInfo.languages && data.personalInfo.languages.length > 0) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6 flex flex-col h-full">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex flex-col h-full">
                     {/* Header - Fixed */}
-                    <div className="mb-6">
-                      <Globe className="mx-auto mb-3 text-current/60" size={32} />
-                      <h4 className="font-semibold text-base text-center">Languages</h4>
+                    <div className="mb-4 sm:mb-5 md:mb-6">
+                      <Globe className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
+                      <h4 className="font-semibold text-sm sm:text-base text-center">Languages</h4>
                     </div>
                     
                     {/* Content - Flexible, no overflow, natural wrapping */}
@@ -419,7 +419,7 @@ export default function AboutSection({
                     
                     {/* Footer - Separate block for actions */}
                     {inlineEditMode && (
-                      <div className="mt-6 pt-4 border-t border-dashed border-slate-300">
+                      <div className="mt-4 sm:mt-5 md:mt-6 pt-3 sm:pt-4 border-t border-dashed border-slate-300">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -432,9 +432,9 @@ export default function AboutSection({
                               }
                             });
                           }}
-                          className="w-full py-3 px-4 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-50/50 rounded-lg transition-all flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-slate-400"
+                          className="w-full py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-50/50 rounded-lg transition-all flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-slate-400"
                         >
-                          <Plus size={16} />
+                          <Plus size={14} className="sm:w-4 sm:h-4" />
                           Add language
                         </button>
                       </div>
@@ -446,11 +446,11 @@ export default function AboutSection({
               {/* Interests Card */}
               {((data.personalInfo?.interests && data.personalInfo.interests.length > 0) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
-                  <CardContent className="p-6 flex flex-col h-full">
+                  <CardContent className="p-4 sm:p-5 md:p-6 flex flex-col h-full">
                     {/* Header - Fixed */}
-                    <div className="mb-6">
-                      <Heart className="mx-auto mb-3 text-current/60" size={32} />
-                      <h4 className="font-semibold text-base text-center">Interests</h4>
+                    <div className="mb-4 sm:mb-5 md:mb-6">
+                      <Heart className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
+                      <h4 className="font-semibold text-sm sm:text-base text-center">Interests</h4>
                     </div>
                     
                     {/* Content - Flexible, no overflow, natural wrapping */}
@@ -513,7 +513,7 @@ export default function AboutSection({
                     
                     {/* Footer - Separate block for actions */}
                     {inlineEditMode && (
-                      <div className="mt-6 pt-4 border-t border-dashed border-slate-300">
+                      <div className="mt-4 sm:mt-5 md:mt-6 pt-3 sm:pt-4 border-t border-dashed border-slate-300">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -526,9 +526,9 @@ export default function AboutSection({
                               }
                             });
                           }}
-                          className="w-full py-3 px-4 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-50/50 rounded-lg transition-all flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-slate-400"
+                          className="w-full py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-50/50 rounded-lg transition-all flex items-center justify-center gap-2 border-2 border-dashed border-slate-300 hover:border-slate-400"
                         >
-                          <Plus size={16} />
+                          <Plus size={14} className="sm:w-4 sm:h-4" />
                           Add interest
                         </button>
                       </div>
@@ -540,15 +540,15 @@ export default function AboutSection({
           </motion.div>
         )}
 
-        {/* Quote or Call to Action */}
+        {/* Quote or Call to Action - responsive */}
         <motion.div 
-          className="mt-16 text-center"
+          className="mt-12 sm:mt-14 md:mt-16 text-center px-4"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          <blockquote className="text-xl lg:text-2xl font-light italic text-current/80 max-w-3xl mx-auto">
+          <blockquote className="text-lg sm:text-xl lg:text-2xl font-light italic text-current/80 max-w-3xl mx-auto">
             {inlineEditMode ? (
               <EditableText
                 value={data.quote || 'The best way to predict the future is to create it.'}
@@ -561,7 +561,7 @@ export default function AboutSection({
               `"${data.quote || 'The best way to predict the future is to create it.'}"`
             )}
           </blockquote>
-          <div className="mt-4 w-32 h-0.5 bg-current/30 mx-auto" />
+          <div className="mt-3 sm:mt-4 w-24 sm:w-32 h-0.5 bg-current/30 mx-auto" />
         </motion.div>
       </div>
     </motion.section>

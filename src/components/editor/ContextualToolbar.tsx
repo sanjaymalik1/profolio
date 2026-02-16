@@ -162,7 +162,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
   return (
     <div
       ref={toolbarRef}
-      className="fixed z-[100] bg-white border border-gray-200 rounded-lg shadow-lg px-2 py-2"
+      className="fixed z-[100] bg-white border border-gray-200 rounded-lg shadow-lg px-2 sm:px-2 py-2 sm:py-2"
       style={{
         top: position.top,
         left: position.left,
@@ -170,30 +170,30 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
       onClick={handleClick}
       onMouseDown={handleMouseDown}
     >
-      <div className="flex items-center gap-1">
-        {/* Text Formatting */}
-        <div className="flex items-center gap-0.5 border-r border-gray-200 pr-2 mr-1">
+      <div className="flex items-center gap-1 sm:gap-1">
+        {/* Text Formatting - touch-friendly buttons */}
+        <div className="flex items-center gap-0.5 border-r border-gray-200 pr-1.5 sm:pr-2 mr-1">
           <button
             type="button"
             onClick={() => toggleFormat('bold')}
             className={cn(
-              'p-2 rounded hover:bg-gray-100 transition-colors',
+              'p-2 sm:p-2 rounded hover:bg-gray-100 transition-colors touch-manipulation',
               formatting.bold && 'bg-gray-200'
             )}
             title="Bold"
           >
-            <Bold size={16} />
+            <Bold size={16} className="sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={() => toggleFormat('italic')}
             className={cn(
-              'p-2 rounded hover:bg-gray-100 transition-colors',
+              'p-2 sm:p-2 rounded hover:bg-gray-100 transition-colors touch-manipulation',
               formatting.italic && 'bg-gray-200'
             )}
             title="Italic"
           >
-            <Italic size={16} />
+            <Italic size={16} className="sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"

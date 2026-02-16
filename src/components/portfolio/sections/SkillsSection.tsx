@@ -93,7 +93,7 @@ export default function SkillsSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
+      <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
@@ -103,7 +103,7 @@ export default function SkillsSection({
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.6 }}
         >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
             {inlineEditMode ? (
               <EditableText
                 value={data.heading || ''}
@@ -121,12 +121,12 @@ export default function SkillsSection({
 
         {/* Skills by Category */}
         {inlineEditMode && Object.values(skillsByCategory).every(arr => !arr || arr.length === 0) ? (
-          <div className="text-center py-16 px-4">
+          <div className="text-center py-12 sm:py-16 px-4">
             <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-purple-500" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Star className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500" />
               </div>
-              <p className="text-slate-500 text-sm mb-4">
+              <p className="text-slate-500 text-xs sm:text-sm mb-3 sm:mb-4">
                 Add skills to showcase your expertise
               </p>
               <p className="text-xs text-slate-400">
@@ -135,7 +135,7 @@ export default function SkillsSection({
             </div>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-10 lg:space-y-12">
             {Object.entries(skillsByCategory).map(([categoryKey, categorySkills], categoryIndex) => {
             const Icon = categoryIcons[categoryKey as keyof typeof categoryIcons] || Star;
             
@@ -148,15 +148,15 @@ export default function SkillsSection({
                 transition={{ delay: 0.2 + categoryIndex * 0.1, duration: 0.6 }}
               >
                 <Card className="border-2 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-8">
+                  <CardContent className="p-4 sm:p-6 md:p-8">
                     
-                    {/* Category Header */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="p-3 rounded-lg bg-current/10">
-                        <Icon className="text-current" size={24} />
+                    {/* Category Header - responsive */}
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
+                      <div className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-current/10">
+                        <Icon className="text-current" size={20} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-semibold capitalize">
+                        <h3 className="text-base sm:text-lg md:text-xl font-semibold capitalize">
                           {categoryKey === 'technical' ? 'Technical Skills' : 
                            categoryKey === 'soft' ? 'Soft Skills' :
                            categoryKey === 'languages' ? 'Languages' : 'Tools'}
@@ -223,8 +223,8 @@ export default function SkillsSection({
                         ))}
                       </div>
                     ) : (
-                      /* Badge/Grid Layout */
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      /* Badge/Grid Layout - responsive */
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
                         {categorySkills.map((skill, skillIndex) => (
                           <motion.div
                             key={skillIndex}

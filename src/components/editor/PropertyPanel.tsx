@@ -78,9 +78,9 @@ export const PropertyPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-full sm:w-72 lg:w-80 xl:w-96 bg-white border-l border-slate-200/50 flex flex-col h-full">
-      {/* Header - minimal */}
-      <div className="p-4 border-b border-slate-200/50">
+    <aside className="hidden md:flex w-64 lg:w-72 xl:w-80 2xl:w-96 bg-white border-l border-slate-200/50 flex-col h-full">
+      {/* Header - minimal and responsive */}
+      <div className="p-3 sm:p-4 border-b border-slate-200/50">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-medium flex items-center gap-2 text-slate-700">
             <Settings className="w-3.5 h-3.5 text-slate-500" />
@@ -96,10 +96,10 @@ export const PropertyPanel: React.FC = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {renderPropertyForm()}
         </div>
       </div>
-    </div>
+    </aside>
   );
 };

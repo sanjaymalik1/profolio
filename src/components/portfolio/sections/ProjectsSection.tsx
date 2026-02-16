@@ -70,7 +70,7 @@ export default function ProjectsSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
+      <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
@@ -99,14 +99,14 @@ export default function ProjectsSection({
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
 
-        {/* Projects Grid */}
+        {/* Projects Grid - responsive */}
         {inlineEditMode && (!data.projects || data.projects.length === 0) ? (
-          <div className="text-center py-16 px-4">
+          <div className="text-center py-12 sm:py-16 px-4">
             <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-8 h-8 text-blue-500" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
               </div>
-              <p className="text-slate-500 text-sm mb-4">
+              <p className="text-slate-500 text-xs sm:text-sm mb-3 sm:mb-4">
                 Click to add your first project
               </p>
               <p className="text-xs text-slate-400">
@@ -116,9 +116,9 @@ export default function ProjectsSection({
           </div>
         ) : (
           <div className={`
-            grid gap-8
-            ${isGridLayout ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}
-            ${isMasonryLayout ? 'md:grid-cols-2 lg:grid-cols-3' : ''}
+            grid gap-4 sm:gap-6 lg:gap-8
+            ${isGridLayout ? 'md:grid-cols-2' : 'grid-cols-1'}
+            ${isMasonryLayout ? 'sm:grid-cols-2 lg:grid-cols-3' : ''}
           `}>
             {data.projects.map((project, index) => (
             <motion.div

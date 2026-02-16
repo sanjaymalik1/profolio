@@ -90,13 +90,13 @@ export function EditorBlock({
           (isHovered || isSelected) ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
       >
-        <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg shadow-lg p-1">
-          {/* Move Up */}
+        <div className="flex items-center gap-0.5 sm:gap-1 bg-white border border-gray-200 rounded-lg shadow-lg p-1">
+          {/* Move Up - touch-friendly */}
           {canMoveUp && onMoveUp && (
             <button
               type="button"
               onClick={(e) => handleAction(e, onMoveUp)}
-              className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+              className="p-2 sm:p-1.5 rounded hover:bg-gray-100 transition-colors touch-manipulation"
               title="Move up"
             >
               <ChevronUp size={16} className="text-gray-600" />

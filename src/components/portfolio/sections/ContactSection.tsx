@@ -116,7 +116,7 @@ export default function ContactSection({
       variants={!isEditing ? animationVariants : undefined}
       onClick={isEditing ? onEdit : undefined}
     >
-      <div className={`${spacing.container} ${spacing.sectionX} relative z-0`}>
+      <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
         
         {/* Section Header */}
         <motion.div 
@@ -145,11 +145,11 @@ export default function ContactSection({
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
 
-        <div className={`${grid.cols2} ${grid.gapLarge}`}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           
           {/* Contact Information */}
           <motion.div 
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -164,20 +164,20 @@ export default function ContactSection({
             </div>
 
             {/* Contact Details */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {data.email && (
                 <motion.div 
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.3, duration: 0.5 }}
                 >
-                  <div className="p-3 bg-current/10 rounded-lg">
-                    <Mail className="text-current" size={20} />
+                  <div className="p-2.5 sm:p-3 bg-current/10 rounded-lg flex-shrink-0">
+                    <Mail className="text-current" size={18} />
                   </div>
-                  <div>
-                    <p className="font-medium">Email</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base">Email</p>
                     {inlineEditMode ? (
                       <EditableField
                         value={data.email}
@@ -200,17 +200,17 @@ export default function ContactSection({
 
               {data.phone && (
                 <motion.div 
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.4, duration: 0.5 }}
                 >
-                  <div className="p-3 bg-current/10 rounded-lg">
-                    <Phone className="text-current" size={20} />
+                  <div className="p-2.5 sm:p-3 bg-current/10 rounded-lg flex-shrink-0">
+                    <Phone className="text-current" size={18} />
                   </div>
-                  <div>
-                    <p className="font-medium">Phone</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base">Phone</p>
                     {inlineEditMode ? (
                       <EditableField
                         value={data.phone}
@@ -233,17 +233,17 @@ export default function ContactSection({
 
               {data.location && (
                 <motion.div 
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.5, duration: 0.5 }}
                 >
-                  <div className="p-3 bg-current/10 rounded-lg">
-                    <MapPin className="text-current" size={20} />
+                  <div className="p-2.5 sm:p-3 bg-current/10 rounded-lg flex-shrink-0">
+                    <MapPin className="text-current" size={18} />
                   </div>
-                  <div>
-                    <p className="font-medium">Location</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base">Location</p>
                     {inlineEditMode ? (
                       <EditableField
                         value={data.location}
@@ -260,17 +260,17 @@ export default function ContactSection({
 
               {data.availability && (
                 <motion.div 
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.6, duration: 0.5 }}
                 >
-                  <div className="p-3 bg-current/10 rounded-lg">
-                    <Clock className="text-current" size={20} />
+                  <div className="p-2.5 sm:p-3 bg-current/10 rounded-lg flex-shrink-0">
+                    <Clock className="text-current" size={18} />
                   </div>
-                  <div>
-                    <p className="font-medium">Availability</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base">Availability</p>
                     {inlineEditMode ? (
                       <EditableField
                         value={data.availability}
@@ -286,17 +286,17 @@ export default function ContactSection({
               )}
             </div>
 
-            {/* Social Links */}
+            {/* Social Links - responsive */}
             {data.socialLinks && data.socialLinks.length > 0 && (
               <motion.div 
-                className="pt-8"
+                className="pt-6 sm:pt-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.7, duration: 0.5 }}
               >
-                <h4 className="font-medium mb-4">Connect with me</h4>
-                <div className="flex gap-4">
+                <h4 className="font-medium mb-3 sm:mb-4 text-sm sm:text-base">Connect with me</h4>
+                <div className="flex flex-wrap gap-3 sm:gap-4">
                   {data.socialLinks.map((socialLink, index) => {
                     const Icon = socialIcons[socialLink.platform as keyof typeof socialIcons] || Globe;
                     return (
