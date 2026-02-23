@@ -11,15 +11,16 @@ datasource db {
 }
 
 // User model - minimal app-level data (Clerk handles authentication)
-// Uses Clerk userId as the primary identifier
+// Uses MongoDB ObjectId as primary key, with separate field for Clerk mapping
 model User {
-  id        String   @id @map("_id") // Clerk userId (e.g., user_xyz123)
-  email     String   @unique
-  name      String?
-  image     String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId // MongoDB ObjectId
+  clerkUserId String?  @unique // Clerk userId (e.g., user_xyz123) - optional for flexibility
+  email       String   @unique
+  name        String?
+  image       String?
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Application data
   profile    Profile?
@@ -31,7 +32,7 @@ model User {
 // User profile information
 model Profile {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique // Clerk userId
+  userId String @unique @db.ObjectId // Reference to User.id
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   firstName String?
@@ -53,7 +54,7 @@ model Profile {
 // Portfolio model for user portfolios
 model Portfolio {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String // Clerk userId
+  userId String @db.ObjectId // Reference to User.id
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   title           String

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/user-helpers';
 
 // POST /api/portfolios/[id]/publish - Publish/unpublish a portfolio
 export async function POST(
@@ -17,6 +18,15 @@ export async function POST(
       );
     }
 
+    // Get user from database
+    const user = await getOrCreateUser(userId);
+    if (!user) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
+    }
+
     const { id } = params;
     const body = await request.json();
     const { isPublic, customSlug } = body;
@@ -25,7 +35,7 @@ export async function POST(
     const portfolio = await prisma.portfolio.findFirst({
       where: { 
         id,
-        userId: userId // Direct Clerk userId
+        userId: user.id // Use database user.id (ObjectId)
       },
     });
 

@@ -22,10 +22,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }, { status: 401 });
     }
 
+    // Get user from database
+    const user = await getOrCreateUser(userId);
+    if (!user) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
+    }
+
     const portfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: userId // Direct Clerk userId
+        userId: user.id // Use database user.id (ObjectId)
       },
     });
 
@@ -62,6 +71,15 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       }, { status: 401 });
     }
 
+    // Get user from database
+    const user = await getOrCreateUser(userId);
+    if (!user) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
+    }
+
     const body = await request.json();
     const { title, content, template, isPublic } = body;
 
@@ -69,7 +87,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const existingPortfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: userId // Direct Clerk userId
+        userId: user.id // Use database user.id (ObjectId)
       },
     });
 
@@ -149,11 +167,20 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       }, { status: 401 });
     }
 
+    // Get user from database
+    const user = await getOrCreateUser(userId);
+    if (!user) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'User not found' 
+      }, { status: 404 });
+    }
+
     // Check if portfolio exists and belongs to user
     const existingPortfolio = await prisma.portfolio.findFirst({
       where: { 
         id: id,
-        userId: userId // Direct Clerk userId
+        userId: user.id // Use database user.id (ObjectId)
       },
     });
 

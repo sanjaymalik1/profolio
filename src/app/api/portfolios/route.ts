@@ -25,9 +25,9 @@ export async function GET() {
       }, { status: 404 });
     }
 
-    // Query portfolios by Clerk userId
+    // Query portfolios by database user.id
     const portfolios = await prisma.portfolio.findMany({
-      where: { userId: userId }, // Direct Clerk userId
+      where: { userId: user.id }, // Use database user.id (ObjectId)
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true,
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     const portfolio = await prisma.portfolio.create({
       data: {
-        userId: userId, // Direct Clerk userId
+        userId: user.id, // Use database user.id (ObjectId)
         title,
         slug,
         template,
