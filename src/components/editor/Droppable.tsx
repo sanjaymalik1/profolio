@@ -34,7 +34,7 @@ export const Droppable: React.FC<DroppableProps> = ({
 
   return (
     <div
-      ref={drop as any}
+      ref={drop as unknown as React.LegacyRef<HTMLDivElement>}
       className={`transition-all duration-200 ${dropIndicatorClass} ${className}`}
     >
       {children}

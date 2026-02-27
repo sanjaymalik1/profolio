@@ -1,4 +1,16 @@
 // Drag and Drop Types for Portfolio Editor
+import { 
+  HeroData, 
+  AboutData, 
+  SkillsData, 
+  ProjectsData, 
+  ContactData, 
+  ExperienceData, 
+  EducationData,
+  TemplateSectionData,
+  SectionStyling 
+} from './portfolio';
+
 export interface DragItem {
   type: string;
   id: string;
@@ -40,15 +52,63 @@ export interface DropResult {
   targetZone: 'editor' | 'trash' | 'palette';
 }
 
-// Editor state for sections
-export interface EditorSection {
+// Editor state for sections - Discriminated union based on section type
+interface BaseEditorSection {
   id: string;
-  type: DraggableSectionType;
-  data: any; // Will be typed based on section type
   styling: SectionStyling;
   isEditable: boolean;
   order: number;
 }
+
+interface HeroEditorSection extends BaseEditorSection {
+  type: 'hero';
+  data: HeroData;
+}
+
+interface AboutEditorSection extends BaseEditorSection {
+  type: 'about';
+  data: AboutData;
+}
+
+interface SkillsEditorSection extends BaseEditorSection {
+  type: 'skills';
+  data: SkillsData;
+}
+
+interface ProjectsEditorSection extends BaseEditorSection {
+  type: 'projects';
+  data: ProjectsData;
+}
+
+interface ContactEditorSection extends BaseEditorSection {
+  type: 'contact';
+  data: ContactData;
+}
+
+interface ExperienceEditorSection extends BaseEditorSection {
+  type: 'experience';
+  data: ExperienceData;
+}
+
+interface EducationEditorSection extends BaseEditorSection {
+  type: 'education';
+  data: EducationData;
+}
+
+interface TemplateEditorSection extends BaseEditorSection {
+  type: 'template';
+  data: TemplateSectionData;
+}
+
+export type EditorSection = 
+  | HeroEditorSection
+  | AboutEditorSection
+  | SkillsEditorSection
+  | ProjectsEditorSection
+  | ContactEditorSection
+  | ExperienceEditorSection
+  | EducationEditorSection
+  | TemplateEditorSection;
 
 // History state for undo/redo (excludes history fields to avoid nested history)
 export interface EditorStateSnapshot {
@@ -78,7 +138,7 @@ export type EditorAction =
   | { type: 'ADD_SECTION'; payload: { sectionType: DraggableSectionType; index?: number } }
   | { type: 'REMOVE_SECTION'; payload: { sectionId: string } }
   | { type: 'MOVE_SECTION'; payload: { sectionId: string; newIndex: number } }
-  | { type: 'UPDATE_SECTION_DATA'; payload: { sectionId: string; data: any } }
+  | { type: 'UPDATE_SECTION_DATA'; payload: { sectionId: string; data: Record<string, unknown> } }
   | { type: 'UPDATE_SECTION_STYLING'; payload: { sectionId: string; styling: Partial<SectionStyling> } }
   | { type: 'SELECT_SECTION'; payload: { sectionId: string | null } }
   | { type: 'SET_DRAGGING'; payload: { isDragging: boolean } }
@@ -105,7 +165,7 @@ export interface DraggableProps {
 export interface DroppableProps {
   children: React.ReactNode;
   accept: string | string[];
-  onDrop: (item: DragItem, monitor: any) => void;
+  onDrop: (item: DragItem, monitor: unknown) => void;
   canDrop?: (item: DragItem) => boolean;
   className?: string;
 }
@@ -119,8 +179,5 @@ export interface PaletteSection {
   category: 'basic' | 'advanced' | 'specialty';
   preview: string; // Preview image or component
 }
-
-// Import existing types
-import { SectionStyling } from './portfolio';
 
 export * from './portfolio';

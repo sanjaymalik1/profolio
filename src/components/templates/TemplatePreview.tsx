@@ -3,8 +3,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { templateComponents, getTemplate } from './index';
-import { applyTemplateToEditor } from '@/lib/templateConverter';
-import { useEditorActions } from '@/contexts/EditorContext';
 import { 
   Dialog, 
   DialogContent, 
@@ -34,17 +32,8 @@ interface TemplatePreviewProps {
 
 export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: TemplatePreviewProps) {
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [isApplying, setIsApplying] = useState(false);
   const template = templateId ? getTemplate(templateId) : null;
   
-  // Try to get editor actions if available (will be null on landing page)
-  let editorActions = null;
-  try {
-    editorActions = useEditorActions();
-  } catch (e) {
-    // Not in editor context, that's fine
-  }
-
   if (!template) return null;
 
   const TemplateComponent = template.component;
@@ -74,32 +63,9 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
   const handleUseTemplate = async () => {
     if (!templateId) return;
     
-    // If no editor actions (landing page), just call the callback
-    if (!editorActions) {
-      onUseTemplate?.(templateId);
-      onClose();
-      return;
-    }
-    
-    setIsApplying(true);
-    
-    try {
-      await applyTemplateToEditor(templateId, editorActions, {
-        replaceAll: true,
-        showConfirmation: true,
-        onSuccess: () => {
-          // Close preview modal
-          onClose();
-          // Call original callback if provided
-          onUseTemplate?.(templateId);
-        },
-        onError: (error) => {
-          alert(`Failed to apply template: ${error.message}`);
-        }
-      });
-    } finally {
-      setIsApplying(false);
-    }
+    // Use callback pattern - works in all contexts
+    onUseTemplate?.(templateId);
+    onClose();
   };
 
   return (
@@ -159,10 +125,9 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
               <Button 
                 onClick={handleUseTemplate} 
                 className="gap-2"
-                disabled={isApplying}
               >
                 <Sparkles className="w-4 h-4" />
-                {isApplying ? 'Applying...' : 'Use Template'}
+                Use Template
               </Button>
               <Button variant="outline" onClick={onClose} size="sm" className="p-2">
                 <X className="w-4 h-4" />

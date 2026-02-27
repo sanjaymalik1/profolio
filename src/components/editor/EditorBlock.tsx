@@ -19,10 +19,10 @@ interface EditorBlockProps {
 }
 
 export function EditorBlock({ 
-  blockId,
+  blockId: _blockId,
   sectionType,
   isSelected, 
-  onSelect,
+  onSelect: _onSelect,
   onDuplicate,
   onDelete,
   onMoveUp,

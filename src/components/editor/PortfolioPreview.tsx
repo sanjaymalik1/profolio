@@ -27,7 +27,22 @@ import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessiona
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
 
+// Import types
+import type { TemplateSectionData } from '@/types/portfolio';
+import type { EditorSection } from '@/types/editor';
+
 export type PreviewDevice = 'desktop' | 'tablet' | 'mobile';
+
+// Type guard for TemplateSectionData
+function isTemplateSectionData(data: unknown): data is TemplateSectionData {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'templateId' in data &&
+    'templateData' in data &&
+    typeof (data as TemplateSectionData).templateId === 'string'
+  );
+}
 
 export const PortfolioPreview: React.FC = () => {
   const { state } = useEditor();
@@ -87,32 +102,33 @@ export const PortfolioPreview: React.FC = () => {
     }
   };
 
-  const renderSection = (section: any) => {
-    const commonProps = {
-      data: section.data,
-      styling: {
-        backgroundColor: 'transparent',
-        textColor: 'inherit',
-        padding: { top: '4rem', bottom: '4rem', left: '2rem', right: '2rem' },
-        margin: { top: '0', bottom: '0' },
-        alignment: 'center' as const,
-        layout: 'default' as const,
-        animation: { type: 'fade' as const, delay: 0, duration: 800 }
-      },
-      isEditing: true  // Set to true to disable animations in editor preview
+  const renderSection = (section: EditorSection) => {
+    // Common styling that will be used for all sections  
+    const commonStyling = {
+      backgroundColor: 'transparent',
+      textColor: 'inherit',
+      padding: { top: '4rem', bottom: '4rem', left: '2rem', right: '2rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: 'center' as const,
+      layout: 'default' as const,
+      animation: { type: 'fade' as const, delay: 0, duration: 800 }
     };
 
     switch (section.type) {
-      case 'template':
-        // Render entire template component in preview
-        if (section.data.templateId === 'dark-professional') {
-          return <DarkProfessionalTemplate key={section.id} data={section.data.templateData} isPreview={true} />;
-        }
-        if (section.data.templateId === 'elegant-monochrome') {
-          return <ElegantMonochromeTemplate key={section.id} data={section.data.templateData} isPreview={true} />;
-        }
-        if (section.data.templateId === 'warm-minimalist') {
-          return <WarmMinimalistTemplate key={section.id} data={section.data.templateData} isPreview={true} />;
+      case 'template': {
+        // Type guard to ensure section.data is TemplateSectionData
+        if (isTemplateSectionData(section.data)) {
+          const { templateId, templateData } = section.data;
+          // Render entire template component in preview
+          if (templateId === 'dark-professional') {
+            return <DarkProfessionalTemplate key={section.id} data={templateData} isPreview={true} />;
+          }
+          if (templateId === 'elegant-monochrome') {
+            return <ElegantMonochromeTemplate key={section.id} data={templateData} isPreview={true} />;
+          }
+          if (templateId === 'warm-minimalist') {
+            return <WarmMinimalistTemplate key={section.id} data={templateData} isPreview={true} />;
+          }
         }
         return (
           <div key={section.id} className="min-h-[400px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
@@ -120,21 +136,22 @@ export const PortfolioPreview: React.FC = () => {
               <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium mb-2">Template Not Found</p>
               <p className="text-sm">
-                Template "{section.data.templateId}" is not available for preview.
+                Template &quot;{isTemplateSectionData(section.data) ? section.data.templateId : 'unknown'}&quot; is not available for preview.
               </p>
             </div>
           </div>
         );
+      }
       case 'hero':
-        return <HeroSection key={section.id} {...commonProps} />;
+        return <HeroSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
       case 'about':
-        return <AboutSection key={section.id} {...commonProps} />;
+        return <AboutSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
       case 'skills':
-        return <SkillsSection key={section.id} {...commonProps} />;
+        return <SkillsSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
       case 'projects':
-        return <ProjectsSection key={section.id} {...commonProps} />;
+        return <ProjectsSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
       case 'contact':
-        return <ContactSection key={section.id} {...commonProps} />;
+        return <ContactSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
       default:
         return (
           <div key={section.id} className="min-h-[400px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">

@@ -16,7 +16,8 @@ import {
   SkillsData, 
   ProjectsData, 
   ContactData,
-  SectionStyling 
+  SectionStyling,
+  SectionData
 } from '@/types/portfolio';
 
 // Initial editor state
@@ -33,7 +34,7 @@ const initialState: EditorState = {
 };
 
 // Default section data generators
-const createDefaultSectionData = (type: DraggableSectionType): any => {
+const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
   const defaultStyling: SectionStyling = {
     backgroundColor: 'transparent',
     textColor: 'inherit',
@@ -114,18 +115,18 @@ const createDefaultSectionData = (type: DraggableSectionType): any => {
 };
 
 // Helper function for deep cloning
-const deepClone = (obj: any): any => {
+const deepClone = <T,>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return new Date(obj.getTime());
-  if (obj instanceof Array) return obj.map(item => deepClone(item));
+  if (obj instanceof Date) return new Date(obj.getTime()) as T;
+  if (obj instanceof Array) return obj.map(item => deepClone(item)) as T;
   if (typeof obj === 'object') {
-    const clonedObj: any = {};
+    const clonedObj: Record<string, unknown> = {};
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        clonedObj[key] = deepClone(obj[key]);
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clonedObj[key] = deepClone((obj as Record<string, unknown>)[key]);
       }
     }
-    return clonedObj;
+    return clonedObj as T;
   }
   return obj;
 };
@@ -157,7 +158,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
   switch (action.type) {
     case 'ADD_SECTION': {
       const { sectionType, index } = action.payload;
-      const newSection: EditorSection = {
+      const newSection = {
         id: `${sectionType}-${Date.now()}`,
         type: sectionType,
         data: deepClone(createDefaultSectionData(sectionType)),
@@ -172,7 +173,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         },
         isEditable: true,
         order: index !== undefined ? index : state.sections.length
-      };
+      } as EditorSection;
 
       const newSections = [...state.sections];
       if (index !== undefined) {
@@ -245,7 +246,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
               data: deepClone({ ...section.data, ...data })
             }
           : section
-      );
+      ) as EditorSection[];
 
       return {
         ...state,
@@ -265,7 +266,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
               styling: deepClone({ ...section.styling, ...styling })
             }
           : section
-      );
+      ) as EditorSection[];
 
       return {
         ...state,
@@ -466,7 +467,7 @@ export const useEditorActions = () => {
     }
   };
 
-  const updateSectionData = (sectionId: string, data: any) => {
+  const updateSectionData = (sectionId: string, data: Record<string, unknown>) => {
     dispatch({ type: 'UPDATE_SECTION_DATA', payload: { sectionId, data } });
   };
 
@@ -498,7 +499,7 @@ export const useEditorActions = () => {
     dispatch({ type: 'RESET_EDITOR' });
   };
 
-  const loadPortfolioData = (portfolioData: any) => {
+  const loadPortfolioData = (portfolioData: { sections?: EditorSection[] }) => {
     if (portfolioData && portfolioData.sections) {
       // Deep clone the portfolio data to prevent reference sharing
       loadSections(deepClone(portfolioData.sections));

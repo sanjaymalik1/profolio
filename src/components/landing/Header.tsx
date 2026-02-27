@@ -9,7 +9,9 @@ export default function Header() {
   const { signOut } = useClerk();
 
   const handleSignOut = () => {
-    signOut(() => window.location.href = '/');
+    signOut(() => {
+      window.location.href = '/';
+    });
   };
 
   return (

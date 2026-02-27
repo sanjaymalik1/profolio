@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 // Get all users (Admin only)
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { userId, sessionClaims } = await auth();
     
@@ -55,9 +55,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { userId, role } = body;
+    const { userId: targetUserId, role } = body;
 
-    if (!userId || !role || !['USER', 'ADMIN'].includes(role)) {
+    if (!targetUserId || !role || !['USER', 'ADMIN'].includes(role)) {
       return NextResponse.json(
         { success: false, message: 'Invalid user ID or role' },
         { status: 400 }
@@ -65,7 +65,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Prevent admin from demoting themselves
-    if (userId === (session.user as any).id && role === 'USER') {
+    if (targetUserId === userId && role === 'USER') {
       return NextResponse.json(
         { success: false, message: 'Cannot demote yourself' },
         { status: 400 }
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: targetUserId },
       data: { role },
       select: {
         id: true,

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import { HeroData } from '@/types/portfolio';
+import type { HeroData, SocialLink } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,7 +31,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
   const { updateSectionData } = useEditorActions();
   const heroData = section.data as HeroData;
 
-  const handleInputChange = (field: keyof HeroData, value: any) => {
+  const handleInputChange = <K extends keyof HeroData>(field: K, value: HeroData[K]) => {
     const updatedData = { ...heroData, [field]: value };
     updateSectionData(section.id, updatedData);
   };
@@ -43,7 +43,12 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
   };
 
   const addSocialLink = () => {
-    const newSocialLinks = [...(heroData.socialLinks || []), { platform: 'github', url: '' }];
+    const newLink: SocialLink = {
+      platform: 'github',
+      url: '',
+    };
+
+    const newSocialLinks = [...(heroData.socialLinks || []), newLink];
     handleInputChange('socialLinks', newSocialLinks);
   };
 

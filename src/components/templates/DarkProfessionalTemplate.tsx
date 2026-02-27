@@ -3,15 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, ExternalLink, Terminal, Code2, Database, Server, Cpu, Zap } from 'lucide-react';
+import type { TemplateData, ProjectsData, Project } from '@/types/portfolio';
 
 interface DarkProfessionalTemplateProps {
-  data?: {
-    hero?: any;
-    about?: any;
-    skills?: any;
-    projects?: any;
-    contact?: any;
-  };
+  data?: TemplateData;
   isPreview?: boolean;
 }
 
@@ -60,40 +55,50 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
     }
   };
 
-  const projectsData = data?.projects || {
+  const projectsData: ProjectsData = data?.projects || {
     heading: "Projects",
+    categories: [],
     projects: [
       {
         id: "1",
         title: "Microservices Platform",
         description: "Scalable microservices architecture serving 10M+ requests/day",
         technologies: ["Go", "Docker", "Kubernetes", "PostgreSQL"],
+        images: [],
         links: {
           github: "https://github.com/jordansmith/microservices"
         },
-        featured: true
+        featured: true,
+        category: "Backend",
+        status: "completed" as const
       },
       {
         id: "2",
         title: "Real-time Analytics Engine",
         description: "High-performance analytics system with real-time data processing",
         technologies: ["Python", "Apache Kafka", "ClickHouse", "React"],
+        images: [],
         links: {
           github: "https://github.com/jordansmith/analytics"
         },
-        featured: true
+        featured: true,
+        category: "Data",
+        status: "completed" as const
       },
       {
         id: "3",
         title: "Developer Tools Suite",
         description: "CLI tools and libraries to improve developer productivity",
         technologies: ["TypeScript", "Node.js", "CLI", "NPM"],
+        images: [],
         links: {
           github: "https://github.com/jordansmith/devtools"
         },
-        featured: true
+        featured: true,
+        category: "Tools",
+        status: "completed" as const
       }
-    ]
+    ] as Project[]
   };
 
   const contactData = data?.contact || {
@@ -190,7 +195,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex justify-center gap-6"
           >
-            {(heroData.socialLinks || []).map((link: any, index: number) => (
+            {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
               <motion.a
                 key={index}
                 href={link.url}
@@ -291,7 +296,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                   Languages & Frameworks
                 </h3>
                 <div className="space-y-6">
-                  {(skillsData.skillCategories?.technical || []).map((skill: any, index: number) => (
+                  {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, x: -20 }}
@@ -325,7 +330,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                   Tools & Infrastructure
                 </h3>
                 <div className="space-y-6">
-                  {(skillsData.skillCategories?.tools || []).map((skill: any, index: number) => (
+                  {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, x: 20 }}
@@ -371,7 +376,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(projectsData.projects || []).map((project: any, index: number) => (
+              {(projectsData.projects || []).map((project: Project, index: number) => (
                 <motion.div
                   key={project.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -478,7 +483,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
               </div>
               <div className="text-green-400 text-sm">
-                <span className="text-slate-400">$</span> echo "Thanks for visiting!"
+                <span className="text-slate-400">$</span> echo &quot;Thanks for visiting!&quot;
               </div>
               <div className="text-blue-300 text-sm mb-1">Thanks for visiting!</div>
               <div className="text-green-400 text-sm">

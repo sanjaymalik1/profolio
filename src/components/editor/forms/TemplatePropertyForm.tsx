@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
+import type { TemplateData } from '@/types/portfolio';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,15 +19,23 @@ interface TemplatePropertyFormProps {
 
 export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ section }) => {
   const { updateSectionData } = useEditorActions();
-  const [formData, setFormData] = useState(section.data.templateData);
+  
+  // Always call hooks at the top level
+  const initialData = section.type === 'template' ? section.data.templateData : {};
+  const [formData, setFormData] = useState<TemplateData>(initialData);
+  
+  // Type guard: ensure this is a template section
+  if (section.type !== 'template') {
+    return null;
+  }
 
-  const handleChange = (path: string[], value: any) => {
+  const handleChange = (path: string[], value: string | unknown) => {
     const newData = { ...formData };
-    let current: any = newData;
+    let current: Record<string, unknown> = newData as Record<string, unknown>;
     
     for (let i = 0; i < path.length - 1; i++) {
       if (!current[path[i]]) current[path[i]] = {};
-      current = current[path[i]];
+      current = current[path[i]] as Record<string, unknown>;
     }
     current[path[path.length - 1]] = value;
     
@@ -35,7 +44,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
 
   const handleSave = () => {
     updateSectionData(section.id, {
-      ...section.data,
+      templateId: section.data.templateId,
       templateData: formData
     });
   };

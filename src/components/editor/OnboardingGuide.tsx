@@ -81,7 +81,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            On the left sidebar, you'll find different portfolio sections like Hero, About, 
+            On the left sidebar, you&apos;ll find different portfolio sections like Hero, About, 
             Skills, Projects, and Contact.
           </p>
           <div className="bg-green-50 p-4 rounded-lg">

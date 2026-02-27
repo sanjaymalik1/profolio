@@ -3,15 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, ExternalLink, Award, Briefcase, User } from 'lucide-react';
+import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
 
 interface ElegantMonochromeTemplateProps {
-  data?: {
-    hero?: any;
-    about?: any;
-    skills?: any;
-    projects?: any;
-    contact?: any;
-  };
+  data?: TemplateData;
   isPreview?: boolean;
 }
 
@@ -58,37 +53,44 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
     }
   };
 
-  const projectsData = data?.projects || {
+  const projectsData: ProjectsData = data?.projects || {
     heading: "Key Projects",
+    categories: ["Strategy", "Growth", "Operations"],
     projects: [
       {
+        id: "1",
         title: "Digital Transformation Initiative",
         description: "Led comprehensive digital transformation for Fortune 500 company, resulting in 40% efficiency improvement and $5M annual cost savings.",
-        image: "",
         technologies: ["Strategy", "Change Management", "Process Optimization"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Strategy"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Strategy",
+        status: "completed" as const
       },
       {
+        id: "2",
         title: "Market Expansion Strategy",
         description: "Developed and executed market entry strategy for European expansion, achieving 25% market share within 18 months.",
-        image: "",
         technologies: ["Market Research", "Strategic Planning", "Risk Assessment"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Growth"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Growth",
+        status: "completed" as const
       },
       {
+        id: "3",
         title: "Operational Excellence Program",
         description: "Designed and implemented operational excellence program across 15 business units, improving productivity by 35%.",
-        image: "",
         technologies: ["Lean Six Sigma", "Process Design", "Performance Management"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Operations"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Operations",
+        status: "completed" as const
       }
-    ]
+    ] as Project[]
   };
 
   const contactData = data?.contact || {
@@ -115,7 +117,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
               </div>
               
               <h1 className="text-5xl lg:text-6xl font-light mb-6 leading-tight">
-                <span className="font-extralight text-gray-500">I'm</span><br />
+                <span className="font-extralight text-gray-500">I&apos;m</span><br />
                 <span className="font-medium">{heroData.fullName}</span>
               </h1>
               
@@ -133,7 +135,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
               </div>
 
               <div className="flex gap-4">
-                {(heroData.socialLinks || []).map((link: any, index: number) => (
+                {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
                   <motion.a
                     key={index}
                     href={link.url}
@@ -227,7 +229,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
                 Core Skills
               </h3>
               <div className="space-y-6">
-                {(skillsData.skillCategories?.technical || []).map((skill: any, index: number) => (
+                {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -260,7 +262,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
                 Tools & Platforms
               </h3>
               <div className="space-y-6">
-                {(skillsData.skillCategories?.tools || []).map((skill: any, index: number) => (
+                {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -304,7 +306,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
           </motion.div>
 
           <div className="space-y-12">
-            {(projectsData.projects || []).map((project: any, index: number) => (
+            {(projectsData.projects || []).map((project, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
@@ -361,7 +363,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
             <div className="w-16 h-px bg-white mx-auto mb-12"></div>
             
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              Ready to transform your business? Let's discuss how we can achieve your strategic objectives together.
+              Ready to transform your business? Let&apos;s discuss how we can achieve your strategic objectives together.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">

@@ -33,7 +33,7 @@ export interface Portfolio {
   slug: string;
   template: string;
   isPublic: boolean;
-  content?: any; // JSON content
+  content?: unknown; // JSON content
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,7 +69,7 @@ export interface AuthResponse {
   token?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;

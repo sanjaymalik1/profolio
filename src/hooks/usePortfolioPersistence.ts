@@ -114,7 +114,10 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
-      const updateData: any = { 
+      const updateData: {
+        content: unknown;
+        title: string;
+      } = { 
         content: state,
         title: title || state.portfolioTitle
       };

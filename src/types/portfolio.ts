@@ -26,6 +26,10 @@ export interface AboutData {
     languages: string[];
     interests: string[];
   };
+  // Legacy properties for backward compatibility
+  name?: string;
+  title?: string;
+  description?: string;
 }
 
 export interface Skill {
@@ -85,6 +89,9 @@ export interface Project {
   status: 'completed' | 'in-progress' | 'planned';
   teamSize?: number;
   role?: string;
+  // Legacy properties for backward compatibility
+  link?: string;
+  github?: string;
 }
 
 export interface ProjectsData {
@@ -130,6 +137,10 @@ export interface ContactData {
     enabled: boolean;
     fields: ContactFormField[];
   };
+  // Legacy properties for backward compatibility
+  linkedin?: string;
+  github?: string;
+  website?: string;
 }
 
 export interface ContactFormField {
@@ -139,6 +150,22 @@ export interface ContactFormField {
   required: boolean;
   placeholder?: string;
   options?: string[]; // for select fields
+}
+
+// Template data structure
+export interface TemplateData {
+  hero?: HeroData;
+  about?: AboutData;
+  skills?: SkillsData;
+  projects?: ProjectsData;
+  contact?: ContactData;
+  experience?: ExperienceData;
+  education?: EducationData;
+}
+
+export interface TemplateSectionData {
+  templateId: string;
+  templateData: TemplateData;
 }
 
 // ===============================
@@ -231,6 +258,7 @@ export type SectionType =
   | 'contact' 
   | 'testimonials'
   | 'certifications'
+  | 'template'
   | 'custom';
 
 export type SectionData = 
@@ -241,7 +269,8 @@ export type SectionData =
   | ProjectsData 
   | EducationData 
   | ContactData
-  | Record<string, any>; // for custom sections
+  | TemplateSectionData
+  | Record<string, unknown>; // for custom sections
 
 export interface SectionStyling {
   backgroundColor?: string;

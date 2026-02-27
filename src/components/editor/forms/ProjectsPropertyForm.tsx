@@ -3,7 +3,7 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import { ProjectsData } from '@/types/portfolio';
+import type { ProjectsData, Project } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,7 +20,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
   const { updateSectionData } = useEditorActions();
   const projectsData = section.data as ProjectsData;
 
-  const handleInputChange = (field: keyof ProjectsData, value: any) => {
+  const handleInputChange = <K extends keyof ProjectsData>(field: K, value: ProjectsData[K]) => {
     const updatedData = { ...projectsData, [field]: value };
     updateSectionData(section.id, updatedData);
   };
@@ -47,7 +47,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
     handleInputChange('projects', updatedProjects);
   };
 
-  const updateProject = (projectIndex: number, field: string, value: any) => {
+  const updateProject = (projectIndex: number, field: string, value: string | string[] | unknown) => {
     const updatedProjects = [...(projectsData.projects || [])];
     updatedProjects[projectIndex] = { ...updatedProjects[projectIndex], [field]: value };
     handleInputChange('projects', updatedProjects);

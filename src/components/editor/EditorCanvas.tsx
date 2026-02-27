@@ -5,7 +5,8 @@ import { Droppable } from './Droppable';
 import { Draggable } from './Draggable';
 import { EditorBlock } from './EditorBlock';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
-import { DragItem, PaletteDragItem, EditorSectionDragItem } from '@/types/editor';
+import { DragItem, PaletteDragItem, EditorSectionDragItem, DraggableSectionType, EditorSection } from '@/types/editor';
+import { TemplateSectionData } from '@/types/portfolio';
 
 // Import section components
 import HeroSection from '@/components/portfolio/sections/HeroSection';
@@ -20,15 +21,11 @@ import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochr
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
 
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Trash2, 
-  Edit, 
   GripVertical, 
   Plus,
-  Eye,
-  EyeOff
+  Eye
 } from 'lucide-react';
 
 interface EditorCanvasProps {
@@ -60,7 +57,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     return type.charAt(0).toUpperCase() + type.slice(1) + ' Section';
   };
 
-  const handleDrop = (item: DragItem, monitor: any) => {
+  const handleDrop = (item: DragItem) => {
     const targetIndex = state?.sections?.length || 0;
     
     if (item.type === 'palette-section') {
@@ -84,7 +81,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     }
   };
 
-  const renderSection = (section: any, index: number) => {
+  const renderSection = (section: EditorSection, index: number) => {
     const isSelected = state.selectedSectionId === section.id;
     
     const dragItem: EditorSectionDragItem = {
@@ -97,19 +94,9 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
     // Render the appropriate section component
     const SectionComponent = () => {
-      const commonProps = {
-        data: section.data,
-        styling: section.styling,
-        isEditing: true,  // Always true in editor to disable animations
-        isPublicView: false,  // Explicitly false in editor to enable inline editing
-        onEdit: () => selectSection(section.id),
-        onDataChange: (newData: any) => updateSectionData(section.id, newData),
-        onStylingChange: (newStyling: any) => updateSectionStyling(section.id, newStyling),
-      };
-
       switch (section.type) {
         case 'template':
-          // Render entire template component
+          // TypeScript now knows section.data is TemplateSectionData
           if (section.data.templateId === 'dark-professional') {
             return <DarkProfessionalTemplate data={section.data.templateData} isPreview={false} />;
           }
@@ -121,25 +108,92 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           }
           return (
             <div className="p-8 text-center text-muted-foreground">
-              Template "{section.data.templateId}" not found
+              Template &quot;{section.data.templateId}&quot; not found
             </div>
           );
         case 'hero':
-          return <HeroSection {...commonProps} />;
+          // TypeScript knows section.data is HeroData here
+          return (
+            <HeroSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
         case 'about':
-          return <AboutSection {...commonProps} />;
+          // TypeScript knows section.data is AboutData here
+          return (
+            <AboutSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
         case 'skills':
-          return <SkillsSection {...commonProps} />;
+          // TypeScript knows section.data is SkillsData here
+          return (
+            <SkillsSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
         case 'projects':
-          return <ProjectsSection {...commonProps} />;
+          // TypeScript knows section.data is ProjectsData here
+          return (
+            <ProjectsSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
         case 'contact':
-          return <ContactSection {...commonProps} />;
-        default:
+          // TypeScript knows section.data is ContactData here
+          return (
+            <ContactSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
+        case 'experience':
+          // TypeScript knows section.data is ExperienceData here
           return (
             <div className="p-8 text-center text-muted-foreground">
-              Section type "{section.type}" not implemented yet
+              Experience section component not yet implemented
             </div>
           );
+        case 'education':
+          // TypeScript knows section.data is EducationData here
+          return (
+            <div className="p-8 text-center text-muted-foreground">
+              Education section component not yet implemented
+            </div>
+          );
+        default:
+          // Exhaustive type check - ensures all section types are handled
+          const _exhaustiveCheck: never = section;
+          return null;
       }
     };
 
@@ -248,40 +302,44 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-slate-50/30' : 'p-3 sm:p-4 md:p-6 bg-white'}
           ${state?.isDragging ? 'border-blue-400 bg-blue-50/30' : 'border-slate-300'}
         `}
-        onClick={(e) => {
-          // Deselect block when clicking canvas background
-          if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.space-y-0') === null) {
-            setSelectedBlockId(null);
-          }
-        }}
       >
-        {(state?.sections?.length || 0) === 0 ? (
-          <div className="text-center py-8 sm:py-12 px-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <Plus className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400" />
+        <div
+          className="w-full h-full"
+          onClick={(e) => {
+            // Deselect block when clicking canvas background
+            if (e.target === e.currentTarget || (e.target as HTMLElement).closest('.space-y-0') === null) {
+              setSelectedBlockId(null);
+            }
+          }}
+        >
+          {(state?.sections?.length || 0) === 0 ? (
+            <div className="text-center py-8 sm:py-12 px-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Plus className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400" />
+              </div>
+              <h4 className="text-sm sm:text-base font-medium text-slate-700 mb-1">Start building your portfolio</h4>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
+                <span className="hidden lg:inline">Drag sections from the left panel to begin</span>
+                <span className="lg:hidden">Add sections to get started</span>
+              </p>
             </div>
-            <h4 className="text-sm sm:text-base font-medium text-slate-700 mb-1">Start building your portfolio</h4>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto">
-              <span className="hidden lg:inline">Drag sections from the left panel to begin</span>
-              <span className="lg:hidden">Add sections to get started</span>
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-0">
-            {(state?.sections || [])
-              .sort((a, b) => a.order - b.order)
-              .map((section, index) => renderSection(section, index))}
-            
-            {/* Final drop zone */}
-            <Droppable
-              accept={['palette-section', 'editor-section']}
-              onDrop={(item) => handleSectionDrop(item, state?.sections?.length || 0)}
-              className="h-8 opacity-0 hover:opacity-100 transition-opacity"
-            >
-              <div className="h-full bg-blue-500 rounded-full mx-4" />
-            </Droppable>
-          </div>
-        )}
+          ) : (
+            <div className="space-y-0">
+              {(state?.sections || [])
+                .sort((a, b) => a.order - b.order)
+                .map((section, index) => renderSection(section, index))}
+              
+              {/* Final drop zone */}
+              <Droppable
+                accept={['palette-section', 'editor-section']}
+                onDrop={(item) => handleSectionDrop(item, state?.sections?.length || 0)}
+                className="h-8 opacity-0 hover:opacity-100 transition-opacity"
+              >
+                <div className="h-full bg-blue-500 rounded-full mx-4" />
+              </Droppable>
+            </div>
+          )}
+        </div>
       </Droppable>
 
       {/* Canvas footer - responsive */}

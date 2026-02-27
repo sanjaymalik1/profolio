@@ -16,9 +16,9 @@ interface AboutPropertyFormProps {
 
 export const AboutPropertyForm: React.FC<AboutPropertyFormProps> = ({ section }) => {
   const { updateSectionData } = useEditorActions();
-  const aboutData = section.data as AboutData;
+  const aboutData = section.data as unknown as AboutData;
 
-  const handleInputChange = (field: keyof AboutData, value: any) => {
+  const handleInputChange = (field: keyof AboutData, value: string | string[] | unknown) => {
     const updatedData = { ...aboutData, [field]: value };
     updateSectionData(section.id, updatedData);
   };

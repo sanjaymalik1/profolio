@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { getOrCreateUser } from '@/lib/user-helpers';
+import type { Prisma } from '@prisma/client';
 
 interface RouteParams {
   params: Promise<{
@@ -123,9 +124,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // If portfolio is published and content is being updated, update lastPublishedAt
-    const updateData: any = {
+    const updateData: Prisma.PortfolioUpdateInput = {
       ...(title && { title }),
-      ...(content && { content }),
+      ...(content && { content: content as Prisma.InputJsonValue }),
       ...(template && { template }),
       ...(typeof isPublic === 'boolean' && { isPublic }),
       slug,

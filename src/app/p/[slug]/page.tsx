@@ -40,7 +40,7 @@ async function getPortfolio(slug: string): Promise<Portfolio | null> {
       data: { viewCount: { increment: 1 } },
     });
 
-    return portfolio as Portfolio;
+    return portfolio as unknown as Portfolio;
   } catch (error) {
     console.error('Error fetching portfolio:', error);
     return null;

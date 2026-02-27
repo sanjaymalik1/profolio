@@ -48,12 +48,13 @@ export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { portfolios, loading: portfoliosLoading, deletePortfolio, getPortfolioStats, refetch } = usePortfolios();
+  const { portfolios, loading: portfoliosLoading, deletePortfolio, refetch } = usePortfolios();
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
-  const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<any | null>(null);
+  const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<{ id: string; title: string; slug: string; customSlug?: string; isPublic: boolean; viewCount?: number } | null>(null);
 
   useEffect(() => {
     if (isLoaded && user) {
+
       fetchProfile();
     }
   }, [isLoaded, user]);
@@ -171,7 +172,7 @@ export default function DashboardPage() {
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">You're currently working on this</span>
+                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">You&apos;re currently working on this</span>
                           {activePortfolio.isPublic ? (
                             <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-0 text-xs">
                               Published
@@ -190,7 +191,7 @@ export default function DashboardPage() {
                             <Clock className="h-4 w-4" />
                             Updated {new Date(activePortfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
-                          <span className="font-medium text-slate-700">{activePortfolio.content?.sections?.length || 0} sections added</span>
+                          <span className="font-medium text-slate-700">{(activePortfolio.content as { sections?: unknown[] })?.sections?.length || 0} sections added</span>
                         </div>
                         <p className="text-xs text-slate-500">
                           {activePortfolio.isPublic ? 'Live on the web' : 'Last edited by you'}
@@ -288,7 +289,7 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span>Updated {new Date(portfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                               <span>•</span>
-                              <span>{portfolio.content?.sections?.length || 0} sections</span>
+                              <span>{(portfolio.content as { sections?: unknown[] })?.sections?.length || 0} sections</span>
                             </div>
                           </div>
                         </div>

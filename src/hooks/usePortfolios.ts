@@ -8,7 +8,7 @@ interface Portfolio {
   slug: string;
   template: string;
   isPublic: boolean;
-  content: any;
+  content: unknown;
   createdAt: string;
   updatedAt: string;
 }
@@ -110,7 +110,7 @@ export const usePortfolios = () => {
     }
   };
 
-  const createPortfolio = async (title: string, content?: any) => {
+  const createPortfolio = async (title: string, content?: unknown) => {
     try {
       const response = await fetch('/api/portfolios', {
         method: 'POST',
@@ -176,7 +176,8 @@ export const usePortfolios = () => {
         return new Date(p.updatedAt) > dayAgo;
       }).length,
       sectionsCount: portfolios.reduce((total, p) => {
-        return total + (p.content?.sections?.length || 0);
+        const content = p.content as { sections?: unknown[] } | undefined;
+        return total + (content?.sections?.length || 0);
       }, 0)
     };
   };

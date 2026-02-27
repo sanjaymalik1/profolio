@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { EditorSection } from '@/types/editor';
+import { HeroData, AboutData, SkillsData, ProjectsData, ContactData } from '@/types/portfolio';
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
@@ -21,8 +22,8 @@ export function PortfolioRenderer({ sections }: PortfolioRendererProps) {
 
   if (templateSection) {
     // Render template component
-    const templateId = (templateSection.data as any)?.templateId;
-    const templateData = (templateSection.data as any)?.templateData || templateSection.data;
+    const templateId = (templateSection.data as { templateId?: string })?.templateId;
+    const templateData = (templateSection.data as { templateData?: unknown })?.templateData || templateSection.data;
     
     switch (templateId) {
       case 'dark-professional':
@@ -47,15 +48,15 @@ export function PortfolioRenderer({ sections }: PortfolioRendererProps) {
         // isPublicView is set to true to hide all editor-only UI elements
         switch (section.type) {
           case 'hero':
-            return <HeroSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
+            return <HeroSection key={section.id} data={section.data as unknown as HeroData} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'about':
-            return <AboutSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
+            return <AboutSection key={section.id} data={section.data as unknown as AboutData} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'skills':
-            return <SkillsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
+            return <SkillsSection key={section.id} data={section.data as unknown as SkillsData} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'projects':
-            return <ProjectsSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
+            return <ProjectsSection key={section.id} data={section.data as unknown as ProjectsData} styling={section.styling} isEditing={false} isPublicView={true} />;
           case 'contact':
-            return <ContactSection key={section.id} data={section.data} styling={section.styling} isEditing={false} isPublicView={true} />;
+            return <ContactSection key={section.id} data={section.data as unknown as ContactData} styling={section.styling} isEditing={false} isPublicView={true} />;
           default:
             return null;
         }

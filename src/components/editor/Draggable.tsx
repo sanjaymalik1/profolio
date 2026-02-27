@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useDrag, DragSourceMonitor } from 'react-dnd';
-import { DragItem, DraggableProps } from '@/types/editor';
+import { DragItem, DraggableProps, DropResult } from '@/types/editor';
 
 export const Draggable: React.FC<DraggableProps> = ({
   children,
@@ -21,15 +21,15 @@ export const Draggable: React.FC<DraggableProps> = ({
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (item: any, monitor: DragSourceMonitor) => {
-      const dropResult = monitor.getDropResult() as any;
+    end: (item: DragItem, monitor: DragSourceMonitor) => {
+      const dropResult = monitor.getDropResult() as DropResult | null;
       onDragEnd?.(dropResult);
     }
   }), [dragItem, canDrag, onDragStart, onDragEnd]);
 
   return (
     <div
-      ref={drag as any}
+      ref={drag as unknown as React.LegacyRef<HTMLDivElement>}
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: canDrag ? 'grab' : 'default',

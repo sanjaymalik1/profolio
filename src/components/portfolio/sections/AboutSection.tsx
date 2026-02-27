@@ -306,7 +306,9 @@ export default function AboutSection({
                               value={data.personalInfo?.age?.toString() || ''}
                               onChange={(value) => onDataChange?.({ 
                                 personalInfo: { 
-                                  ...data.personalInfo, 
+                                  ...data.personalInfo,
+                                  languages: data.personalInfo?.languages || [],
+                                  interests: data.personalInfo?.interests || [],
                                   age: value ? parseInt(value) : undefined 
                                 } 
                               })}
@@ -319,7 +321,9 @@ export default function AboutSection({
                             value={data.personalInfo?.location || ''}
                             onChange={(value) => onDataChange?.({ 
                               personalInfo: { 
-                                ...data.personalInfo, 
+                                ...data.personalInfo,
+                                languages: data.personalInfo?.languages || [],
+                                interests: data.personalInfo?.interests || [],
                                 location: value 
                               } 
                             })}
@@ -377,7 +381,8 @@ export default function AboutSection({
                                     onDataChange?.({
                                       personalInfo: {
                                         ...data.personalInfo,
-                                        languages: newLanguages
+                                        languages: newLanguages,
+                                        interests: data.personalInfo?.interests || []
                                       }
                                     });
                                   }}
@@ -394,7 +399,8 @@ export default function AboutSection({
                                     onDataChange?.({
                                       personalInfo: {
                                         ...data.personalInfo,
-                                        languages: newLanguages
+                                        languages: newLanguages,
+                                        interests: data.personalInfo?.interests || []
                                       }
                                     });
                                   }}
@@ -428,7 +434,8 @@ export default function AboutSection({
                             onDataChange?.({
                               personalInfo: {
                                 ...data.personalInfo,
-                                languages: newLanguages
+                                languages: newLanguages,
+                                interests: data.personalInfo?.interests || []
                               }
                             });
                           }}
@@ -471,6 +478,7 @@ export default function AboutSection({
                                     onDataChange?.({
                                       personalInfo: {
                                         ...data.personalInfo,
+                                        languages: data.personalInfo?.languages || [],
                                         interests: newInterests
                                       }
                                     });
@@ -488,6 +496,7 @@ export default function AboutSection({
                                     onDataChange?.({
                                       personalInfo: {
                                         ...data.personalInfo,
+                                        languages: data.personalInfo?.languages || [],
                                         interests: newInterests
                                       }
                                     });
@@ -522,6 +531,7 @@ export default function AboutSection({
                             onDataChange?.({
                               personalInfo: {
                                 ...data.personalInfo,
+                                languages: data.personalInfo?.languages || [],
                                 interests: newInterests
                               }
                             });

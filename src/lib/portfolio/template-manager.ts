@@ -1,4 +1,4 @@
-import { PortfolioTemplate, TemplateCategory, Portfolio, PortfolioSection } from '@/types/portfolio';
+import { PortfolioTemplate, TemplateCategory, Portfolio, PortfolioSection, SectionData } from '@/types/portfolio';
 import { portfolioTemplates } from './templates';
 
 // ===============================
@@ -163,8 +163,8 @@ export class TemplateManager {
   }
 
   // Deep clone section data
-  private cloneData(data: any): any {
-    return JSON.parse(JSON.stringify(data));
+  private cloneData(data: SectionData): SectionData {
+    return JSON.parse(JSON.stringify(data)) as SectionData;
   }
 
   // Generate unique section ID

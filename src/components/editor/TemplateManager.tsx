@@ -38,7 +38,15 @@ export function TemplateManager() {
     if (!selectedTemplateId) return;
 
     try {
-      await applyTemplateToEditor(selectedTemplateId, { loadSections, resetEditor }, {
+      await applyTemplateToEditor(selectedTemplateId, { 
+        clearEditor: resetEditor,
+        loadState: (state: unknown) => {
+          // The state should be an array of EditorSection
+          if (Array.isArray(state)) {
+            loadSections(state);
+          }
+        }
+      }, {
         replaceAll: true,
         showConfirmation: false, // We already showed confirmation
         onSuccess: () => {
@@ -124,7 +132,7 @@ export function TemplateManager() {
 
               {/* Template Features */}
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">What's included:</h4>
+                <h4 className="font-medium text-gray-900 mb-2">What&apos;s included:</h4>
                 <ul className="space-y-1 text-sm text-gray-600">
                   {selectedTemplate.features.slice(0, 4).map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">

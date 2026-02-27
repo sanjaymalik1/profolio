@@ -44,7 +44,7 @@ export default function AdminPage() {
         fetchUsers();
       }
     }
-  }, [status, session, router]);
+  }, [isLoaded, user, router]);
 
   const fetchUsers = async () => {
     try {
@@ -92,7 +92,7 @@ export default function AdminPage() {
     }
   };
 
-  if (status === 'loading' || loading) {
+  if (!isLoaded || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -103,7 +103,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!session || (session.user as any)?.role !== 'ADMIN') {
+  if (!user || user.publicMetadata?.role !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -173,54 +173,54 @@ export default function AdminPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
+                    {users.map((userData) => (
+                      <TableRow key={userData.id}>
                         <TableCell className="text-xs sm:text-sm">
                           <div className="flex items-center space-x-2 sm:space-x-3">
                             <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                               <AvatarFallback className="text-xs sm:text-sm">
-                                {(user.name || user.email)[0].toUpperCase()}
+                                {(userData.name || userData.email)[0].toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
                               <div className="font-medium truncate">
-                                {user.name || 'No name'}
+                                {userData.name || 'No name'}
                               </div>
                               <div className="text-xs text-gray-500 truncate md:hidden">
-                                {user.email}
+                                {userData.email}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">{user.email}</TableCell>
+                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">{userData.email}</TableCell>
                         <TableCell>
-                          <Badge variant={user.role === 'ADMIN' ? 'destructive' : 'secondary'} className="text-xs">
-                            {user.role}
+                          <Badge variant={userData.role === 'ADMIN' ? 'destructive' : 'secondary'} className="text-xs">
+                            {userData.role}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
-                          {new Date(user.createdAt).toLocaleDateString()}
+                          {new Date(userData.createdAt).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                          {user.id !== (session.user as any)?.id && (
+                          {userData.id !== user?.id && (
                             <Button
                               onClick={() => updateUserRole(
-                                user.id, 
-                                user.role === 'ADMIN' ? 'USER' : 'ADMIN'
+                                userData.id, 
+                                userData.role === 'ADMIN' ? 'USER' : 'ADMIN'
                               )}
-                              disabled={updating === user.id}
-                              variant={user.role === 'ADMIN' ? 'destructive' : 'default'}
+                              disabled={updating === userData.id}
+                              variant={userData.role === 'ADMIN' ? 'destructive' : 'default'}
                               size="sm"
                               className="text-xs"
                             >
-                              {updating === user.id ? (
+                              {updating === userData.id ? (
                                 <span className="hidden sm:inline">Updating...</span>
                               ) : (
-                                user.role === 'ADMIN' ? 'Demote' : 'Promote'
+                                userData.role === 'ADMIN' ? 'Demote' : 'Promote'
                               )}
                             </Button>
                           )}
-                          {user.id === (session.user as any)?.id && (
+                          {userData.id === user?.id && (
                             <Badge variant="outline" className="text-xs">You</Badge>
                           )}
                         </TableCell>

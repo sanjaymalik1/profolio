@@ -50,7 +50,7 @@ export default function Testimonials() {
             transition={{ delay: 0.1 }}
             className="text-lg text-gray-600/90 leading-[1.7]"
           >
-            ProFolio was created to solve a simple problem: building a portfolio shouldn't require coding skills or design expertise. This tool prioritizes simplicity, honesty, and quality.
+            ProFolio was created to solve a simple problem: building a portfolio shouldn&apos;t require coding skills or design expertise. This tool prioritizes simplicity, honesty, and quality.
           </motion.p>
         </div>
 

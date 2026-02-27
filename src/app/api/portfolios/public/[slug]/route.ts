@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+interface RouteParams {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
 // GET /api/portfolios/public/[slug] - Get public portfolio by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: RouteParams
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Find portfolio by customSlug or slug
     const portfolio = await prisma.portfolio.findFirst({

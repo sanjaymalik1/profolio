@@ -3,7 +3,7 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import { ContactData } from '@/types/portfolio';
+import type { ContactData, SocialLink } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,7 +20,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
   const { updateSectionData } = useEditorActions();
   const contactData = section.data as ContactData;
 
-  const handleInputChange = (field: keyof ContactData, value: any) => {
+  const handleInputChange = <K extends keyof ContactData>(field: K, value: ContactData[K]) => {
     const updatedData = { ...contactData, [field]: value };
     updateSectionData(section.id, updatedData);
   };
@@ -41,7 +41,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
     handleInputChange('socialLinks', updatedSocialLinks);
   };
 
-  const updateContactForm = (field: string, value: any) => {
+  const updateContactForm = (field: string, value: string | boolean | unknown[] | undefined) => {
     const updatedContactForm = {
       ...contactData.contactForm,
       [field]: value
@@ -66,7 +66,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
     updateContactForm('fields', updatedFields);
   };
 
-  const updateFormField = (index: number, field: string, value: any) => {
+  const updateFormField = (index: number, field: string, value: string | boolean) => {
     const updatedFields = [...(contactData.contactForm?.fields || [])];
     updatedFields[index] = { ...updatedFields[index], [field]: value };
     updateContactForm('fields', updatedFields);

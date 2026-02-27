@@ -140,7 +140,7 @@ export default function ContactSection({
             )}
           </h2>
           <p className={`${typography.body} ${textColors.muted} max-w-2xl mx-auto ${spacing.marginBottom.medium}`}>
-            I'm always open to discussing new opportunities and interesting projects.
+            I&apos;m always open to discussing new opportunities and interesting projects.
           </p>
           <div className="w-20 h-1 bg-current mx-auto opacity-50 rounded-full" />
         </motion.div>
@@ -156,9 +156,9 @@ export default function ContactSection({
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <div>
-              <h3 className={`${typography.subsectionTitle} ${spacing.marginBottom.medium}`}>Let's Talk</h3>
+              <h3 className={`${typography.subsectionTitle} ${spacing.marginBottom.medium}`}>Let&apos;s Talk</h3>
               <p className={`${typography.muted} ${spacing.marginBottom.large}`}>
-                Feel free to reach out if you're looking for a developer, have a question, 
+                Feel free to reach out if you&apos;re looking for a developer, have a question, 
                 or just want to connect.
               </p>
             </div>
@@ -423,7 +423,7 @@ export default function ContactSection({
           <div className="bg-current/5 rounded-2xl p-8">
             <h3 className="text-xl font-bold mb-4">Prefer a quick call?</h3>
             <p className="text-current/70 mb-6">
-              Sometimes it's easier to just talk. Feel free to schedule a call with me.
+              Sometimes it&apos;s easier to just talk. Feel free to schedule a call with me.
             </p>
             <Button size="lg" variant="outline" asChild>
               <a href="mailto:contact@example.com?subject=Schedule a Call">

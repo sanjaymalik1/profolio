@@ -3,15 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, ExternalLink, Heart, Coffee, Star, Send } from 'lucide-react';
+import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
 
 interface WarmMinimalistTemplateProps {
-  data?: {
-    hero?: any;
-    about?: any;
-    skills?: any;
-    projects?: any;
-    contact?: any;
-  };
+  data?: TemplateData;
   isPreview?: boolean;
 }
 
@@ -59,37 +54,44 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
     }
   };
 
-  const projectsData = data?.projects || {
+  const projectsData: ProjectsData = data?.projects || {
     heading: "Recent Work",
+    categories: ["Branding", "Wellness", "Technology"],
     projects: [
       {
+        id: "1",
         title: "Bloom Coffee Co.",
         description: "Complete brand identity and packaging design for a local organic coffee roaster. Created a warm, approachable brand that reflects their commitment to sustainability.",
-        image: "",
         technologies: ["Brand Identity", "Packaging", "Web Design"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Branding"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Branding",
+        status: "completed" as const
       },
       {
+        id: "2",
         title: "Mindful Yoga Studio",
         description: "Peaceful, zen-inspired brand design and marketing materials for a local yoga studio, including class schedules, social media templates, and signage.",
-        image: "",
         technologies: ["Brand Design", "Print Design", "Social Media"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Wellness"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Wellness",
+        status: "completed" as const
       },
       {
+        id: "3",
         title: "TechStart Accelerator",
         description: "Modern, professional brand identity for a startup accelerator program, including pitch deck templates and digital marketing materials.",
-        image: "",
         technologies: ["Brand Identity", "Digital Marketing", "Presentation Design"],
-        liveUrl: "",
-        githubUrl: "",
-        category: "Technology"
+        images: [],
+        links: {},
+        featured: true,
+        category: "Technology",
+        status: "completed" as const
       }
-    ]
+    ] as Project[]
   };
 
   const contactData = data?.contact || {
@@ -132,7 +134,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
               </div>
               
               <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
-                Hi, I'm <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
+                Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
               </h1>
               
               <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
@@ -149,7 +151,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
               </div>
 
               <div className="flex justify-center gap-4 mb-8">
-                {(heroData.socialLinks || []).map((link: any, index: number) => (
+                {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
                   <motion.a
                     key={index}
                     href={link.url}
@@ -169,7 +171,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 bg-red-500 text-white font-medium rounded-full hover:bg-red-600 transition-colors shadow-lg"
               >
-                Let's Work Together
+                Let&apos;s Work Together
               </motion.button>
             </motion.div>
           </div>
@@ -264,7 +266,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
             <div>
               <h3 className="text-2xl font-light mb-8 text-amber-800">Creative Skills</h3>
               <div className="space-y-6">
-                {(skillsData.skillCategories?.technical || []).map((skill: any, index: number) => (
+                {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -295,7 +297,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
             <div>
               <h3 className="text-2xl font-light mb-8 text-amber-800">Favorite Tools</h3>
               <div className="space-y-6">
-                {(skillsData.skillCategories?.tools || []).map((skill: any, index: number) => (
+                {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -340,7 +342,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {(projectsData.projects || []).map((project: any, index: number) => (
+            {(projectsData.projects || []).map((project, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
@@ -391,7 +393,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
             <div className="w-16 h-1 bg-white mx-auto rounded-full mb-12"></div>
             
             <p className="text-xl mb-12 max-w-2xl mx-auto opacity-90">
-              Have a project in mind? I'd love to hear about it! Let's create something beautiful together.
+              Have a project in mind? I&apos;d love to hear about it! Let&apos;s create something beautiful together.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">

@@ -48,7 +48,17 @@ export const PortfolioManager: React.FC = () => {
   const [saveTitle, setSaveTitle] = useState('');
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
-  const [portfolioDetails, setPortfolioDetails] = useState<any>(null);
+  const [portfolioDetails, setPortfolioDetails] = useState<{
+    id: string;
+    title: string;
+    slug: string;
+    customSlug?: string | null;
+    isPublic: boolean;
+    updatedAt: string;
+    lastPublishedAt?: string | null;
+    publishedAt?: string | null;
+    viewCount?: number;
+  } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   
   // Title editing state
@@ -358,7 +368,7 @@ export const PortfolioManager: React.FC = () => {
           portfolioTitle={portfolioDetails.title}
           isPublic={portfolioDetails.isPublic || false}
           currentSlug={portfolioDetails.slug}
-          customSlug={portfolioDetails.customSlug}
+          customSlug={portfolioDetails.customSlug ?? undefined}
           publicUrl={publicUrl}
           viewCount={portfolioDetails.viewCount || 0}
           isOpen={showPublishDialog}

@@ -3,12 +3,19 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { getOrCreateUser } from '@/lib/user-helpers';
 
+interface RouteParams {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
 // POST /api/portfolios/[id]/publish - Publish/unpublish a portfolio
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: RouteParams
 ) {
   try {
+    const { id } = await params;
     const { userId } = await auth();
     
     if (!userId) {
@@ -27,7 +34,7 @@ export async function POST(
       }, { status: 404 });
     }
 
-    const { id } = params;
+
     const body = await request.json();
     const { isPublic, customSlug } = body;
 
@@ -47,7 +54,14 @@ export async function POST(
     }
 
     // Prepare update data
-    const updateData: any = {
+    const updateData: {
+      isPublic: boolean;
+      updatedAt: Date;
+      publishedAt?: Date | null;
+      lastPublishedAt?: Date | null;
+      slug?: string;
+      customSlug?: string;
+    } = {
       isPublic,
       updatedAt: new Date(),
     };

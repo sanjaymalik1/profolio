@@ -8,8 +8,8 @@ export interface TemplateComponent {
   id: string;
   name: string;
   category: string;
-  component: React.ComponentType<any>;
-  previewData?: any;
+  component: React.ComponentType<{ data?: Record<string, unknown>; isPreview?: boolean }>;
+  previewData?: Record<string, unknown>;
 }
 
 export const templateComponents: Record<string, TemplateComponent> = {

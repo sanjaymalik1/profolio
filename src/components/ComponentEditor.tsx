@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { ComponentType, AboutData, SkillsData, ProjectsData, ContactData } from '@/types/portfolio';
 
+type ComponentData = AboutData | SkillsData | ProjectsData | ContactData;
+
 interface ComponentEditorProps {
   componentType: ComponentType;
-  data: any;
+  data: ComponentData;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
+  onSave: (data: ComponentData) => void;
 }
 
 export default function ComponentEditor({ componentType, data, isOpen, onClose, onSave }: ComponentEditorProps) {
@@ -98,7 +100,7 @@ export default function ComponentEditor({ componentType, data, isOpen, onClose, 
         ))}
         <button
           onClick={() => {
-            const newSkills = [...(skillsData.skills || []), { name: '', level: 50 }];
+            const newSkills = [...(skillsData.skills || []), { name: '', level: 50, category: 'technical' as const }];
             setEditingData({...skillsData, skills: newSkills});
           }}
           className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
@@ -249,9 +251,18 @@ export default function ComponentEditor({ componentType, data, isOpen, onClose, 
         <button
           onClick={() => {
             const newProjects = [...(projectsData.projects || []), { 
+              id: `project-${Date.now()}`,
               title: '', 
               description: '', 
               technologies: [],
+              images: [],
+              links: {
+                live: '',
+                github: ''
+              },
+              featured: false,
+              category: '',
+              status: 'planned' as const,
               link: '',
               github: ''
             }];

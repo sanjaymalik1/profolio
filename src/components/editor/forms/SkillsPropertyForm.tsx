@@ -3,7 +3,7 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import { SkillsData } from '@/types/portfolio';
+import type { SkillsData, Skill } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
   const { updateSectionData } = useEditorActions();
   const skillsData = section.data as SkillsData;
 
-  const handleInputChange = (field: keyof SkillsData, value: any) => {
+  const handleInputChange = <K extends keyof SkillsData>(field: K, value: SkillsData[K]) => {
     const updatedData = { ...skillsData, [field]: value };
     updateSectionData(section.id, updatedData);
   };
@@ -55,7 +55,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
     handleInputChange('skillCategories', updatedCategories);
   };
 
-  const updateSkill = (skillIndex: number, category: string, field: string, value: any) => {
+  const updateSkill = (skillIndex: number, category: string, field: string, value: string | number) => {
     const updatedCategories = {
       ...skillsData.skillCategories,
       [category]: skillsData.skillCategories?.[category as keyof typeof skillsData.skillCategories]?.map((skill, index) =>
