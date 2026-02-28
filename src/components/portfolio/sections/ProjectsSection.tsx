@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ProjectsData, SectionStyling, Project } from '@/types/portfolio';
+import { ProjectsData, SectionStyling } from '@/types/portfolio';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { ExternalLink, Github, Calendar, User, Star, Plus } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
 import { typography, textColors } from '@/design/typography';
-import { spacing, grid } from '@/design/spacing';
+import { spacing } from '@/design/spacing';
 
 interface ProjectsSectionProps {
   data: ProjectsData;
@@ -24,22 +24,21 @@ interface ProjectsSectionProps {
   onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function ProjectsSection({ 
-  data, 
-  styling, 
-  isEditing = false, 
+export default function ProjectsSection({
+  data,
+  styling,
+  isEditing = false,
   isPublicView = false,
   onEdit,
   onDataChange,
-  onStylingChange 
 }: ProjectsSectionProps) {
   // Inline editing mode detection
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
 
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: (styling.animation?.duration || 600) / 1000,
@@ -61,7 +60,7 @@ export default function ProjectsSection({
   const isMasonryLayout = styling.layout === 'masonry';
 
   return (
-    <motion.section 
+    <motion.section
       className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
@@ -71,9 +70,9 @@ export default function ProjectsSection({
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
-        
+
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
           whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
@@ -121,58 +120,40 @@ export default function ProjectsSection({
             ${isMasonryLayout ? 'sm:grid-cols-2 lg:grid-cols-3' : ''}
           `}>
             {data.projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ 
-                delay: 0.2 + index * 0.1, 
-                duration: 0.6,
-                ease: "easeOut"
-              }}
-              whileHover={{ y: -5 }}
-              className={`group ${isMasonryLayout ? 'break-inside-avoid' : ''}`}
-            >
-              <Card className="border-2 hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
-                
-                {/* Project Image */}
-                {inlineEditMode ? (
-                  <div className="relative aspect-video">
-                    <EditableImage
-                      value={project.images?.[0] || ''}
-                      onChange={(value) => {
-                        const updatedProjects = [...data.projects];
-                        const projectIndex = data.projects.findIndex(p => p.id === project.id);
-                        updatedProjects[projectIndex] = {
-                          ...project,
-                          images: [value, ...(project.images?.slice(1) || [])]
-                        };
-                        onDataChange?.({ projects: updatedProjects });
-                      }}
-                      aspectRatio="video"
-                      containerClassName="w-full h-full"
-                    />
-                    {project.featured && (
-                      <div className="absolute top-4 right-4 pointer-events-none">
-                        <Badge className="bg-yellow-500 text-white">
-                          <Star size={14} className="mr-1" />
-                          Featured
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  project.images && project.images.length > 0 && (
-                    <div className="relative overflow-hidden aspect-video">
-                      <Image
-                        src={project.images[0]}
-                        alt={project.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: 0.2 + index * 0.1,
+                  duration: 0.6,
+                  ease: "easeOut"
+                }}
+                whileHover={{ y: -5 }}
+                className={`group ${isMasonryLayout ? 'break-inside-avoid' : ''}`}
+              >
+                <Card className="border-2 hover:shadow-2xl transition-all duration-300 overflow-hidden h-full">
+
+                  {/* Project Image */}
+                  {inlineEditMode ? (
+                    <div className="relative aspect-video">
+                      <EditableImage
+                        value={project.images?.[0] || ''}
+                        onChange={(value) => {
+                          const updatedProjects = [...data.projects];
+                          const projectIndex = data.projects.findIndex(p => p.id === project.id);
+                          updatedProjects[projectIndex] = {
+                            ...project,
+                            images: [value, ...(project.images?.slice(1) || [])]
+                          };
+                          onDataChange?.({ projects: updatedProjects });
+                        }}
+                        aspectRatio="video"
+                        containerClassName="w-full h-full"
                       />
                       {project.featured && (
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4 pointer-events-none">
                           <Badge className="bg-yellow-500 text-white">
                             <Star size={14} className="mr-1" />
                             Featured
@@ -180,149 +161,167 @@ export default function ProjectsSection({
                         </div>
                       )}
                     </div>
-                  )
-                )}
+                  ) : (
+                    project.images && project.images.length > 0 && (
+                      <div className="relative overflow-hidden aspect-video">
+                        <Image
+                          src={project.images[0]}
+                          alt={project.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {project.featured && (
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-yellow-500 text-white">
+                              <Star size={14} className="mr-1" />
+                              Featured
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  )}
 
-                <CardContent className="p-6">
-                  {/* Project Header */}
-                  <div className="mb-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-xl font-bold group-hover:text-blue-600 transition-colors">
+                  <CardContent className="p-6">
+                    {/* Project Header */}
+                    <div className="mb-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-xl font-bold group-hover:text-blue-600 transition-colors">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={project.title}
+                              onChange={(value) => {
+                                const updatedProjects = [...data.projects];
+                                const projectIndex = data.projects.findIndex(p => p.id === project.id);
+                                updatedProjects[projectIndex] = { ...project, title: value };
+                                onDataChange?.({ projects: updatedProjects });
+                              }}
+                              placeholder="Project title"
+                              className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            project.title
+                          )}
+                        </h3>
+                        {project.status && (
+                          <Badge
+                            variant={project.status === 'completed' ? 'secondary' : 'outline'}
+                            className="ml-2"
+                          >
+                            {project.status}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-current/70 leading-relaxed">
                         {inlineEditMode ? (
                           <EditableText
-                            value={project.title}
+                            value={project.description}
                             onChange={(value) => {
                               const updatedProjects = [...data.projects];
                               const projectIndex = data.projects.findIndex(p => p.id === project.id);
-                              updatedProjects[projectIndex] = { ...project, title: value };
+                              updatedProjects[projectIndex] = { ...project, description: value };
                               onDataChange?.({ projects: updatedProjects });
                             }}
-                            placeholder="Project title"
-                            className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1"
+                            placeholder="Project description"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 text-current/70"
+                            multiline
                             as="span"
                           />
                         ) : (
-                          project.title
+                          project.description
                         )}
-                      </h3>
-                      {project.status && (
-                        <Badge 
-                          variant={project.status === 'completed' ? 'secondary' : 'outline'}
-                          className="ml-2"
-                        >
-                          {project.status}
+                      </p>
+                    </div>
+
+                    {/* Technologies */}
+                    {project.technologies && project.technologies.length > 0 && (
+                      <div className="mb-4">
+                        <div className="flex flex-wrap gap-2">
+                          {project.technologies.map((tech, techIndex) => (
+                            <Badge key={techIndex} variant="outline" className="text-xs">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Project Details */}
+                    <div className="flex items-center gap-4 text-sm text-current/60 mb-6">
+                      {project.startDate && (
+                        <div className="flex items-center gap-1">
+                          <Calendar size={14} />
+                          <span>{project.startDate}</span>
+                        </div>
+                      )}
+                      {project.role && (
+                        <div className="flex items-center gap-1">
+                          <User size={14} />
+                          <span>{project.role}</span>
+                        </div>
+                      )}
+                      {project.category && (
+                        <Badge variant="secondary" className="text-xs">
+                          {project.category}
                         </Badge>
                       )}
                     </div>
-                    <p className="text-current/70 leading-relaxed">
-                      {inlineEditMode ? (
-                        <EditableText
-                          value={project.description}
-                          onChange={(value) => {
-                            const updatedProjects = [...data.projects];
-                            const projectIndex = data.projects.findIndex(p => p.id === project.id);
-                            updatedProjects[projectIndex] = { ...project, description: value };
-                            onDataChange?.({ projects: updatedProjects });
-                          }}
-                          placeholder="Project description"
-                          className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 text-current/70"
-                          multiline
-                          as="span"
-                        />
-                      ) : (
-                        project.description
+
+                    {/* Long Description */}
+                    {project.longDescription && (
+                      <div className="mb-6">
+                        <p className="text-sm text-current/70 leading-relaxed">
+                          {project.longDescription.substring(0, 150)}...
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 mt-auto">
+                      {project.links.live && (
+                        <Button
+                          asChild
+                          size="sm"
+                          className="flex-1"
+                        >
+                          <Link
+                            href={project.links.live}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink size={16} className="mr-2" />
+                            Live Demo
+                          </Link>
+                        </Button>
                       )}
-                    </p>
-                  </div>
-
-                  {/* Technologies */}
-                  {project.technologies && project.technologies.length > 0 && (
-                    <div className="mb-4">
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.map((tech, techIndex) => (
-                          <Badge key={techIndex} variant="outline" className="text-xs">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Project Details */}
-                  <div className="flex items-center gap-4 text-sm text-current/60 mb-6">
-                    {project.startDate && (
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        <span>{project.startDate}</span>
-                      </div>
-                    )}
-                    {project.role && (
-                      <div className="flex items-center gap-1">
-                        <User size={14} />
-                        <span>{project.role}</span>
-                      </div>
-                    )}
-                    {project.category && (
-                      <Badge variant="secondary" className="text-xs">
-                        {project.category}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Long Description */}
-                  {project.longDescription && (
-                    <div className="mb-6">
-                      <p className="text-sm text-current/70 leading-relaxed">
-                        {project.longDescription.substring(0, 150)}...
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 mt-auto">
-                    {project.links.live && (
-                      <Button 
-                        asChild 
-                        size="sm" 
-                        className="flex-1"
-                      >
-                        <Link 
-                          href={project.links.live} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                      {project.links.github && (
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
                         >
-                          <ExternalLink size={16} className="mr-2" />
-                          Live Demo
-                        </Link>
-                      </Button>
-                    )}
-                    {project.links.github && (
-                      <Button 
-                        asChild 
-                        variant="outline" 
-                        size="sm"
-                        className="flex-1"
-                      >
-                        <Link 
-                          href={project.links.github} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <Github size={16} className="mr-2" />
-                          Code
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+                          <Link
+                            href={project.links.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Github size={16} className="mr-2" />
+                            Code
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
         )}
 
         {/* View All Projects CTA */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -338,7 +337,7 @@ export default function ProjectsSection({
         </motion.div>
 
         {/* Stats Section */}
-        <motion.div 
+        <motion.div
           className="mt-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

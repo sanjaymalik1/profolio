@@ -3,7 +3,7 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import type { SkillsData, Skill } from '@/types/portfolio';
+import type { SkillsData } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -31,12 +31,12 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
       category,
       icon: ''
     };
-    
+
     const updatedCategories = {
       ...skillsData.skillCategories,
       [category]: [...(skillsData.skillCategories?.[category] || []), newSkill]
     };
-    
+
     // Update both skills array and categories
     const allSkills = Object.values(updatedCategories).flat();
     handleInputChange('skills', allSkills);
@@ -48,7 +48,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
       ...skillsData.skillCategories,
       [category]: skillsData.skillCategories?.[category as keyof typeof skillsData.skillCategories]?.filter((_, index) => index !== skillIndex) || []
     };
-    
+
     // Update both skills array and categories
     const allSkills = Object.values(updatedCategories).flat();
     handleInputChange('skills', allSkills);
@@ -62,7 +62,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
         index === skillIndex ? { ...skill, [field]: value } : skill
       ) || []
     };
-    
+
     // Update both skills array and categories
     const allSkills = Object.values(updatedCategories).flat();
     handleInputChange('skills', allSkills);
@@ -81,7 +81,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
 
   return (
     <div className="space-y-6">
-      
+
       {/* Section Heading */}
       <Card>
         <CardHeader>
@@ -144,7 +144,7 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
                   </Button>
                 </div>
               )) || []}
-              
+
               <Button
                 variant="outline"
                 size="sm"

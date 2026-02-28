@@ -82,9 +82,9 @@ export class TemplateManager {
   }
 
   // Get categories with count
-  public getCategoriesWithCount(): Array<{category: TemplateCategory, count: number}> {
+  public getCategoriesWithCount(): Array<{ category: TemplateCategory, count: number }> {
     const categoryCount = new Map<TemplateCategory, number>();
-    
+
     this.getAllTemplates().forEach(template => {
       const currentCount = categoryCount.get(template.category) || 0;
       categoryCount.set(template.category, currentCount + 1);
@@ -98,8 +98,8 @@ export class TemplateManager {
 
   // Create portfolio from template
   public createPortfolioFromTemplate(
-    templateId: string, 
-    userId: string, 
+    templateId: string,
+    userId: string,
     title: string,
     customizations?: Partial<Portfolio>
   ): Omit<Portfolio, 'id' | 'createdAt' | 'updatedAt'> | null {
@@ -107,7 +107,7 @@ export class TemplateManager {
     if (!template) return null;
 
     const slug = this.generateSlug(title, userId);
-    const now = new Date().toISOString();
+
 
     return {
       userId,
@@ -181,10 +181,10 @@ export class TemplateManager {
       .replace(/[^\w\s-]/g, '')
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
-    
+
     const userIdShort = userId.slice(-4);
     const timestamp = Date.now().toString(36);
-    
+
     return `${baseSlug}-${userIdShort}-${timestamp}`;
   }
 }
@@ -289,7 +289,7 @@ export class TemplateValidator {
 
   public static validateAllTemplates(): Map<string, TemplateValidationResult> {
     const results = new Map<string, TemplateValidationResult>();
-    
+
     portfolioTemplates.forEach(template => {
       const validation = this.validateTemplate(template);
       results.set(template.id, validation);
@@ -326,28 +326,28 @@ export class TemplateFilter {
 
     // Filter by category
     if (filters.category && filters.category.length > 0) {
-      filtered = filtered.filter(template => 
+      filtered = filtered.filter(template =>
         filters.category!.includes(template.category)
       );
     }
 
     // Filter by difficulty
     if (filters.difficulty && filters.difficulty.length > 0) {
-      filtered = filtered.filter(template => 
+      filtered = filtered.filter(template =>
         filters.difficulty!.includes(template.difficulty)
       );
     }
 
     // Filter by premium status
     if (filters.isPremium !== undefined) {
-      filtered = filtered.filter(template => 
+      filtered = filtered.filter(template =>
         template.isPremium === filters.isPremium
       );
     }
 
     // Filter by popularity
     if (filters.isPopular !== undefined) {
-      filtered = filtered.filter(template => 
+      filtered = filtered.filter(template =>
         template.isPopular === filters.isPopular
       );
     }
@@ -368,8 +368,8 @@ export class TemplateFilter {
     // Filter by tags
     if (filters.tags && filters.tags.length > 0) {
       filtered = filtered.filter(template =>
-        filters.tags!.some(tag => 
-          template.tags.some(templateTag => 
+        filters.tags!.some(tag =>
+          template.tags.some(templateTag =>
             templateTag.toLowerCase().includes(tag.toLowerCase())
           )
         )

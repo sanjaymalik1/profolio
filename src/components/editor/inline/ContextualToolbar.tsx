@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  AlignLeft, 
-  AlignCenter, 
+import {
+  Bold,
+  Italic,
+  AlignLeft,
+  AlignCenter,
   AlignRight,
   Palette,
-  Type,
   Minus,
   Plus
 } from 'lucide-react';
@@ -111,7 +109,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
       >
         <Bold className="h-4 w-4" />
       </Button>
-      
+
       <Button
         size="sm"
         variant="ghost"

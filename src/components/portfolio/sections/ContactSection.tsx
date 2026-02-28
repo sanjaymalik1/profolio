@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ContactData, SectionStyling } from '@/types/portfolio';
-import { Badge } from '@/components/ui/badge';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,13 +12,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableField } from '@/components/editor/inline/EditableField';
 import { typography, textColors } from '@/design/typography';
-import { spacing, grid } from '@/design/spacing';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  Send, 
+import { spacing } from '@/design/spacing';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Send,
   MessageSquare,
   Github,
   Linkedin,
@@ -36,14 +36,13 @@ interface ContactSectionProps {
   onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function ContactSection({ 
-  data, 
-  styling, 
-  isEditing = false, 
+export default function ContactSection({
+  data,
+  styling,
+  isEditing = false,
   isPublicView = false,
   onEdit,
   onDataChange,
-  onStylingChange 
 }: ContactSectionProps) {
   // Inline editing mode detection
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
@@ -58,8 +57,8 @@ export default function ContactSection({
 
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: (styling.animation?.duration || 600) / 1000,
@@ -87,14 +86,14 @@ export default function ContactSection({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Reset form
     setFormData({ name: '', email: '', subject: '', message: '' });
     setIsSubmitting(false);
-    
+
     // Show success message (you can implement this)
     alert('Message sent successfully!');
   };
@@ -107,7 +106,7 @@ export default function ContactSection({
   };
 
   return (
-    <motion.section 
+    <motion.section
       className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
@@ -117,9 +116,9 @@ export default function ContactSection({
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
-        
+
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
           whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
@@ -146,9 +145,9 @@ export default function ContactSection({
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
-          
+
           {/* Contact Information */}
-          <motion.div 
+          <motion.div
             className="space-y-6 sm:space-y-8"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -158,7 +157,7 @@ export default function ContactSection({
             <div>
               <h3 className={`${typography.subsectionTitle} ${spacing.marginBottom.medium}`}>Let&apos;s Talk</h3>
               <p className={`${typography.muted} ${spacing.marginBottom.large}`}>
-                Feel free to reach out if you&apos;re looking for a developer, have a question, 
+                Feel free to reach out if you&apos;re looking for a developer, have a question,
                 or just want to connect.
               </p>
             </div>
@@ -166,7 +165,7 @@ export default function ContactSection({
             {/* Contact Details */}
             <div className="space-y-4 sm:space-y-6">
               {data.email && (
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -187,8 +186,8 @@ export default function ContactSection({
                         className="text-current/70"
                       />
                     ) : (
-                      <a 
-                        href={`mailto:${data.email}`} 
+                      <a
+                        href={`mailto:${data.email}`}
                         className="text-current/70 hover:text-current transition-colors"
                       >
                         {data.email}
@@ -199,7 +198,7 @@ export default function ContactSection({
               )}
 
               {data.phone && (
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -220,8 +219,8 @@ export default function ContactSection({
                         className="text-current/70"
                       />
                     ) : (
-                      <a 
-                        href={`tel:${data.phone}`} 
+                      <a
+                        href={`tel:${data.phone}`}
                         className="text-current/70 hover:text-current transition-colors"
                       >
                         {data.phone}
@@ -232,7 +231,7 @@ export default function ContactSection({
               )}
 
               {data.location && (
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -259,7 +258,7 @@ export default function ContactSection({
               )}
 
               {data.availability && (
-                <motion.div 
+                <motion.div
                   className="flex items-center gap-3 sm:gap-4"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -288,7 +287,7 @@ export default function ContactSection({
 
             {/* Social Links - responsive */}
             {data.socialLinks && data.socialLinks.length > 0 && (
-              <motion.div 
+              <motion.div
                 className="pt-6 sm:pt-8"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -388,9 +387,9 @@ export default function ContactSection({
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    size="lg"
                     className="w-full"
                     disabled={isSubmitting}
                   >
@@ -413,7 +412,7 @@ export default function ContactSection({
         </div>
 
         {/* Quick Contact CTA */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

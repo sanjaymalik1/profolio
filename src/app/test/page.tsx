@@ -7,14 +7,14 @@ import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
 import TemplateGallery from '@/components/portfolio/TemplateGallery';
-import { Button } from '@/components/ui/button';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  HeroData, 
-  AboutData, 
-  SkillsData, 
-  ProjectsData, 
+import {
+  HeroData,
+  AboutData,
+  SkillsData,
+  ProjectsData,
   ContactData,
   SectionStyling,
   PortfolioTemplate
@@ -224,15 +224,15 @@ export default function TestPage() {
           </TabsList>
 
           <TabsContent value="sections" className="space-y-8">
-            
+
             {/* Hero Section Test */}
             <Card>
               <CardHeader>
                 <CardTitle>Hero Section</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <HeroSection 
-                  data={sampleHeroData} 
+                <HeroSection
+                  data={sampleHeroData}
                   styling={defaultStyling}
                   isEditing={false}
                 />
@@ -245,8 +245,8 @@ export default function TestPage() {
                 <CardTitle>About Section</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <AboutSection 
-                  data={sampleAboutData} 
+                <AboutSection
+                  data={sampleAboutData}
                   styling={defaultStyling}
                   isEditing={false}
                 />
@@ -259,8 +259,8 @@ export default function TestPage() {
                 <CardTitle>Skills Section</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <SkillsSection 
-                  data={sampleSkillsData} 
+                <SkillsSection
+                  data={sampleSkillsData}
                   styling={defaultStyling}
                   isEditing={false}
                 />
@@ -273,8 +273,8 @@ export default function TestPage() {
                 <CardTitle>Projects Section</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <ProjectsSection 
-                  data={sampleProjectsData} 
+                <ProjectsSection
+                  data={sampleProjectsData}
                   styling={{ ...defaultStyling, layout: 'grid' }}
                   isEditing={false}
                 />
@@ -287,8 +287,8 @@ export default function TestPage() {
                 <CardTitle>Contact Section</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <ContactSection 
-                  data={sampleContactData} 
+                <ContactSection
+                  data={sampleContactData}
                   styling={defaultStyling}
                   isEditing={false}
                 />
@@ -304,14 +304,14 @@ export default function TestPage() {
                 </p>
               </CardHeader>
               <CardContent className="p-0 space-y-4">
-                <HeroSection 
-                  data={sampleHeroData} 
+                <HeroSection
+                  data={sampleHeroData}
                   styling={defaultStyling}
                   isEditing={true}
                   onEdit={() => alert('Hero section clicked for editing!')}
                 />
-                <AboutSection 
-                  data={sampleAboutData} 
+                <AboutSection
+                  data={sampleAboutData}
                   styling={defaultStyling}
                   isEditing={true}
                   onEdit={() => alert('About section clicked for editing!')}

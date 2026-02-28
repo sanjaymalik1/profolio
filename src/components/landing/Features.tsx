@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Zap, Globe, Palette, Download } from "lucide-react";
+import { Zap, Globe, Palette } from "lucide-react";
 
 const FeatureCard = ({ title, desc, icon: Icon, index }: { title: string; desc: string; icon: React.ElementType; index: number }) => (
-  <motion.div 
+  <motion.div
     initial={{ y: 30, opacity: 0 }}
     whileInView={{ y: 0, opacity: 1 }}
     viewport={{ once: true }}
@@ -26,7 +26,7 @@ export default function Features() {
     <section id="features" className="py-24 lg:py-32 bg-gradient-to-b from-white via-slate-50/60 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 max-w-3xl mx-auto">
-          <motion.h2 
+          <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
@@ -46,21 +46,21 @@ export default function Features() {
         </div>
 
         <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-          <FeatureCard 
-            title="Visual editor" 
-            desc="Drag, drop, and customize sections with an intuitive interface. See changes update in real-time." 
+          <FeatureCard
+            title="Visual editor"
+            desc="Drag, drop, and customize sections with an intuitive interface. See changes update in real-time."
             icon={Palette}
             index={0}
           />
-          <FeatureCard 
-            title="Instant publishing" 
-            desc="Publish your portfolio with a custom URL. Share your work without managing deployment." 
+          <FeatureCard
+            title="Instant publishing"
+            desc="Publish your portfolio with a custom URL. Share your work without managing deployment."
             icon={Globe}
             index={1}
           />
-          <FeatureCard 
-            title="Ready-made templates" 
-            desc="Start with pre-designed templates for common portfolio layouts. Customize to match your needs." 
+          <FeatureCard
+            title="Ready-made templates"
+            desc="Start with pre-designed templates for common portfolio layouts. Customize to match your needs."
             icon={Zap}
             index={2}
           />

@@ -2,14 +2,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { SkillsData, SectionStyling, Skill } from '@/types/portfolio';
+import { SkillsData, SectionStyling } from '@/types/portfolio';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Star, Code, Palette, Wrench, Globe, Database } from 'lucide-react';
+
+import { Star, Code, Wrench, Globe } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
-import { typography, textColors } from '@/design/typography';
-import { spacing, grid } from '@/design/spacing';
+import { spacing } from '@/design/spacing';
 
 interface SkillsSectionProps {
   data: SkillsData;
@@ -28,22 +27,21 @@ const categoryIcons = {
   language: Globe
 } as const;
 
-export default function SkillsSection({ 
-  data, 
-  styling, 
-  isEditing = false, 
+export default function SkillsSection({
+  data,
+  styling,
+  isEditing = false,
   isPublicView = false,
   onEdit,
   onDataChange,
-  onStylingChange 
 }: SkillsSectionProps) {
   // Inline editing mode detection
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
 
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: (styling.animation?.duration || 600) / 1000,
@@ -84,7 +82,7 @@ export default function SkillsSection({
   };
 
   return (
-    <motion.section 
+    <motion.section
       className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
@@ -94,9 +92,9 @@ export default function SkillsSection({
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
-        
+
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -137,111 +135,111 @@ export default function SkillsSection({
         ) : (
           <div className="space-y-8 sm:space-y-10 lg:space-y-12">
             {Object.entries(skillsByCategory).map(([categoryKey, categorySkills], categoryIndex) => {
-            const Icon = categoryIcons[categoryKey as keyof typeof categoryIcons] || Star;
-            
-            return (
-              <motion.div
-                key={categoryKey}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 + categoryIndex * 0.1, duration: 0.6 }}
-              >
-                <Card className="border-2 hover:shadow-lg transition-all duration-300">
-                  <CardContent className="p-4 sm:p-6 md:p-8">
-                    
-                    {/* Category Header - responsive */}
-                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
-                      <div className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-current/10">
-                        <Icon className="text-current" size={20} />
-                      </div>
-                      <div>
-                        <h3 className="text-base sm:text-lg md:text-xl font-semibold capitalize">
-                          {categoryKey === 'technical' ? 'Technical Skills' : 
-                           categoryKey === 'soft' ? 'Soft Skills' :
-                           categoryKey === 'languages' ? 'Languages' : 'Tools'}
-                        </h3>
-                      </div>
-                    </div>
+              const Icon = categoryIcons[categoryKey as keyof typeof categoryIcons] || Star;
 
-                    {/* Skills Display */}
-                    {styling.layout === 'default' ? (
-                      /* Progress Bar Layout */
-                      <div className="space-y-4">
-                        {categorySkills.map((skill, skillIndex) => (
-                          <motion.div
-                            key={skillIndex}
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ 
-                              delay: 0.3 + categoryIndex * 0.1 + skillIndex * 0.05, 
-                              duration: 0.5 
-                            }}
-                          >
-                            <div className="flex items-center justify-between mb-2">
-                              {inlineEditMode ? (
-                                <EditableText
-                                  value={skill.name}
-                                  onChange={(value) => {
-                                    const updatedSkills = [...categorySkills];
-                                    updatedSkills[skillIndex] = { ...skill, name: value };
-                                    onDataChange?.({
-                                      skillCategories: {
-                                        ...data.skillCategories,
-                                        [categoryKey]: updatedSkills
-                                      }
-                                    });
-                                  }}
-                                  placeholder="Skill name"
-                                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 font-medium"
-                                  as="span"
-                                />
-                              ) : (
-                                <span className="font-medium">{skill.name}</span>
-                              )}
-                              <span className={`text-sm font-semibold ${getSkillLevelColor(skill.level)}`}>
-                                {skill.level}%
-                              </span>
-                            </div>
-                            <div className="relative">
-                              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                                <motion.div
-                                  className={`h-full ${getProgressColor(skill.level)} rounded-full`}
-                                  initial={{ width: 0 }}
-                                  whileInView={{ width: `${skill.level}%` }}
-                                  viewport={{ once: true }}
-                                  transition={{ 
-                                    delay: 0.5 + categoryIndex * 0.1 + skillIndex * 0.05,
-                                    duration: 1,
-                                    ease: "easeOut"
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
+              return (
+                <motion.div
+                  key={categoryKey}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + categoryIndex * 0.1, duration: 0.6 }}
+                >
+                  <Card className="border-2 hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-4 sm:p-6 md:p-8">
+
+                      {/* Category Header - responsive */}
+                      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
+                        <div className="p-2 sm:p-2.5 md:p-3 rounded-lg bg-current/10">
+                          <Icon className="text-current" size={20} />
+                        </div>
+                        <div>
+                          <h3 className="text-base sm:text-lg md:text-xl font-semibold capitalize">
+                            {categoryKey === 'technical' ? 'Technical Skills' :
+                              categoryKey === 'soft' ? 'Soft Skills' :
+                                categoryKey === 'languages' ? 'Languages' : 'Tools'}
+                          </h3>
+                        </div>
                       </div>
-                    ) : (
-                      /* Badge/Grid Layout - responsive */
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-                        {categorySkills.map((skill, skillIndex) => (
-                          <motion.div
-                            key={skillIndex}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ 
-                              delay: 0.3 + categoryIndex * 0.1 + skillIndex * 0.05, 
-                              duration: 0.4,
-                              type: "spring",
-                              stiffness: 100
-                            }}
-                            whileHover={{ scale: 1.05 }}
-                          >
-                            <Badge
-                              variant="outline"
-                              className={`
+
+                      {/* Skills Display */}
+                      {styling.layout === 'default' ? (
+                        /* Progress Bar Layout */
+                        <div className="space-y-4">
+                          {categorySkills.map((skill, skillIndex) => (
+                            <motion.div
+                              key={skillIndex}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{
+                                delay: 0.3 + categoryIndex * 0.1 + skillIndex * 0.05,
+                                duration: 0.5
+                              }}
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                {inlineEditMode ? (
+                                  <EditableText
+                                    value={skill.name}
+                                    onChange={(value) => {
+                                      const updatedSkills = [...categorySkills];
+                                      updatedSkills[skillIndex] = { ...skill, name: value };
+                                      onDataChange?.({
+                                        skillCategories: {
+                                          ...data.skillCategories,
+                                          [categoryKey]: updatedSkills
+                                        }
+                                      });
+                                    }}
+                                    placeholder="Skill name"
+                                    className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-1 -mx-1 font-medium"
+                                    as="span"
+                                  />
+                                ) : (
+                                  <span className="font-medium">{skill.name}</span>
+                                )}
+                                <span className={`text-sm font-semibold ${getSkillLevelColor(skill.level)}`}>
+                                  {skill.level}%
+                                </span>
+                              </div>
+                              <div className="relative">
+                                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                  <motion.div
+                                    className={`h-full ${getProgressColor(skill.level)} rounded-full`}
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: `${skill.level}%` }}
+                                    viewport={{ once: true }}
+                                    transition={{
+                                      delay: 0.5 + categoryIndex * 0.1 + skillIndex * 0.05,
+                                      duration: 1,
+                                      ease: "easeOut"
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      ) : (
+                        /* Badge/Grid Layout - responsive */
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                          {categorySkills.map((skill, skillIndex) => (
+                            <motion.div
+                              key={skillIndex}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              viewport={{ once: true }}
+                              transition={{
+                                delay: 0.3 + categoryIndex * 0.1 + skillIndex * 0.05,
+                                duration: 0.4,
+                                type: "spring",
+                                stiffness: 100
+                              }}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <Badge
+                                variant="outline"
+                                className={`
                                 p-3 text-sm font-medium border-2 hover:shadow-md transition-all cursor-default
                                 flex items-center justify-between w-full
                                 ${skill.level >= 90 ? 'border-green-200 bg-green-50 text-green-700' : ''}
@@ -249,45 +247,45 @@ export default function SkillsSection({
                                 ${skill.level >= 60 && skill.level < 75 ? 'border-yellow-200 bg-yellow-50 text-yellow-700' : ''}
                                 ${skill.level < 60 ? 'border-gray-200 bg-gray-50 text-gray-700' : ''}
                               `}
-                            >
-                              {inlineEditMode ? (
-                                <EditableText
-                                  value={skill.name}
-                                  onChange={(value) => {
-                                    const updatedSkills = [...categorySkills];
-                                    updatedSkills[skillIndex] = { ...skill, name: value };
-                                    onDataChange?.({
-                                      skillCategories: {
-                                        ...data.skillCategories,
-                                        [categoryKey]: updatedSkills
-                                      }
-                                    });
-                                  }}
-                                  placeholder="Skill name"
-                                  className="outline-none focus:ring-1 focus:ring-blue-400/50 rounded px-1 -mx-1 truncate"
-                                  as="span"
-                                />
-                              ) : (
-                                <span className="truncate">{skill.name}</span>
-                              )}
-                              <span className="ml-2 text-xs font-bold">
-                                {skill.level}%
-                              </span>
-                            </Badge>
-                          </motion.div>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
+                              >
+                                {inlineEditMode ? (
+                                  <EditableText
+                                    value={skill.name}
+                                    onChange={(value) => {
+                                      const updatedSkills = [...categorySkills];
+                                      updatedSkills[skillIndex] = { ...skill, name: value };
+                                      onDataChange?.({
+                                        skillCategories: {
+                                          ...data.skillCategories,
+                                          [categoryKey]: updatedSkills
+                                        }
+                                      });
+                                    }}
+                                    placeholder="Skill name"
+                                    className="outline-none focus:ring-1 focus:ring-blue-400/50 rounded px-1 -mx-1 truncate"
+                                    as="span"
+                                  />
+                                ) : (
+                                  <span className="truncate">{skill.name}</span>
+                                )}
+                                <span className="ml-2 text-xs font-bold">
+                                  {skill.level}%
+                                </span>
+                              </Badge>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
             })}
           </div>
         )}
 
         {/* Skills Summary Stats */}
-        <motion.div 
+        <motion.div
           className="mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

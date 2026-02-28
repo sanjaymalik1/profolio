@@ -24,22 +24,21 @@ interface AboutSectionProps {
   onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-export default function AboutSection({ 
-  data, 
-  styling, 
-  isEditing = false, 
+export default function AboutSection({
+  data,
+  styling,
+  isEditing = false,
   isPublicView = false,
   onEdit,
   onDataChange,
-  onStylingChange 
 }: AboutSectionProps) {
   // Inline editing mode detection
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
 
   const animationVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: (styling.animation?.duration || 600) / 1000,
@@ -60,7 +59,7 @@ export default function AboutSection({
   const isGridLayout = styling.layout === 'grid';
 
   return (
-    <motion.section 
+    <motion.section
       className={`relative ${spacing.section}`}
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
@@ -70,9 +69,9 @@ export default function AboutSection({
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={`${spacing.container} px-4 sm:px-6 lg:px-8 relative z-0`}>
-        
+
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className={`text-center ${spacing.marginBottom.xlarge}`}
           initial={!isEditing ? { opacity: 0, y: 20 } : undefined}
           whileInView={!isEditing ? { opacity: 1, y: 0 } : undefined}
@@ -96,10 +95,10 @@ export default function AboutSection({
         </motion.div>
 
         <div className={`grid ${grid.gapLarge} ${isGridLayout ? 'lg:grid-cols-2' : 'lg:grid-cols-1'} items-center`}>
-          
+
           {/* Profile Image */}
           {(data.profileImage || inlineEditMode) && (
-            <motion.div 
+            <motion.div
               className={`${isGridLayout ? 'order-1 lg:order-1' : 'float-left mr-8 mb-4'} ${isGridLayout ? 'justify-self-center' : ''}`}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -134,14 +133,14 @@ export default function AboutSection({
           )}
 
           {/* Content */}
-          <motion.div 
+          <motion.div
             className={`${isGridLayout ? 'order-2 lg:order-2' : ''} space-y-4 sm:space-y-6`}
             initial={{ opacity: 0, x: isGridLayout ? 30 : 0, y: isGridLayout ? 0 : 20 }}
             whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            
+
             {/* Main Content */}
             <div className="prose prose-lg max-w-none">
               <p className={`${typography.body} ${textColors.secondary}`}>
@@ -276,7 +275,7 @@ export default function AboutSection({
 
         {/* Personal Info Cards */}
         {data.personalInfo && (
-          <motion.div 
+          <motion.div
             className="mt-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -285,7 +284,7 @@ export default function AboutSection({
           >
             {/* Grid with items-stretch for equal height cards - responsive */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 items-stretch">
-              
+
               {/* Personal Card */}
               {((data.personalInfo.age || data.personalInfo.location) || inlineEditMode) && (
                 <Card className="border-2 hover:shadow-lg transition-shadow">
@@ -295,7 +294,7 @@ export default function AboutSection({
                       <User className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
                       <h4 className="font-semibold text-sm sm:text-base text-center">Personal</h4>
                     </div>
-                    
+
                     {/* Content - Flexible, no overflow, natural wrapping */}
                     <div className="flex-1 w-full flex flex-col gap-3 justify-start">
                       {inlineEditMode ? (
@@ -304,13 +303,13 @@ export default function AboutSection({
                             <span className="text-current/60 whitespace-nowrap">Age:</span>
                             <EditableField
                               value={data.personalInfo?.age?.toString() || ''}
-                              onChange={(value) => onDataChange?.({ 
-                                personalInfo: { 
+                              onChange={(value) => onDataChange?.({
+                                personalInfo: {
                                   ...data.personalInfo,
                                   languages: data.personalInfo?.languages || [],
                                   interests: data.personalInfo?.interests || [],
-                                  age: value ? parseInt(value) : undefined 
-                                } 
+                                  age: value ? parseInt(value) : undefined
+                                }
                               })}
                               placeholder="25"
                               type="text"
@@ -319,13 +318,13 @@ export default function AboutSection({
                           </div>
                           <EditableField
                             value={data.personalInfo?.location || ''}
-                            onChange={(value) => onDataChange?.({ 
-                              personalInfo: { 
+                            onChange={(value) => onDataChange?.({
+                              personalInfo: {
                                 ...data.personalInfo,
                                 languages: data.personalInfo?.languages || [],
                                 interests: data.personalInfo?.interests || [],
-                                location: value 
-                              } 
+                                location: value
+                              }
                             })}
                             placeholder="City, Country"
                             className="text-center text-sm text-current/70"
@@ -346,7 +345,7 @@ export default function AboutSection({
                         </>
                       )}
                     </div>
-                    
+
                     {/* Footer - Separate block (empty for Personal) */}
                     <div className="mt-6" />
                   </CardContent>
@@ -362,7 +361,7 @@ export default function AboutSection({
                       <Globe className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
                       <h4 className="font-semibold text-sm sm:text-base text-center">Languages</h4>
                     </div>
-                    
+
                     {/* Content - Flexible, no overflow, natural wrapping */}
                     <div className="flex-1 w-full flex flex-col gap-2 justify-start items-center">
                       {inlineEditMode ? (
@@ -422,7 +421,7 @@ export default function AboutSection({
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Footer - Separate block for actions */}
                     {inlineEditMode && (
                       <div className="mt-4 sm:mt-5 md:mt-6 pt-3 sm:pt-4 border-t border-dashed border-slate-300">
@@ -459,7 +458,7 @@ export default function AboutSection({
                       <Heart className="mx-auto mb-2 sm:mb-3 text-current/60" size={28} />
                       <h4 className="font-semibold text-sm sm:text-base text-center">Interests</h4>
                     </div>
-                    
+
                     {/* Content - Flexible, no overflow, natural wrapping */}
                     <div className="flex-1 w-full flex flex-col gap-2 justify-start items-center">
                       {inlineEditMode ? (
@@ -519,7 +518,7 @@ export default function AboutSection({
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Footer - Separate block for actions */}
                     {inlineEditMode && (
                       <div className="mt-4 sm:mt-5 md:mt-6 pt-3 sm:pt-4 border-t border-dashed border-slate-300">
@@ -551,7 +550,7 @@ export default function AboutSection({
         )}
 
         {/* Quote or Call to Action - responsive */}
-        <motion.div 
+        <motion.div
           className="mt-12 sm:mt-14 md:mt-16 text-center px-4"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

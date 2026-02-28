@@ -3,21 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { useEditor } from '@/contexts/EditorContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogFooter
 } from '@/components/ui/dialog';
-import { 
-  Lightbulb, 
-  GripVertical, 
-  Settings, 
-  Eye, 
+import {
+  Lightbulb,
+  GripVertical,
+  Settings,
+  Eye,
   Save,
   ChevronRight,
   ChevronLeft,
@@ -58,7 +58,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            Profolio is a powerful drag-and-drop portfolio builder that lets you create 
+            Profolio is a powerful drag-and-drop portfolio builder that lets you create
             professional portfolios without any coding knowledge.
           </p>
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -81,7 +81,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            On the left sidebar, you&apos;ll find different portfolio sections like Hero, About, 
+            On the left sidebar, you&apos;ll find different portfolio sections like Hero, About,
             Skills, Projects, and Contact.
           </p>
           <div className="bg-green-50 p-4 rounded-lg">
@@ -107,7 +107,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            Click on any section in the canvas to select it. The properties panel 
+            Click on any section in the canvas to select it. The properties panel
             on the right will show customization options for that section.
           </p>
           <div className="bg-purple-50 p-4 rounded-lg">
@@ -134,7 +134,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            Switch between Canvas and Preview tabs to see your portfolio in action. 
+            Switch between Canvas and Preview tabs to see your portfolio in action.
             Test how it looks on desktop, tablet, and mobile devices.
           </p>
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -157,7 +157,7 @@ export const OnboardingGuide: React.FC = () => {
       content: (
         <div className="space-y-4">
           <p className="text-gray-600">
-            Your work is automatically saved every 5 seconds. You can also manually 
+            Your work is automatically saved every 5 seconds. You can also manually
             save, load previous versions, and export your portfolio.
           </p>
           <div className="bg-orange-50 p-4 rounded-lg">
@@ -231,15 +231,14 @@ export const OnboardingGuide: React.FC = () => {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            
+
             {/* Progress indicator */}
             <div className="flex items-center gap-2 mt-4">
               {steps.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index <= currentStep ? 'bg-blue-500' : 'bg-gray-300'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors ${index <= currentStep ? 'bg-blue-500' : 'bg-gray-300'
+                    }`}
                 />
               ))}
               <span className="text-xs text-gray-500 ml-2">
@@ -260,7 +259,7 @@ export const OnboardingGuide: React.FC = () => {
             >
               Skip Tutorial
             </Button>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -270,7 +269,7 @@ export const OnboardingGuide: React.FC = () => {
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Previous
               </Button>
-              
+
               {isLastStep ? (
                 <Button onClick={handleFinish}>
                   <CheckCircle className="w-4 h-4 mr-2" />

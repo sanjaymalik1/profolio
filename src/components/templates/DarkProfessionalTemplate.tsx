@@ -10,7 +10,7 @@ interface DarkProfessionalTemplateProps {
   isPreview?: boolean;
 }
 
-export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfessionalTemplateProps) {
+export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps) {
   const heroData = data?.hero || {
     fullName: "Jordan Smith",
     title: "Senior Software Engineer",
@@ -225,13 +225,13 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
               <Terminal className="w-8 h-8 text-blue-400" />
               <h2 className="text-4xl font-bold">{aboutData.heading}</h2>
             </div>
-            
+
             <div className="grid lg:grid-cols-3 gap-12 items-start">
               <div className="lg:col-span-2">
                 <p className="text-lg text-slate-300 mb-8 leading-relaxed">
                   {aboutData.content}
                 </p>
-                
+
                 <div className="grid gap-4">
                   {(aboutData.highlights || []).map((highlight: string, index: number) => (
                     <motion.div
@@ -396,7 +396,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                     <p className="text-slate-400 mb-4 leading-relaxed text-sm">
                       {project.description}
                     </p>
-                    
+
                     <div className="flex flex-wrap gap-2 mb-6">
                       {(project.technologies || []).map((tech: string, techIndex: number) => (
                         <span
@@ -450,9 +450,9 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                 <Terminal className="w-8 h-8 text-emerald-400" />
                 <h2 className="text-4xl font-bold">{contactData.heading}</h2>
               </div>
-              
+
               <p className="text-xl text-slate-300 mb-8">{contactData.availability}</p>
-              
+
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
                 <div className="flex items-center gap-3 text-slate-400">
                   <Mail className="w-5 h-5" />

@@ -18,18 +18,16 @@ interface EditorBlockProps {
   children: React.ReactNode;
 }
 
-export function EditorBlock({ 
-  blockId: _blockId,
+export function EditorBlock({
   sectionType,
-  isSelected, 
-  onSelect: _onSelect,
+  isSelected,
   onDuplicate,
   onDelete,
   onMoveUp,
   onMoveDown,
   canMoveUp = true,
   canMoveDown = true,
-  children 
+  children
 }: EditorBlockProps) {
   // Helper to format section type for display
   const formatSectionType = (type?: string) => {
@@ -63,11 +61,11 @@ export function EditorBlock({
       <div
         className={cn(
           "absolute inset-0 pointer-events-none rounded-lg transition-all duration-200",
-          isSelected 
-            ? "border-2 border-blue-500 bg-blue-50/5 shadow-[0_0_0_4px_rgba(59,130,246,0.12)] opacity-100" 
-            : isHovered 
-            ? "border-2 border-blue-400/40 opacity-100"
-            : "opacity-0"
+          isSelected
+            ? "border-2 border-blue-500 bg-blue-50/5 shadow-[0_0_0_4px_rgba(59,130,246,0.12)] opacity-100"
+            : isHovered
+              ? "border-2 border-blue-400/40 opacity-100"
+              : "opacity-0"
         )}
         style={{ zIndex: 10 }}
       />

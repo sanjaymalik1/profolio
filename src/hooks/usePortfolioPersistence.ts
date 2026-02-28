@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
-import { EditorState } from '@/types/editor';
+
 import { useSearchParams } from 'next/navigation';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
@@ -12,16 +12,70 @@ export const usePortfolioPersistence = () => {
   const { setUnsavedChanges } = useEditorActions();
   const searchParams = useSearchParams();
   const portfolioId = searchParams.get('id');
-  
+
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
-  
+
   // Debounce timer ref
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
   const pendingSaveRef = useRef(false);
+
+  const performAutoSave = useCallback(async () => {
+    if (!portfolioId) return;
+
+    isSavingRef.current = true;
+    setSaveState('saving');
+    setSaveError(null);
+
+    try {
+      const response = await fetch(`/api/portfolios/${portfolioId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: state,
+          title: state.portfolioTitle
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSaveState('saved');
+        setLastSaved(new Date());
+        setSaveError(null);
+
+        // Clear unsaved changes flag immediately after successful save
+        setUnsavedChanges(false);
+
+        // Reset to idle after showing success briefly
+        setTimeout(() => {
+          setSaveState('idle');
+        }, 2000);
+      } else {
+        throw new Error(result.error || 'Failed to save');
+      }
+    } catch (error) {
+      console.error('[Auto-save] Error:', error);
+      setSaveState('error');
+      setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
+
+      // Show error for 5 seconds then reset
+      setTimeout(() => {
+        setSaveState('idle');
+      }, 5000);
+    } finally {
+      isSavingRef.current = false;
+
+      // If there was a pending save request, trigger it now
+      if (pendingSaveRef.current) {
+        pendingSaveRef.current = false;
+        setTimeout(() => performAutoSave(), 100);
+      }
+    }
+  }, [portfolioId, state, setUnsavedChanges]);
 
   // Debounced auto-save with queue
   useEffect(() => {
@@ -49,61 +103,7 @@ export const usePortfolioPersistence = () => {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, portfolioId]);
-
-  const performAutoSave = async () => {
-    if (!portfolioId) return;
-    
-    isSavingRef.current = true;
-    setSaveState('saving');
-    setSaveError(null);
-
-    try {
-      const response = await fetch(`/api/portfolios/${portfolioId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          content: state, 
-          title: state.portfolioTitle 
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        setSaveState('saved');
-        setLastSaved(new Date());
-        setSaveError(null);
-        
-        // Clear unsaved changes flag immediately after successful save
-        setUnsavedChanges(false);
-        
-        // Reset to idle after showing success briefly
-        setTimeout(() => {
-          setSaveState('idle');
-        }, 2000);
-      } else {
-        throw new Error(result.error || 'Failed to save');
-      }
-    } catch (error) {
-      console.error('[Auto-save] Error:', error);
-      setSaveState('error');
-      setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
-      
-      // Show error for 5 seconds then reset
-      setTimeout(() => {
-        setSaveState('idle');
-      }, 5000);
-    } finally {
-      isSavingRef.current = false;
-      
-      // If there was a pending save request, trigger it now
-      if (pendingSaveRef.current) {
-        pendingSaveRef.current = false;
-        setTimeout(() => performAutoSave(), 100);
-      }
-    }
-  };
+  }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, portfolioId, autoSaveEnabled, performAutoSave]);
 
   const saveToDatabase = useCallback(async (title?: string) => {
     if (!portfolioId) {
@@ -117,7 +117,7 @@ export const usePortfolioPersistence = () => {
       const updateData: {
         content: unknown;
         title: string;
-      } = { 
+      } = {
         content: state,
         title: title || state.portfolioTitle
       };
@@ -138,14 +138,14 @@ export const usePortfolioPersistence = () => {
         setSaveState('saved');
         setLastSaved(new Date());
         setSaveError(null);
-        
+
         // Clear unsaved changes flag immediately after successful save
         setUnsavedChanges(false);
-        
+
         setTimeout(() => {
           setSaveState('idle');
         }, 2000);
-        
+
         return portfolioId;
       } else {
         throw new Error(result.error || 'Failed to save');
@@ -156,7 +156,7 @@ export const usePortfolioPersistence = () => {
       setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
       throw error;
     }
-  }, [state, portfolioId]);
+  }, [state, portfolioId, setUnsavedChanges]);
 
   const loadFromDatabase = useCallback(async (id: string) => {
     try {

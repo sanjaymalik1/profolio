@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const DragComponent = ({ children, isDragging }: { children: React.ReactNode; isDragging: boolean }) => (
   <motion.div
-    animate={{ 
+    animate={{
       scale: isDragging ? 0.95 : 1,
       opacity: isDragging ? 0.5 : 1
     }}
@@ -28,7 +28,7 @@ const CanvasComponent = ({ children }: { children: React.ReactNode }) => (
 export default function InteractiveDemo() {
   const [step, setStep] = useState(0);
   const [canvasItems, setCanvasItems] = useState<string[]>([]);
-  
+
   const steps = [
     { title: "Drag & Drop", description: "Add sections to your portfolio" },
     { title: "Customize", description: "Edit content and styling" },
@@ -39,14 +39,14 @@ export default function InteractiveDemo() {
     const interval = setInterval(() => {
       setStep((prev) => {
         const nextStep = (prev + 1) % 3;
-        
+
         if (nextStep === 0) {
           setCanvasItems([]);
         }
         else if (nextStep === 1 && canvasItems.length === 0) {
           setTimeout(() => setCanvasItems(["Hero", "About", "Projects"]), 600);
         }
-        
+
         return nextStep;
       });
     }, 3500);
@@ -89,7 +89,7 @@ export default function InteractiveDemo() {
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Canvas</div>
               <div className="space-y-2">
                 <AnimatePresence>
-                  {canvasItems.map((item, index) => (
+                  {canvasItems.map((item) => (
                     <CanvasComponent key={item}>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-700 font-medium">{item}</span>
@@ -116,7 +116,7 @@ export default function InteractiveDemo() {
                     </CanvasComponent>
                   ))}
                 </AnimatePresence>
-                
+
                 {canvasItems.length === 0 && (
                   <div className="h-full flex items-center justify-center text-slate-400 text-sm">
                     Drop sections here to start building
@@ -133,13 +133,11 @@ export default function InteractiveDemo() {
             {steps.map((s, i) => (
               <div
                 key={i}
-                className={`flex items-center gap-2 text-xs ${
-                  i === step ? 'text-blue-600 font-medium' : 'text-slate-400'
-                }`}
+                className={`flex items-center gap-2 text-xs ${i === step ? 'text-blue-600 font-medium' : 'text-slate-400'
+                  }`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${
-                  i === step ? 'bg-blue-600' : 'bg-slate-300'
-                }`}></div>
+                <div className={`w-1.5 h-1.5 rounded-full ${i === step ? 'bg-blue-600' : 'bg-slate-300'
+                  }`}></div>
                 <span className="hidden sm:inline">{s.title}</span>
               </div>
             ))}

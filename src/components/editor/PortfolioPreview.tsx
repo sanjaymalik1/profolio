@@ -2,17 +2,16 @@
 
 import React from 'react';
 import { useEditor } from '@/contexts/EditorContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Monitor, 
-  Tablet, 
-  Smartphone, 
-  Eye, 
+import {
+  Monitor,
+  Tablet,
+  Smartphone,
+  Eye,
   EyeOff,
   Maximize2,
-  RotateCcw
 } from 'lucide-react';
 
 // Import portfolio section components
@@ -234,7 +233,7 @@ export const PortfolioPreview: React.FC = () => {
           >
             <Maximize2 size={16} />
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -248,11 +247,10 @@ export const PortfolioPreview: React.FC = () => {
       {/* Preview Content */}
       <div ref={previewContainerRef} className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
         <div className="p-6 flex justify-center">
-          <div 
+          <div
             style={getDeviceStyles()}
-            className={`bg-white shadow-2xl transition-all duration-300 ${
-              previewDevice !== 'desktop' ? 'border rounded-lg' : ''
-            }`}
+            className={`bg-white shadow-2xl transition-all duration-300 ${previewDevice !== 'desktop' ? 'border rounded-lg' : ''
+              }`}
           >
             {/* Portfolio Sections - Static preview with no interactions */}
             {state.sections.length > 0 ? (

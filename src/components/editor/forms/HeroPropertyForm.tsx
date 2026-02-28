@@ -9,14 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Briefcase, 
-  FileText, 
+
+
+import {
+  User,
   Image as ImageIcon,
-  MapPin,
   Mail,
   Plus,
   Trash2,
@@ -59,7 +56,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
 
   return (
     <div className="space-y-5">
-      
+
       {/* Basic Information */}
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="pb-3 bg-slate-50">
@@ -222,7 +219,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
                 </Button>
               </div>
             ))}
-            
+
             <Button
               variant="outline"
               size="sm"

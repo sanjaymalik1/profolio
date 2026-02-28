@@ -5,18 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+
 import { Badge } from '@/components/ui/badge';
-import { 
-  Eye, 
-  Edit, 
-  Download, 
+import {
   Trash,
-  ExternalLink,
   Clock,
-  FileText,
-  Star,
   Globe
 } from 'lucide-react';
 import { usePortfolios } from '@/hooks/usePortfolios';
@@ -46,7 +40,7 @@ export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const { portfolios, loading: portfoliosLoading, deletePortfolio, refetch } = usePortfolios();
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
@@ -130,7 +124,7 @@ export default function DashboardPage() {
           ) : portfolios.length === 0 ? (
             <div className="text-center py-20 border border-dashed border-slate-200 rounded-xl bg-white">
               <p className="text-slate-600 mb-6 text-sm">No portfolios yet. Create one to get started.</p>
-              <Button 
+              <Button
                 onClick={async () => {
                   try {
                     const response = await fetch('/api/portfolios', {
@@ -149,7 +143,7 @@ export default function DashboardPage() {
                     } else {
                       alert('Failed to create portfolio: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Failed to create portfolio. Please try again.');
                   }
                 }}
@@ -163,10 +157,10 @@ export default function DashboardPage() {
             <>
               {/* Active Portfolio Card */}
               {(() => {
-                const activePortfolio = [...portfolios].sort((a, b) => 
+                const activePortfolio = [...portfolios].sort((a, b) =>
                   new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
                 )[0];
-                
+
                 return (
                   <div className="bg-gradient-to-br from-white to-slate-50/80 rounded-xl p-6 sm:p-8 shadow-md border border-slate-200/60">
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -236,7 +230,7 @@ export default function DashboardPage() {
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-medium text-slate-500">Recent portfolios</h2>
-                  <Button 
+                  <Button
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/portfolios', {
@@ -255,7 +249,7 @@ export default function DashboardPage() {
                         } else {
                           alert('Failed to create portfolio: ' + result.error);
                         }
-                      } catch (error) {
+                      } catch {
                         alert('Failed to create portfolio. Please try again.');
                       }
                     }}
@@ -368,7 +362,7 @@ export default function DashboardPage() {
                     } else {
                       alert('Failed to create portfolio: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Failed to create portfolio. Please try again.');
                   }
                 }}
@@ -376,7 +370,7 @@ export default function DashboardPage() {
                 <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">Recommended</div>
                 <div className="aspect-[16/10] bg-slate-700 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors"></div>
-                  <span 
+                  <span
                     className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white text-slate-900 hover:bg-white shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
@@ -408,14 +402,14 @@ export default function DashboardPage() {
                     } else {
                       alert('Failed to create portfolio: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Failed to create portfolio. Please try again.');
                   }
                 }}
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span 
+                  <span
                     className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
@@ -447,14 +441,14 @@ export default function DashboardPage() {
                     } else {
                       alert('Failed to create portfolio: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Failed to create portfolio. Please try again.');
                   }
                 }}
               >
                 <div className="aspect-[16/10] bg-amber-50/50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span 
+                  <span
                     className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Use Template
@@ -486,14 +480,14 @@ export default function DashboardPage() {
                     } else {
                       alert('Failed to create portfolio: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Failed to create portfolio. Please try again.');
                   }
                 }}
               >
                 <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
                   <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span 
+                  <span
                     className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
                   >
                     Start Blank
@@ -537,7 +531,7 @@ export default function DashboardPage() {
             } else {
               alert('Failed to create portfolio: ' + result.error);
             }
-          } catch (error) {
+          } catch {
             alert('Failed to create portfolio. Please try again.');
           }
         }}

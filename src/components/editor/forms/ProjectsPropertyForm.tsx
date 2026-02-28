@@ -3,14 +3,14 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import type { ProjectsData, Project } from '@/types/portfolio';
+import type { ProjectsData } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, FolderOpen, Link, ExternalLink, Github } from 'lucide-react';
+import { Plus, Trash2, FolderOpen } from 'lucide-react';
 
 interface ProjectsPropertyFormProps {
   section: EditorSection;
@@ -37,7 +37,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
       category: 'web',
       status: 'completed' as const
     };
-    
+
     const updatedProjects = [...(projectsData.projects || []), newProject];
     handleInputChange('projects', updatedProjects);
   };
@@ -81,7 +81,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
 
   return (
     <div className="space-y-6">
-      
+
       {/* Section Heading */}
       <Card>
         <CardHeader>
@@ -130,7 +130,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                 </Button>
               </div>
             )) || []}
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -240,7 +240,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                 </div>
               </div>
             )) || []}
-            
+
             <Button
               variant="outline"
               onClick={addProject}

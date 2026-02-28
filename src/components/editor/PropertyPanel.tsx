@@ -5,7 +5,7 @@ import { useEditor } from '@/contexts/EditorContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Settings, Eye } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { EditorSection } from '@/types/editor';
 import { HeroPropertyForm } from './forms/HeroPropertyForm';
 import { AboutPropertyForm } from './forms/AboutPropertyForm';
@@ -16,8 +16,8 @@ import { TemplatePropertyForm } from './forms/TemplatePropertyForm';
 
 export const PropertyPanel: React.FC = () => {
   const { state } = useEditor();
-  const selectedSection = state.selectedSectionId ? 
-    state.sections.find((section: EditorSection) => section.id === state.selectedSectionId) : 
+  const selectedSection = state.selectedSectionId ?
+    state.sections.find((section: EditorSection) => section.id === state.selectedSectionId) :
     null;
 
   const renderPropertyForm = () => {

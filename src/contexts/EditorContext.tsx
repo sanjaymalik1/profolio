@@ -3,18 +3,18 @@
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { 
-  EditorState, 
-  EditorAction, 
-  EditorSection, 
+import {
+  EditorState,
+  EditorAction,
+  EditorSection,
   EditorStateSnapshot,
-  DraggableSectionType 
+  DraggableSectionType
 } from '@/types/editor';
-import { 
-  HeroData, 
-  AboutData, 
-  SkillsData, 
-  ProjectsData, 
+import {
+  HeroData,
+  AboutData,
+  SkillsData,
+  ProjectsData,
   ContactData,
   SectionStyling,
   SectionData
@@ -35,15 +35,6 @@ const initialState: EditorState = {
 
 // Default section data generators
 const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
-  const defaultStyling: SectionStyling = {
-    backgroundColor: 'transparent',
-    textColor: 'inherit',
-    padding: { top: '3rem', right: '2rem', bottom: '3rem', left: '2rem' },
-    margin: { top: '0', bottom: '2rem' },
-    alignment: 'left',
-    layout: 'default',
-    animation: { type: 'slide', duration: 600, delay: 200 }
-  };
 
   switch (type) {
     case 'hero':
@@ -203,7 +194,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const newSections = state.sections
         .filter(section => section.id !== sectionId)
         .map((section, index) => ({ ...section, order: index }));
-      
+
       return {
         ...state,
         sections: newSections,
@@ -222,7 +213,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const newSections = [...state.sections];
       const [movedSection] = newSections.splice(sectionIndex, 1);
       newSections.splice(newIndex, 0, movedSection);
-      
+
       // Update order
       newSections.forEach((section, index) => {
         section.order = index;
@@ -241,10 +232,10 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const { sectionId, data } = action.payload;
       const newSections = state.sections.map(section =>
         section.id === sectionId
-          ? { 
-              ...section, 
-              data: deepClone({ ...section.data, ...data })
-            }
+          ? {
+            ...section,
+            data: deepClone({ ...section.data, ...data })
+          }
           : section
       ) as EditorSection[];
 
@@ -261,10 +252,10 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const { sectionId, styling } = action.payload;
       const newSections = state.sections.map(section =>
         section.id === sectionId
-          ? { 
-              ...section, 
-              styling: deepClone({ ...section.styling, ...styling })
-            }
+          ? {
+            ...section,
+            styling: deepClone({ ...section.styling, ...styling })
+          }
           : section
       ) as EditorSection[];
 
@@ -347,9 +338,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const { sectionId } = action.payload;
       const section = state.sections.find(s => s.id === sectionId);
       if (!section) return state;
-      
+
       const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
-      
+
       // Create duplicated section with new ID but identical data/styling
       const duplicatedSection: EditorSection = {
         ...deepClone(section),
@@ -360,7 +351,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       // Insert the duplicated section right after the original
       const newSections = [...state.sections];
       newSections.splice(sectionIndex + 1, 0, duplicatedSection);
-      
+
       // Update order for all sections
       newSections.forEach((s, idx) => {
         s.order = idx;
@@ -378,10 +369,10 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
     case 'UNDO': {
       if (state.past.length === 0) return state;
-      
+
       const previous = state.past[state.past.length - 1];
       const newPast = state.past.slice(0, -1);
-      
+
       return {
         ...restoreFromSnapshot(state, previous),
         past: newPast,
@@ -391,10 +382,10 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
     case 'REDO': {
       if (state.future.length === 0) return state;
-      
+
       const next = state.future[0];
       const newFuture = state.future.slice(1);
-      
+
       return {
         ...restoreFromSnapshot(state, next),
         past: [...state.past, createSnapshot(state)],
@@ -447,9 +438,9 @@ export const useEditorActions = () => {
 
   const duplicateSection = (sectionId: string) => {
     // Use proper DUPLICATE_SECTION action that sets hasUnsavedChanges: true
-    dispatch({ 
-      type: 'DUPLICATE_SECTION', 
-      payload: { sectionId } 
+    dispatch({
+      type: 'DUPLICATE_SECTION',
+      payload: { sectionId }
     });
   };
 
@@ -570,7 +561,7 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
   // Load portfolio from API based on portfolioId
   useEffect(() => {
     if (!isHydrated) return;
-    
+
     const loadPortfolio = async () => {
       try {
         setIsLoading(true);
@@ -579,8 +570,8 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
         if (templateId) {
           const { convertTemplateToSections } = await import('@/lib/templateConverter');
           const sections = convertTemplateToSections(templateId);
-          dispatch({ 
-            type: 'LOAD_SECTIONS', 
+          dispatch({
+            type: 'LOAD_SECTIONS',
             payload: { sections }
           });
           setIsLoading(false);
@@ -591,18 +582,18 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
         if (portfolioId) {
           const response = await fetch(`/api/portfolios/${portfolioId}`);
           const result = await response.json();
-          
+
           if (result.success && result.data.content?.sections) {
-            dispatch({ 
-              type: 'LOAD_PORTFOLIO', 
-              payload: { 
+            dispatch({
+              type: 'LOAD_PORTFOLIO',
+              payload: {
                 sections: result.data.content.sections,
                 title: result.data.title || 'Untitled Portfolio'
               }
             });
           }
         }
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading portfolio:', error);

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { HeroData, SectionStyling } from '@/types/portfolio';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Github, Linkedin, Twitter, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
@@ -31,14 +31,13 @@ const socialIcons = {
   website: ExternalLink
 } as const;
 
-export default function HeroSection({ 
-  data, 
-  styling, 
-  isEditing = false, 
-  isPublicView = false, 
+export default function HeroSection({
+  data,
+  styling,
+  isEditing = false,
+  isPublicView = false,
   onEdit,
   onDataChange,
-  onStylingChange 
 }: HeroSectionProps) {
   // Determine if inline editing is active
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
@@ -46,8 +45,8 @@ export default function HeroSection({
 
   const animationVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: (styling.animation?.duration || 800) / 1000,
@@ -66,7 +65,7 @@ export default function HeroSection({
   } as React.CSSProperties;
 
   return (
-    <motion.section 
+    <motion.section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={containerStyle}
       initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
@@ -90,10 +89,10 @@ export default function HeroSection({
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
-          
+
           {/* Profile Image */}
           {(data.profileImage || inlineEditMode) && (
-            <motion.div 
+            <motion.div
               className="flex-shrink-0 relative"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -101,7 +100,7 @@ export default function HeroSection({
             >
               {/* Subtle decorative ring - thin and lightweight */}
               <div className="absolute -inset-2 rounded-full border border-current opacity-15 pointer-events-none" />
-              
+
               {/* Circular clipping container with soft shadow - responsive sizes */}
               <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-64 xl:h-64 rounded-full overflow-hidden shadow-lg">
                 {inlineEditMode ? (
@@ -128,9 +127,9 @@ export default function HeroSection({
 
           {/* Content */}
           <div className="flex-1 text-center lg:text-left max-w-3xl">
-            
+
             {/* Name */}
-            <motion.h1 
+            <motion.h1
               className={`${typography.heroTitle} mb-3 sm:mb-4 bg-gradient-to-r from-current to-current/70 bg-clip-text`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -150,7 +149,7 @@ export default function HeroSection({
             </motion.h1>
 
             {/* Title */}
-            <motion.h2 
+            <motion.h2
               className={`${typography.subtitle} mb-2 ${textColors.secondary}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -171,7 +170,7 @@ export default function HeroSection({
 
             {/* Subtitle */}
             {(data.subtitle || inlineEditMode) && (
-              <motion.p 
+              <motion.p
                 className={`${typography.body} ${spacing.marginBottom.medium} ${textColors.muted}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -192,7 +191,7 @@ export default function HeroSection({
             )}
 
             {/* Bio */}
-            <motion.p 
+            <motion.p
               className={`${typography.body} ${spacing.marginBottom.large} ${textColors.secondary} max-w-2xl mx-auto lg:mx-0`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -213,7 +212,7 @@ export default function HeroSection({
             </motion.p>
 
             {/* Location & Contact */}
-            <motion.div 
+            <motion.div
               className={`flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 lg:gap-6 ${spacing.marginBottom.large} text-sm sm:text-base ${textColors.muted}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -235,7 +234,7 @@ export default function HeroSection({
 
             {/* Social Links */}
             {data.socialLinks && data.socialLinks.length > 0 && (
-              <motion.div 
+              <motion.div
                 className={`flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 ${spacing.marginBottom.large}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -261,7 +260,7 @@ export default function HeroSection({
             )}
 
             {/* CTA Buttons - responsive sizes and layout */}
-            <motion.div 
+            <motion.div
               className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -283,7 +282,7 @@ export default function HeroSection({
 
         {/* Scroll Indicator - Hidden in editor preview, public view, and mobile */}
         {!isEditing && !isPublicView && (
-          <motion.div 
+          <motion.div
             className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

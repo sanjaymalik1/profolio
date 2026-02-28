@@ -3,14 +3,14 @@
 import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import type { ContactData, SocialLink } from '@/types/portfolio';
+import type { ContactData } from '@/types/portfolio';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Trash2, Mail, Phone, MapPin, Link, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, Mail, Phone, Link, MessageSquare } from 'lucide-react';
 
 interface ContactPropertyFormProps {
   section: EditorSection;
@@ -74,7 +74,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
 
   return (
     <div className="space-y-6">
-      
+
       {/* Section Heading */}
       <Card>
         <CardHeader>
@@ -189,7 +189,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                 </Button>
               </div>
             )) || []}
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -241,7 +241,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                           <Trash2 className="w-3 h-3" />
                         </Button>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <Label className="text-xs">Name</Label>
@@ -266,7 +266,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                           </select>
                         </div>
                       </div>
-                      
+
                       <div>
                         <Label className="text-xs">Label</Label>
                         <Input
@@ -276,7 +276,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                           className="text-sm"
                         />
                       </div>
-                      
+
                       <div>
                         <Label className="text-xs">Placeholder</Label>
                         <Input
@@ -286,7 +286,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                           className="text-sm"
                         />
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -300,7 +300,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
                       </div>
                     </div>
                   )) || []}
-                  
+
                   <Button
                     variant="outline"
                     size="sm"

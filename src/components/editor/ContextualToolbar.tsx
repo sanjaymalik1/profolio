@@ -73,7 +73,6 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
   selection,
   formatting,
   onChange,
-  onClose,
   containerRef,
 }) => {
   const toolbarRef = useRef<HTMLDivElement>(null);
@@ -96,7 +95,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
       const padding = 8;
 
       // Get container bounds if provided
-      const containerBounds = containerRef?.current?.getBoundingClientRect();
+      containerRef?.current?.getBoundingClientRect();
 
       // Calculate ideal position (above selection by default)
       let top = rect.top - toolbarHeight - padding;

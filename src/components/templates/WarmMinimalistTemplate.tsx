@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, MapPin, ExternalLink, Heart, Coffee, Star, Send } from 'lucide-react';
+import { Github, Linkedin, Mail, MapPin, Heart, Coffee, Star, Send } from 'lucide-react';
 import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
 
 interface WarmMinimalistTemplateProps {
@@ -132,15 +132,15 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
                 <Coffee className="w-4 h-4" />
                 Available for new projects
               </div>
-              
+
               <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
                 Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
               </h1>
-              
+
               <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
                 {heroData.title}
               </h2>
-              
+
               <p className="text-lg text-amber-800 leading-relaxed mb-8 max-w-2xl mx-auto">
                 {heroData.bio}
               </p>
@@ -357,7 +357,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
                     <p className="text-white font-medium">{project.category}</p>
                   </div>
                 </div>
-                
+
                 <div className="p-6">
                   <h3 className="text-xl font-medium mb-3 text-amber-800">{project.title}</h3>
                   <p className="text-amber-700 text-sm leading-relaxed mb-4">
@@ -391,7 +391,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
           >
             <h2 className="text-4xl font-light mb-8">{contactData.heading}</h2>
             <div className="w-16 h-1 bg-white mx-auto rounded-full mb-12"></div>
-            
+
             <p className="text-xl mb-12 max-w-2xl mx-auto opacity-90">
               Have a project in mind? I&apos;d love to hear about it! Let&apos;s create something beautiful together.
             </p>

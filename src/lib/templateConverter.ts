@@ -1,6 +1,6 @@
 import { EditorSection, DraggableSectionType } from '@/types/editor';
 import { SectionStyling, TemplateData } from '@/types/portfolio';
-import { getAllTemplates, getTemplate } from '@/components/templates';
+import { getTemplate } from '@/components/templates';
 import { enhancedColorSchemes } from '@/lib/portfolio/enhanced-templates';
 
 // Default styling for converted sections
@@ -11,10 +11,10 @@ const getDefaultStyling = (sectionType: DraggableSectionType): SectionStyling =>
   margin: { top: '0', bottom: '0' },
   alignment: sectionType === 'hero' ? 'center' : 'left',
   layout: 'default',
-  animation: { 
-    type: sectionType === 'hero' ? 'fade' : 'slide', 
-    duration: 600, 
-    delay: 200 
+  animation: {
+    type: sectionType === 'hero' ? 'fade' : 'slide',
+    duration: 600,
+    delay: 200
   }
 });
 
@@ -23,27 +23,27 @@ const getTemplateStyling = (templateId: string, sectionType: DraggableSectionTyp
   // Only apply custom styling for dark-professional template
   if (templateId === 'dark-professional') {
     const colorScheme = enhancedColorSchemes.darkProfessional;
-    
+
     return {
       backgroundColor: sectionType === 'hero' ? colorScheme.background : colorScheme.surface,
       textColor: colorScheme.text.primary,
-      padding: { 
-        top: sectionType === 'hero' ? '6rem' : '5rem', 
-        right: '2rem', 
-        bottom: sectionType === 'hero' ? '6rem' : '5rem', 
-        left: '2rem' 
+      padding: {
+        top: sectionType === 'hero' ? '6rem' : '5rem',
+        right: '2rem',
+        bottom: sectionType === 'hero' ? '6rem' : '5rem',
+        left: '2rem'
       },
       margin: { top: '0', bottom: '0' },
       alignment: sectionType === 'hero' ? 'center' : 'left',
       layout: 'default',
-      animation: { 
-        type: sectionType === 'hero' ? 'fade' : 'slide', 
-        duration: 800, 
-        delay: sectionType === 'hero' ? 200 : 300 
+      animation: {
+        type: sectionType === 'hero' ? 'fade' : 'slide',
+        duration: 800,
+        delay: sectionType === 'hero' ? 200 : 300
       }
     };
   }
-  
+
   // For other templates, use default styling
   return getDefaultStyling(sectionType);
 };
@@ -73,14 +73,14 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
       ...templateData,
       projects: templateData.projects ? {
         ...templateData.projects,
-        projects: templateData.projects.projects?.map((p: { 
-          id?: string; 
-          title: string; 
-          description: string; 
-          longDescription?: string; 
-          technologies?: string[]; 
-          image?: string; 
-          images?: string[]; 
+        projects: templateData.projects.projects?.map((p: {
+          id?: string;
+          title: string;
+          description: string;
+          longDescription?: string;
+          technologies?: string[];
+          image?: string;
+          images?: string[];
           links?: { live?: string; github?: string; demo?: string; documentation?: string };
           featured?: boolean;
           category?: string;
@@ -113,12 +113,6 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
       } : undefined
     };
 
-    // Get template display name
-    const templateNames: Record<string, string> = {
-      'dark-professional': 'Dark Professional Template',
-      'elegant-monochrome': 'Elegant Monochrome Template',
-      'warm-minimalist': 'Warm Minimalist Template'
-    };
 
     sections.push({
       id: generateSectionId('template', 0),
@@ -143,7 +137,7 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
   }
 
   // For other templates, convert to individual sections (existing logic)
-  
+
   // Convert Hero Section
   if (templateData.hero) {
     sections.push({
@@ -534,11 +528,11 @@ export const applyTemplateToEditor = async (
     onError?: (error: Error) => void;
   } = {}
 ): Promise<void> => {
-  const { 
-    replaceAll = true, 
+  const {
+    replaceAll = true,
     showConfirmation = true,
     onSuccess,
-    onError 
+    onError
   } = options;
 
   try {
@@ -564,7 +558,7 @@ export const applyTemplateToEditor = async (
 
     // Success callback
     onSuccess?.();
-    
+
   } catch (error) {
     console.error('Error applying template:', error);
     const errorMessage = error instanceof Error ? error : new Error('Failed to apply template');

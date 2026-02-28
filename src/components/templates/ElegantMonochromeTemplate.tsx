@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, MapPin, ExternalLink, Award, Briefcase, User } from 'lucide-react';
+import { Linkedin, Mail, MapPin, Award, Briefcase, User } from 'lucide-react';
 import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
 
 interface ElegantMonochromeTemplateProps {
@@ -115,16 +115,16 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
               <div className="inline-block px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-600 mb-6">
                 Available for Consultation
               </div>
-              
+
               <h1 className="text-5xl lg:text-6xl font-light mb-6 leading-tight">
                 <span className="font-extralight text-gray-500">I&apos;m</span><br />
                 <span className="font-medium">{heroData.fullName}</span>
               </h1>
-              
+
               <h2 className="text-2xl text-gray-600 font-light mb-8">
                 {heroData.title}
               </h2>
-              
+
               <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
                 {heroData.bio}
               </p>
@@ -361,7 +361,7 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
           >
             <h2 className="text-4xl font-light mb-8">{contactData.heading}</h2>
             <div className="w-16 h-px bg-white mx-auto mb-12"></div>
-            
+
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
               Ready to transform your business? Let&apos;s discuss how we can achieve your strategic objectives together.
             </p>

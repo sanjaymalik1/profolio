@@ -1,23 +1,22 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { templateComponents, getTemplate } from './index';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
+import { motion } from 'framer-motion';
+import { getTemplate } from './index';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  X, 
-  Monitor, 
-  Tablet, 
-  Smartphone, 
-  ExternalLink,
+import {
+  X,
+  Monitor,
+  Tablet,
+  Smartphone,
   Sparkles,
   Palette,
   Code
@@ -33,7 +32,7 @@ interface TemplatePreviewProps {
 export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: TemplatePreviewProps) {
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const template = templateId ? getTemplate(templateId) : null;
-  
+
   if (!template) return null;
 
   const TemplateComponent = template.component;
@@ -62,7 +61,7 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
 
   const handleUseTemplate = async () => {
     if (!templateId) return;
-    
+
     // Use callback pattern - works in all contexts
     onUseTemplate?.(templateId);
     onClose();
@@ -75,7 +74,7 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
           <DialogTitle>{template.name} Template Preview</DialogTitle>
           <DialogDescription>Preview of the {template.name} portfolio template</DialogDescription>
         </DialogHeader>
-        
+
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b bg-white sticky top-0 z-50">
           <div className="flex items-center gap-4">
@@ -90,7 +89,7 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
               {template.category}
             </Badge>
           </div>
-          
+
           <div className="flex items-center gap-4">
             {/* Device Toggle */}
             <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
@@ -104,7 +103,7 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
               </Button>
               <Button
                 variant={previewDevice === 'tablet' ? 'default' : 'ghost'}
-                size="sm" 
+                size="sm"
                 onClick={() => setPreviewDevice('tablet')}
                 className="p-2"
               >
@@ -122,8 +121,8 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
-              <Button 
-                onClick={handleUseTemplate} 
+              <Button
+                onClick={handleUseTemplate}
                 className="gap-2"
               >
                 <Sparkles className="w-4 h-4" />
@@ -147,7 +146,7 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
               className={`${getDeviceClasses()} transition-all duration-300`}
             >
               <div className="bg-white shadow-lg">
-                <TemplateComponent 
+                <TemplateComponent
                   data={template.previewData}
                   isPreview={true}
                 />

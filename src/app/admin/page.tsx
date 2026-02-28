@@ -55,7 +55,7 @@ export default function AdminPage() {
       } else {
         setMessage('Failed to fetch users');
       }
-    } catch (error) {
+    } catch {
       setMessage('Error fetching users');
     } finally {
       setLoading(false);
@@ -79,13 +79,13 @@ export default function AdminPage() {
       if (data.success) {
         setMessage(data.message);
         // Update the user in the local state
-        setUsers(users.map(user => 
+        setUsers(users.map(user =>
           user.id === userId ? { ...user, role: newRole } : user
         ));
       } else {
         setMessage(data.message || 'Failed to update user role');
       }
-    } catch (error) {
+    } catch {
       setMessage('Error updating user role');
     } finally {
       setUpdating(null);
@@ -150,11 +150,10 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent className="px-4 sm:px-6">
               {message && (
-                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${
-                  message.includes('success') || message.includes('updated')
-                    ? 'bg-green-50 border border-green-200 text-green-600' 
+                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${message.includes('success') || message.includes('updated')
+                    ? 'bg-green-50 border border-green-200 text-green-600'
                     : 'bg-red-50 border border-red-200 text-red-600'
-                }`}>
+                  }`}>
                   {message}
                 </div>
               )}
@@ -173,59 +172,59 @@ export default function AdminPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                    {users.map((userData) => (
-                      <TableRow key={userData.id}>
-                        <TableCell className="text-xs sm:text-sm">
-                          <div className="flex items-center space-x-2 sm:space-x-3">
-                            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                              <AvatarFallback className="text-xs sm:text-sm">
-                                {(userData.name || userData.email)[0].toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="min-w-0">
-                              <div className="font-medium truncate">
-                                {userData.name || 'No name'}
+                        {users.map((userData) => (
+                          <TableRow key={userData.id}>
+                            <TableCell className="text-xs sm:text-sm">
+                              <div className="flex items-center space-x-2 sm:space-x-3">
+                                <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                                  <AvatarFallback className="text-xs sm:text-sm">
+                                    {(userData.name || userData.email)[0].toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0">
+                                  <div className="font-medium truncate">
+                                    {userData.name || 'No name'}
+                                  </div>
+                                  <div className="text-xs text-gray-500 truncate md:hidden">
+                                    {userData.email}
+                                  </div>
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-500 truncate md:hidden">
-                                {userData.email}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">{userData.email}</TableCell>
-                        <TableCell>
-                          <Badge variant={userData.role === 'ADMIN' ? 'destructive' : 'secondary'} className="text-xs">
-                            {userData.role}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
-                          {new Date(userData.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          {userData.id !== user?.id && (
-                            <Button
-                              onClick={() => updateUserRole(
-                                userData.id, 
-                                userData.role === 'ADMIN' ? 'USER' : 'ADMIN'
+                            </TableCell>
+                            <TableCell className="text-xs sm:text-sm hidden md:table-cell">{userData.email}</TableCell>
+                            <TableCell>
+                              <Badge variant={userData.role === 'ADMIN' ? 'destructive' : 'secondary'} className="text-xs">
+                                {userData.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-xs sm:text-sm text-muted-foreground hidden lg:table-cell">
+                              {new Date(userData.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              {userData.id !== user?.id && (
+                                <Button
+                                  onClick={() => updateUserRole(
+                                    userData.id,
+                                    userData.role === 'ADMIN' ? 'USER' : 'ADMIN'
+                                  )}
+                                  disabled={updating === userData.id}
+                                  variant={userData.role === 'ADMIN' ? 'destructive' : 'default'}
+                                  size="sm"
+                                  className="text-xs"
+                                >
+                                  {updating === userData.id ? (
+                                    <span className="hidden sm:inline">Updating...</span>
+                                  ) : (
+                                    userData.role === 'ADMIN' ? 'Demote' : 'Promote'
+                                  )}
+                                </Button>
                               )}
-                              disabled={updating === userData.id}
-                              variant={userData.role === 'ADMIN' ? 'destructive' : 'default'}
-                              size="sm"
-                              className="text-xs"
-                            >
-                              {updating === userData.id ? (
-                                <span className="hidden sm:inline">Updating...</span>
-                              ) : (
-                                userData.role === 'ADMIN' ? 'Demote' : 'Promote'
+                              {userData.id === user?.id && (
+                                <Badge variant="outline" className="text-xs">You</Badge>
                               )}
-                            </Button>
-                          )}
-                          {userData.id === user?.id && (
-                            <Badge variant="outline" className="text-xs">You</Badge>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   </div>

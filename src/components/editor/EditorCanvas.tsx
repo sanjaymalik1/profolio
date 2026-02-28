@@ -5,8 +5,8 @@ import { Droppable } from './Droppable';
 import { Draggable } from './Draggable';
 import { EditorBlock } from './EditorBlock';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
-import { DragItem, PaletteDragItem, EditorSectionDragItem, DraggableSectionType, EditorSection } from '@/types/editor';
-import { TemplateSectionData } from '@/types/portfolio';
+import { DragItem, PaletteDragItem, EditorSectionDragItem, EditorSection } from '@/types/editor';
+
 
 // Import section components
 import HeroSection from '@/components/portfolio/sections/HeroSection';
@@ -22,8 +22,8 @@ import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTem
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  GripVertical, 
+import {
+  GripVertical,
   Plus,
   Eye
 } from 'lucide-react';
@@ -34,9 +34,9 @@ interface EditorCanvasProps {
 
 export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) => {
   const { state } = useEditor();
-  const { 
-    addSection, 
-    removeSection, 
+  const {
+    addSection,
+    removeSection,
     moveSection,
     duplicateSection,
     moveSectionUp,
@@ -44,7 +44,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     selectSection,
     setDragging,
     updateSectionData,
-    updateSectionStyling 
+    updateSectionStyling
   } = useEditorActions();
 
   // Block selection state (separate from section selection for PropertyPanel)
@@ -59,7 +59,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
   const handleDrop = (item: DragItem) => {
     const targetIndex = state?.sections?.length || 0;
-    
+
     if (item.type === 'palette-section') {
       const paletteItem = item as PaletteDragItem;
       addSection(paletteItem.sectionType, targetIndex);
@@ -83,7 +83,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
   const renderSection = (section: EditorSection, index: number) => {
     const isSelected = state.selectedSectionId === section.id;
-    
+
     const dragItem: EditorSectionDragItem = {
       type: 'editor-section',
       id: section.id,
@@ -192,7 +192,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           );
         default:
           // Exhaustive type check - ensures all section types are handled
-          const _exhaustiveCheck: never = section;
+          void (section as never);
           return null;
       }
     };
@@ -228,30 +228,30 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             ${state.isDragging ? 'border-dashed border-slate-300' : ''}
           `}>
 
-          {/* Drag handle - minimal */}
-          <Draggable
-            dragItem={dragItem}
-            onDragStart={() => setDragging(true)}
-            onDragEnd={() => setDragging(false)}
-          >
-            <div className={`
+            {/* Drag handle - minimal */}
+            <Draggable
+              dragItem={dragItem}
+              onDragStart={() => setDragging(true)}
+              onDragEnd={() => setDragging(false)}
+            >
+              <div className={`
               absolute left-2 top-2 z-20 p-1.5 rounded-md bg-white/95 border border-slate-200/60 shadow-sm backdrop-blur-sm
               cursor-grab active:cursor-grabbing transition-opacity
               ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
             `}>
-              <GripVertical className="h-4 w-4 text-slate-400" />
-            </div>
-          </Draggable>
+                <GripVertical className="h-4 w-4 text-slate-400" />
+              </div>
+            </Draggable>
 
-          {/* Section type badge */}
-          <div className={`
+            {/* Section type badge */}
+            <div className={`
             absolute top-3 left-14 z-20 transition-opacity
             ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
           `}>
-            <Badge variant="secondary" className="bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-sm capitalize">
-              {section.type}
-            </Badge>
-          </div>
+              <Badge variant="secondary" className="bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-sm capitalize">
+                {section.type}
+              </Badge>
+            </div>
 
             {/* Section content - Static editor rendering, no animations */}
             <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
@@ -328,7 +328,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
               {(state?.sections || [])
                 .sort((a, b) => a.order - b.order)
                 .map((section, index) => renderSection(section, index))}
-              
+
               {/* Final drop zone */}
               <Droppable
                 accept={['palette-section', 'editor-section']}
@@ -346,7 +346,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
       {(state?.sections?.length || 0) > 0 && (
         <div className="mt-4 sm:mt-6 p-3 sm:p-4 lg:p-5 bg-slate-50 rounded-lg border border-slate-200">
           <p className="text-xs sm:text-sm text-slate-600 text-center leading-relaxed">
-            <span className="font-medium text-slate-700">Tip:</span> 
+            <span className="font-medium text-slate-700">Tip:</span>
             <span className="hidden sm:inline"> Click sections to edit • Drag the grip handle to reorder • Use the trash icon to delete</span>
             <span className="sm:hidden"> Tap sections to edit properties</span>
           </p>

@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
 import { Draggable } from './Draggable';
 import { PaletteDragItem, PaletteSection } from '@/types/editor';
-import { 
-  User, 
-  FileText, 
-  Code, 
-  Briefcase, 
+import {
+  User,
+  FileText,
+  Code,
+  Briefcase,
   Mail,
   GraduationCap,
   Award
@@ -95,7 +95,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
 
   const renderSection = (section: PaletteSection) => {
     const IconComponent = iconComponents[section.icon as keyof typeof iconComponents];
-    
+
     const dragItem: PaletteDragItem = {
       type: 'palette-section',
       id: `palette-${section.type}`,

@@ -32,17 +32,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
   as: Component = 'p',
   multiline = false,
   disabled = false,
-  onFocus,
   onBlur,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  const isMountedRef = useRef(false);
+
   // Set initial content only on mount
   useEffect(() => {
-    if (ref.current && ref.current.textContent === '') {
-      ref.current.textContent = value || '';
+    if (!isMountedRef.current) {
+      isMountedRef.current = true;
+      if (ref.current && ref.current.textContent === '') {
+        ref.current.textContent = value || '';
+      }
     }
-  }, []);
+  }, [value]);
 
   // Sync external changes ONLY when not focused (user not editing)
   useEffect(() => {
@@ -77,7 +81,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
       }
       ref.current?.blur();
     }
-    
+
     if (!multiline && e.key === 'Enter') {
       e.preventDefault();
       commitChange();

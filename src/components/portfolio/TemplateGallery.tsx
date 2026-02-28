@@ -9,13 +9,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Search, 
-  Filter, 
-  Grid, 
-  List, 
-  Star, 
-  Palette, 
+import {
+  Search,
+  Filter,
+  Grid,
+  List,
+  Star,
+  Palette,
   Eye,
   CheckCircle,
   X
@@ -27,10 +27,10 @@ interface TemplateGalleryProps {
   className?: string;
 }
 
-export default function TemplateGallery({ 
-  onTemplateSelect, 
+export default function TemplateGallery({
+  onTemplateSelect,
   selectedTemplateId,
-  className = "" 
+  className = ""
 }: TemplateGalleryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -40,42 +40,40 @@ export default function TemplateGallery({
 
   // Get template manager instance
   const templateManager = TemplateManager.getInstance();
-  
-  // Get all templates
-  const allTemplates = templateManager.getAllTemplates();
+
   const categories = ['modern', 'classic', 'creative', 'developer', 'designer'];
   const difficulties = ['beginner', 'intermediate', 'advanced'];
 
   // Filter templates
   const filteredTemplates = useMemo(() => {
     let filtered = templateManager.searchTemplates(searchQuery);
-    
+
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(template => template.category === selectedCategory);
     }
-    
+
     if (selectedStyle !== 'all') {
       filtered = filtered.filter(template => template.difficulty === selectedStyle);
     }
-    
+
     return filtered;
   }, [searchQuery, selectedCategory, selectedStyle, templateManager]);
 
   return (
     <div className={`space-y-6 ${className}`}>
-      
+
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold mb-4">Choose Your Template</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Select from our professionally designed templates. Each template is fully customizable 
+          Select from our professionally designed templates. Each template is fully customizable
           to match your personal brand and style.
         </p>
       </div>
 
       {/* Filters and Search */}
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-        
+
         {/* Search */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
@@ -89,7 +87,7 @@ export default function TemplateGallery({
 
         {/* Filters */}
         <div className="flex gap-4 items-center">
-          
+
           {/* Category Filter */}
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">Category</Label>
@@ -168,11 +166,11 @@ export default function TemplateGallery({
       </div>
 
       {/* Templates Grid/List */}
-      <motion.div 
+      <motion.div
         className={`
           grid gap-6
-          ${viewMode === 'grid' 
-            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+          ${viewMode === 'grid'
+            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
             : 'grid-cols-1'
           }
         `}
@@ -192,13 +190,13 @@ export default function TemplateGallery({
               <Card className={`
                 group cursor-pointer border-2 transition-all duration-300
                 hover:shadow-xl hover:scale-[1.02]
-                ${selectedTemplateId === template.id 
-                  ? 'border-primary ring-2 ring-primary ring-opacity-20' 
+                ${selectedTemplateId === template.id
+                  ? 'border-primary ring-2 ring-primary ring-opacity-20'
                   : 'border-border hover:border-primary/50'
                 }
               `}>
                 <CardContent className={`p-0 ${viewMode === 'list' ? 'flex' : ''}`}>
-                  
+
                   {/* Template Preview */}
                   <div className={`
                     relative overflow-hidden bg-gradient-to-br 
@@ -206,12 +204,12 @@ export default function TemplateGallery({
                     to-${template.colorScheme.secondary}-50
                     ${viewMode === 'grid' ? 'aspect-[4/3]' : 'w-48 aspect-[4/3] flex-shrink-0'}
                   `}>
-                    
+
                     {/* Mock Layout Preview */}
                     <div className="absolute inset-4 space-y-2">
                       {/* Header */}
                       <div className="h-3 bg-gray-200 rounded w-full" />
-                      
+
                       {/* Content Layout */}
                       <div className="flex gap-2 flex-1 flex-col">
                         <div className="flex-1 space-y-1">
@@ -278,7 +276,7 @@ export default function TemplateGallery({
                         </Badge>
                       )}
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                       {template.description}
                     </p>
@@ -395,7 +393,7 @@ export default function TemplateGallery({
               {/* Modal Content */}
               <div className="p-6 overflow-y-auto max-h-[60vh]">
                 <div className="grid md:grid-cols-2 gap-6">
-                  
+
                   {/* Preview */}
                   <div className="space-y-4">
                     <h4 className="font-semibold">Preview</h4>

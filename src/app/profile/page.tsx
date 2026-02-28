@@ -27,7 +27,7 @@ interface Profile {
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -106,7 +106,7 @@ export default function ProfilePage() {
       } else {
         setMessage('Error updating profile');
       }
-    } catch (error) {
+    } catch {
       setMessage('Error updating profile');
     } finally {
       setSaving(false);
@@ -152,13 +152,12 @@ export default function ProfilePage() {
           <div className="bg-white shadow overflow-hidden sm:rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Profile Settings</h1>
-              
+
               {message && (
-                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${
-                  message.includes('success') 
-                    ? 'bg-green-50 border border-green-200 text-green-600' 
+                <div className={`mb-4 p-3 sm:p-4 rounded-md text-xs sm:text-sm ${message.includes('success')
+                    ? 'bg-green-50 border border-green-200 text-green-600'
                     : 'bg-red-50 border border-red-200 text-red-600'
-                }`}>
+                  }`}>
                   {message}
                 </div>
               )}

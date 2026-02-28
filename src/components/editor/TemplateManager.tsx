@@ -3,19 +3,18 @@
 import React, { useState } from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { enhancedPortfolioTemplates } from '@/lib/portfolio/enhanced-templates';
-import { getAllTemplates } from '@/components/templates';
+
 import { applyTemplateToEditor } from '@/lib/templateConverter';
 import { TemplateGallery } from './TemplateGallery';
 import { Button } from '@/components/ui/button';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
-import { Layout, Palette, Wand2, Sparkles } from 'lucide-react';
+import { Layout, Wand2, Sparkles } from 'lucide-react';
 
 export function TemplateManager() {
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
@@ -23,11 +22,6 @@ export function TemplateManager() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const { loadSections, resetEditor } = useEditorActions();
 
-  // Filter templates to only show those with actual components
-  const actualTemplates = getAllTemplates();
-  const availableTemplates = enhancedPortfolioTemplates.filter(template => 
-    actualTemplates.some(actualTemplate => actualTemplate.id === template.id)
-  );
 
   const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplateId(templateId);
@@ -38,7 +32,7 @@ export function TemplateManager() {
     if (!selectedTemplateId) return;
 
     try {
-      await applyTemplateToEditor(selectedTemplateId, { 
+      await applyTemplateToEditor(selectedTemplateId, {
         clearEditor: resetEditor,
         loadState: (state: unknown) => {
           // The state should be an array of EditorSection
@@ -66,16 +60,16 @@ export function TemplateManager() {
     }
   };
 
-  const selectedTemplate = selectedTemplateId 
+  const selectedTemplate = selectedTemplateId
     ? enhancedPortfolioTemplates.find(t => t.id === selectedTemplateId)
     : null;
 
   return (
     <>
       {/* Template Gallery Button */}
-      <Button 
-        variant="outline" 
-        size="sm" 
+      <Button
+        variant="outline"
+        size="sm"
         onClick={() => setShowTemplateGallery(true)}
         className="gap-2"
       >
@@ -145,13 +139,13 @@ export function TemplateManager() {
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowConfirmDialog(false)}
                 >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   onClick={handleConfirmTemplate}
                   className="bg-blue-600 hover:bg-blue-700"
                 >

@@ -8,17 +8,15 @@ import { usePortfolioPersistence } from '@/hooks/usePortfolioPersistence';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
-import { 
-  Save, 
+import {
   Globe,
   CheckCircle,
   AlertCircle,
@@ -38,7 +36,6 @@ export const PortfolioManager: React.FC = () => {
   const {
     saveState,
     isSaving,
-    lastSaved,
     saveError,
     portfolioId,
     saveToDatabase,
@@ -60,7 +57,7 @@ export const PortfolioManager: React.FC = () => {
     viewCount?: number;
   } | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  
+
   // Title editing state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState(state.portfolioTitle);
@@ -118,30 +115,6 @@ export const PortfolioManager: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo, redo]);
 
-  const handleSave = async () => {
-    if (!isLoaded || !user) {
-      alert('Please sign in to save your portfolio');
-      return;
-    }
-    
-    if (!portfolioId) {
-      alert('No portfolio loaded');
-      return;
-    }
-
-    // Check if portfolio has a title
-    if (portfolioDetails?.title && portfolioDetails.title !== 'Untitled Portfolio') {
-      try {
-        await saveToDatabase();
-      } catch (error) {
-        // Error already displayed by saveError state
-      }
-      return;
-    }
-    
-    // If no title exists, show dialog
-    setShowSaveDialog(true);
-  };
 
   const handleSaveWithTitle = async () => {
     try {
@@ -149,10 +122,10 @@ export const PortfolioManager: React.FC = () => {
       await saveToDatabase(title);
       setSaveTitle('');
       setShowSaveDialog(false);
-      
+
       // Reload portfolio details
       fetchPortfolioDetails();
-    } catch (error) {
+    } catch {
       // Error already displayed by saveError state
     }
   };
@@ -203,7 +176,7 @@ export const PortfolioManager: React.FC = () => {
 
   return (
     <div className="flex items-center gap-3">
-      
+
       {/* Portfolio Title */}
       <div className="flex items-center gap-2">
         {isEditingTitle ? (
@@ -270,30 +243,30 @@ export const PortfolioManager: React.FC = () => {
           <Redo2 className="h-4 w-4" />
         </Button>
       </div>
-      
+
       {/* Save Status Indicator */}
       {isLoaded && user && (
         <div className="flex items-center gap-1.5 text-xs px-2 py-1 border-l pl-3">{saveState === 'saving' ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
-              <span className="hidden sm:inline text-slate-500">Saving...</span>
-            </>
-          ) : saveState === 'error' ? (
-            <>
-              <AlertCircle className="w-3.5 h-3.5 text-red-500" />
-              <span className="hidden sm:inline text-red-600">Error</span>
-            </>
-          ) : state.hasUnsavedChanges ? (
-            <>
-              <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-              <span className="hidden sm:inline text-slate-600">Unsaved</span>
-            </>
-          ) : (
-            <>
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="hidden sm:inline text-emerald-600">Saved</span>
-            </>
-          )}
+          <>
+            <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
+            <span className="hidden sm:inline text-slate-500">Saving...</span>
+          </>
+        ) : saveState === 'error' ? (
+          <>
+            <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+            <span className="hidden sm:inline text-red-600">Error</span>
+          </>
+        ) : state.hasUnsavedChanges ? (
+          <>
+            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+            <span className="hidden sm:inline text-slate-600">Unsaved</span>
+          </>
+        ) : (
+          <>
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="hidden sm:inline text-emerald-600">Saved</span>
+          </>
+        )}
         </div>
       )}
 
@@ -309,45 +282,45 @@ export const PortfolioManager: React.FC = () => {
       {/* Save Dialog */}
       {isLoaded && user && (
         <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Save Portfolio</DialogTitle>
-                <DialogDescription>
-                  Give your portfolio a name to save it to your account.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="saveTitle" className="text-sm font-medium text-slate-700">Portfolio Title</Label>
-                  <Input
-                    id="saveTitle"
-                    value={saveTitle}
-                    onChange={(e) => setSaveTitle(e.target.value)}
-                    placeholder="My Awesome Portfolio"
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveWithTitle()}
-                    className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-                    autoFocus
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowSaveDialog(false)} className="border-slate-200">
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSaveWithTitle} disabled={isSaving}>
-                    {isSaving ? 'Saving...' : 'Save Portfolio'}
-                  </Button>
-                </div>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Save Portfolio</DialogTitle>
+              <DialogDescription>
+                Give your portfolio a name to save it to your account.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="saveTitle" className="text-sm font-medium text-slate-700">Portfolio Title</Label>
+                <Input
+                  id="saveTitle"
+                  value={saveTitle}
+                  onChange={(e) => setSaveTitle(e.target.value)}
+                  placeholder="My Awesome Portfolio"
+                  onKeyDown={(e) => e.key === 'Enter' && handleSaveWithTitle()}
+                  className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
+                  autoFocus
+                />
               </div>
-            </DialogContent>
-          </Dialog>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowSaveDialog(false)} className="border-slate-200">
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveWithTitle} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save Portfolio'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Publish Button */}
       {portfolioId && (
         <>
-          <Button 
-            variant={portfolioDetails?.isPublic ? "default" : "outline"} 
-            size="sm" 
+          <Button
+            variant={portfolioDetails?.isPublic ? "default" : "outline"}
+            size="sm"
             onClick={handlePublishClick}
             disabled={!portfolioDetails}
             className={portfolioDetails?.isPublic ? '' : 'border-slate-200 hover:bg-slate-50'}

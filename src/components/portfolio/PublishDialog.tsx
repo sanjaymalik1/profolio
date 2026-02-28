@@ -12,10 +12,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ExternalLink, 
-  Copy, 
-  Check, 
+import {
+  ExternalLink,
+  Copy,
+  Check,
   Globe,
   Eye,
   EyeOff,
@@ -78,7 +78,7 @@ export function PublishDialog({
       setIsPublic(true);
       setPublicUrl(data.data.publicUrl);
       onPublishSuccess?.();
-    } catch (err) {
+    } catch {
       setError('An error occurred while publishing');
     } finally {
       setIsLoading(false);
@@ -111,7 +111,7 @@ export function PublishDialog({
       setPublicUrl('');
       onPublishSuccess?.();
       onClose();
-    } catch (err) {
+    } catch {
       setError('An error occurred while unpublishing');
     } finally {
       setIsLoading(false);
@@ -141,7 +141,7 @@ export function PublishDialog({
             {isPublic ? 'Manage Published Portfolio' : 'Publish Portfolio'}
           </DialogTitle>
           <DialogDescription>
-            {isPublic 
+            {isPublic
               ? 'Your portfolio is live and accessible to everyone'
               : 'Make your portfolio publicly accessible with a custom URL'
             }
