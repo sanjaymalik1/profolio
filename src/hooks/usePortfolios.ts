@@ -6,9 +6,12 @@ interface Portfolio {
   id: string;
   title: string;
   slug: string;
+  customSlug?: string;
   template: string;
   isPublic: boolean;
-  content: unknown;
+  sectionCount: number;   // computed server-side; content is excluded from list API
+  viewCount: number;
+  lastPublishedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,7 +27,7 @@ export const usePortfolios = () => {
   const loadPortfolios = async () => {
     try {
       const response = await fetch('/api/portfolios');
-      
+
       // Handle auth errors gracefully
       if (response.status === 401) {
         console.warn('[usePortfolios] Unauthorized - user not signed in');
@@ -32,16 +35,16 @@ export const usePortfolios = () => {
         setLoading(false);
         return;
       }
-      
+
       if (response.status === 403) {
         console.warn('[usePortfolios] Forbidden - insufficient permissions');
         setPortfolios([]);
         setLoading(false);
         return;
       }
-      
+
       const result = await response.json();
-      
+
       if (result.success && result.data) {
         setPortfolios(result.data);
       } else {
@@ -61,9 +64,9 @@ export const usePortfolios = () => {
       const response = await fetch(`/api/portfolios/${portfolioId}`, {
         method: 'DELETE',
       });
-      
+
       const result = await response.json();
-      
+
       if (result.success) {
         setPortfolios(prev => prev.filter(p => p.id !== portfolioId));
         return true;
@@ -89,14 +92,14 @@ export const usePortfolios = () => {
         },
         body: JSON.stringify({
           title: `${originalPortfolio.title} (Copy)`,
-          content: originalPortfolio.content,
+          content: { sections: [] }, // list API omits content; duplicate starts fresh
           template: originalPortfolio.template,
           isPublic: false,
         }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setPortfolios(prev => [result.data, ...prev]);
         return true;
@@ -126,7 +129,7 @@ export const usePortfolios = () => {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setPortfolios(prev => [result.data, ...prev]);
         return result.data;
@@ -151,9 +154,9 @@ export const usePortfolios = () => {
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
-        setPortfolios(prev => 
+        setPortfolios(prev =>
           prev.map(p => p.id === portfolioId ? result.data : p)
         );
         return result.data;
@@ -175,10 +178,7 @@ export const usePortfolios = () => {
         dayAgo.setDate(dayAgo.getDate() - 1);
         return new Date(p.updatedAt) > dayAgo;
       }).length,
-      sectionsCount: portfolios.reduce((total, p) => {
-        const content = p.content as { sections?: unknown[] } | undefined;
-        return total + (content?.sections?.length || 0);
-      }, 0)
+      sectionsCount: portfolios.reduce((total, p) => total + p.sectionCount, 0)
     };
   };
 

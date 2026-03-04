@@ -2,77 +2,51 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 
 /**
- * Get or create a user in the database from Clerk userId
- * This ensures that when a new user signs in with Clerk,
- * they are automatically added to our database
+ * Get a user from the database by their Clerk userId.
+ *
+ * Primary path: user exists (created by the Clerk webhook at /api/webhooks/clerk).
+ * Fallback path: user not found → create them now. This handles:
+ *   - Users who signed up before the webhook was configured / reachable
+ *   - Any gap period where the webhook missed a signup
+ *
+ * Once the webhook is reliably active, the fallback path never triggers
+ * but is kept as a safety net.
  */
-export async function getOrCreateUser(clerkUserId: string) {
+export async function getUser(clerkUserId: string) {
   try {
-    // Check if user exists by clerkUserId
-    let user = await prisma.user.findUnique({
-      where: { clerkUserId: clerkUserId },
+    // Fast path: user exists (expected case once webhook is active)
+    const existingUser = await prisma.user.findUnique({
+      where: { clerkUserId },
     });
 
-    if (!user) {
-      // Get Clerk user data
-      const clerkUser = await currentUser();
-      
-      if (!clerkUser) {
-        console.error('[getOrCreateUser] Failed to get Clerk user data for clerkUserId:', clerkUserId);
-        return null;
-      }
-
-      const userEmail = clerkUser.emailAddresses[0]?.emailAddress || '';
-
-      console.log('[getOrCreateUser] User not found by clerkUserId, checking by email:', userEmail);
-
-      // Check if user exists with this email (might be from different auth or import)
-      const existingUserByEmail = await prisma.user.findUnique({
-        where: { email: userEmail },
-      });
-
-      if (existingUserByEmail) {
-        console.log('[getOrCreateUser] User exists with email, updating clerkUserId:', {
-          userId: existingUserByEmail.id,
-          clerkUserId: clerkUserId,
-          email: userEmail,
-        });
-        
-        // Update existing user with Clerk userId
-        user = await prisma.user.update({
-          where: { id: existingUserByEmail.id },
-          data: {
-            clerkUserId: clerkUserId,
-            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || null,
-            image: clerkUser.imageUrl || null,
-            role: clerkUser.publicMetadata?.role === 'ADMIN' ? 'ADMIN' : 'USER',
-          },
-        });
-        console.log('[getOrCreateUser] User updated successfully:', user.id);
-      } else {
-        console.log('[getOrCreateUser] Creating new user:', {
-          clerkUserId: clerkUserId,
-          email: userEmail,
-        });
-
-        // Create new user with Clerk data
-        user = await prisma.user.create({
-          data: {
-            clerkUserId: clerkUserId,
-            email: userEmail,
-            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || null,
-            image: clerkUser.imageUrl || null,
-            role: clerkUser.publicMetadata?.role === 'ADMIN' ? 'ADMIN' : 'USER',
-          },
-        });
-
-        console.log('[getOrCreateUser] User created successfully:', user.id);
-      }
+    if (existingUser) {
+      return existingUser;
     }
 
-    return user;
+    // Fallback: user slipped through (webhook misconfigured, wrong port, etc.)
+    console.warn(`[getUser] Fallback: user not in DB, creating lazily for: ${clerkUserId}`);
+
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      console.error('[getUser] Could not fetch Clerk user data for:', clerkUserId);
+      return null;
+    }
+
+    const primaryEmail =
+      clerkUser.emailAddresses.find((e) => e.id === clerkUser.primaryEmailAddressId)
+        ?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress ?? '';
+
+    const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || null;
+    const role = clerkUser.publicMetadata?.role === 'ADMIN' ? 'ADMIN' : 'USER';
+
+    // Upsert avoids race condition if two API calls arrive simultaneously
+    return await prisma.user.upsert({
+      where: { clerkUserId },
+      create: { clerkUserId, email: primaryEmail, name, image: clerkUser.imageUrl, role },
+      update: { email: primaryEmail, name, image: clerkUser.imageUrl, role },
+    });
   } catch (error) {
-    console.error('[getOrCreateUser] Error:', error);
+    console.error('[getUser] Error:', error);
     throw error;
   }
 }

@@ -16,7 +16,7 @@ import {
 
 // Import portfolio section components
 import HeroSection from '@/components/portfolio/sections/HeroSection';
-import AboutSection from '@/components/portfolio/sections/AboutSection';
+import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
@@ -142,15 +142,15 @@ export const PortfolioPreview: React.FC = () => {
         );
       }
       case 'hero':
-        return <HeroSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
+        return <HeroSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       case 'about':
-        return <AboutSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
+        return <AboutSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       case 'skills':
-        return <SkillsSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
+        return <SkillsSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       case 'projects':
-        return <ProjectsSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
+        return <ProjectsSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       case 'contact':
-        return <ContactSection key={section.id} data={section.data} styling={commonStyling} isEditing={true} />;
+        return <ContactSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       default:
         return (
           <div key={section.id} className="min-h-[400px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">

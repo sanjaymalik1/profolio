@@ -109,8 +109,6 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       <Draggable
         key={section.type}
         dragItem={dragItem}
-        onDragStart={() => console.log(`Started dragging ${section.displayName}`)}
-        onDragEnd={(result) => console.log('Drag ended:', result)}
       >
         <Card className="cursor-grab active:cursor-grabbing hover:shadow-sm transition-all duration-200 border border-slate-200/60 hover:border-slate-300 bg-white">
           <CardContent className="p-3.5">

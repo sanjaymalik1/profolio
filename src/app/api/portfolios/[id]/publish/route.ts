@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { getOrCreateUser } from '@/lib/user-helpers';
+import { getUser } from '@/lib/user-helpers';
 
 interface RouteParams {
   params: Promise<{
@@ -17,7 +17,7 @@ export async function POST(
   try {
     const { id } = await params;
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -26,11 +26,11 @@ export async function POST(
     }
 
     // Get user from database
-    const user = await getOrCreateUser(userId);
+    const user = await getUser(userId);
     if (!user) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'User not found' 
+        error: 'User not found'
       }, { status: 404 });
     }
 
@@ -40,7 +40,7 @@ export async function POST(
 
     // Verify portfolio belongs to user
     const portfolio = await prisma.portfolio.findFirst({
-      where: { 
+      where: {
         id,
         userId: user.id // Use database user.id (ObjectId)
       },
@@ -87,8 +87,8 @@ export async function POST(
       // Validate custom slug format
       const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
       if (!slugRegex.test(customSlug)) {
-        return NextResponse.json({ 
-          error: 'Invalid slug format. Use lowercase letters, numbers, and hyphens only.' 
+        return NextResponse.json({
+          error: 'Invalid slug format. Use lowercase letters, numbers, and hyphens only.'
         }, { status: 400 });
       }
 
@@ -101,8 +101,8 @@ export async function POST(
       });
 
       if (existingPortfolio) {
-        return NextResponse.json({ 
-          error: 'This custom URL is already taken' 
+        return NextResponse.json({
+          error: 'This custom URL is already taken'
         }, { status: 400 });
       }
 
@@ -129,8 +129,8 @@ export async function POST(
     const publicSlug = updatedPortfolio.customSlug || updatedPortfolio.slug;
     const publicUrl = isPublic ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/p/${publicSlug}` : null;
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         ...updatedPortfolio,
         publicUrl,

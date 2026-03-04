@@ -46,20 +46,19 @@ export async function GET(
     });
 
     if (!portfolio) {
-      return NextResponse.json({ 
-        error: 'Portfolio not found or not published' 
+      return NextResponse.json({
+        error: 'Portfolio not found or not published'
       }, { status: 404 });
     }
 
-    // Increment view count
-    await prisma.portfolio.update({
-      where: { id: portfolio.id },
-      data: { viewCount: { increment: 1 } },
-    });
+    // Note: viewCount is intentionally NOT incremented here.
+    // The canonical view counter lives in the SSR page at /p/[slug]/page.tsx,
+    // which is the actual entry point for all public portfolio visitors.
+    // Incrementing here too would double-count any views if this route is ever used.
 
-    return NextResponse.json({ 
-      success: true, 
-      data: portfolio 
+    return NextResponse.json({
+      success: true,
+      data: portfolio
     });
   } catch (error) {
     console.error('Error fetching public portfolio:', error);

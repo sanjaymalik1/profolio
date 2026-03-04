@@ -1,33 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { getOrCreateUser } from '@/lib/user-helpers';
+import { getUser } from '@/lib/user-helpers';
 
 // GET /api/portfolios - Get user's portfolios
 export async function GET() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'Unauthorized - Please sign in' 
+        error: 'Unauthorized - Please sign in'
       }, { status: 401 });
     }
 
     // Ensure user exists in database
-    const user = await getOrCreateUser(userId);
-    
+    const user = await getUser(userId);
+
     if (!user) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'User not found' 
+        error: 'User not found'
       }, { status: 404 });
     }
 
-    // Query portfolios by database user.id
+    // Fetch portfolios, computing sectionCount server-side so we never
+    // send the full content payload to the dashboard (it's not needed there).
     const portfolios = await prisma.portfolio.findMany({
-      where: { userId: user.id }, // Use database user.id (ObjectId)
+      where: { userId: user.id },
       orderBy: { updatedAt: 'desc' },
       select: {
         id: true,
@@ -36,7 +37,7 @@ export async function GET() {
         customSlug: true,
         template: true,
         isPublic: true,
-        content: true,
+        content: true,       // fetch internally only to compute sectionCount
         viewCount: true,
         lastPublishedAt: true,
         createdAt: true,
@@ -44,15 +45,23 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      data: portfolios 
+    // Strip content from the response — replace it with a lightweight sectionCount.
+    // The dashboard only needs to know how many sections exist, not the data inside them.
+    const portfolioList = portfolios.map(({ content, ...rest }) => ({
+      ...rest,
+      sectionCount: (content as { sections?: unknown[] } | null)?.sections?.length ?? 0,
+    }));
+
+    return NextResponse.json({
+      success: true,
+      data: portfolioList
     });
+
   } catch (error) {
     console.error('[Portfolios API GET] Error:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: false,
-      error: 'Failed to load portfolios' 
+      error: 'Failed to load portfolios'
     }, { status: 500 });
   }
 }
@@ -61,21 +70,21 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'Unauthorized - Please sign in' 
+        error: 'Unauthorized - Please sign in'
       }, { status: 401 });
     }
 
     // Ensure user exists in database
-    const user = await getOrCreateUser(userId);
+    const user = await getUser(userId);
 
     if (!user) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'User not found' 
+        error: 'User not found'
       }, { status: 404 });
     }
 
@@ -83,9 +92,9 @@ export async function POST(request: NextRequest) {
     const { title, content, template = 'default', isPublic = false } = body;
 
     if (!title) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: false,
-        error: 'Title is required' 
+        error: 'Title is required'
       }, { status: 400 });
     }
 
@@ -94,10 +103,10 @@ export async function POST(request: NextRequest) {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
-    
+
     let slug = baseSlug;
     let counter = 1;
-    
+
     // Ensure unique slug
     while (await prisma.portfolio.findUnique({ where: { slug } })) {
       slug = `${baseSlug}-${counter}`;
@@ -115,15 +124,15 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      data: portfolio 
+    return NextResponse.json({
+      success: true,
+      data: portfolio
     });
   } catch (error) {
     console.error('[Portfolios API POST] Error:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: false,
-      error: 'Failed to create portfolio' 
+      error: 'Failed to create portfolio'
     }, { status: 500 });
   }
 }

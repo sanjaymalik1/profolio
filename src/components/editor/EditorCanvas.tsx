@@ -6,11 +6,12 @@ import { Draggable } from './Draggable';
 import { EditorBlock } from './EditorBlock';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
 import { DragItem, PaletteDragItem, EditorSectionDragItem, EditorSection } from '@/types/editor';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 
 // Import section components
 import HeroSection from '@/components/portfolio/sections/HeroSection';
-import AboutSection from '@/components/portfolio/sections/AboutSection';
+import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
@@ -25,7 +26,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   GripVertical,
   Plus,
-  Eye
 } from 'lucide-react';
 
 interface EditorCanvasProps {
@@ -255,7 +255,9 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
             {/* Section content - Static editor rendering, no animations */}
             <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
-              <SectionComponent />
+              <ErrorBoundary label={`${section.type} section`}>
+                <SectionComponent />
+              </ErrorBoundary>
             </div>
           </div>
         </EditorBlock>
@@ -278,18 +280,12 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
       )}
 
       {/* Canvas header - responsive */}
-      <div className="flex items-center justify-between mb-4 sm:mb-6 p-3 sm:p-4 lg:p-5 bg-white rounded-lg border border-slate-200 shadow-sm">
+      <div className="flex items-center mb-4 sm:mb-6 p-3 sm:p-4 lg:p-5 bg-white rounded-lg border border-slate-200 shadow-sm">
         <div>
           <h3 className="font-semibold text-slate-900 text-sm sm:text-base">Portfolio Canvas</h3>
           <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
             {state?.sections?.length || 0} section{(state?.sections?.length || 0) !== 1 ? 's' : ''}
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="hidden sm:flex items-center gap-2 border-slate-200 hover:bg-slate-50 text-xs sm:text-sm">
-            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden md:inline">Preview</span>
-          </Button>
         </div>
       </div>
 

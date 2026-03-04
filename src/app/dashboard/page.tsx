@@ -1,12 +1,10 @@
 "use client";
 
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-
-
 import { Badge } from '@/components/ui/badge';
 import {
   Trash,
@@ -16,6 +14,8 @@ import {
 import { usePortfolios } from '@/hooks/usePortfolios';
 import { TemplatePreview } from '@/components/templates/TemplatePreview';
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
+import { DashboardNav } from '@/components/dashboard/DashboardNav';
+import { TEMPLATE_REGISTRY, BLANK_TEMPLATE, getTemplateName } from '@/lib/portfolio/registry';
 
 interface Profile {
   id: string;
@@ -37,41 +37,59 @@ interface Profile {
 }
 
 export default function DashboardPage() {
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
+  const { user } = useUser();
   const router = useRouter();
-  const [, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const { portfolios, loading: portfoliosLoading, deletePortfolio, refetch } = usePortfolios();
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<{ id: string; title: string; slug: string; customSlug?: string; isPublic: boolean; viewCount?: number } | null>(null);
+  const [isCreating, setIsCreating] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoaded && user) {
-
-      fetchProfile();
+    if (user) {
+      fetch('/api/profile')
+        .catch((error) => console.error('Error fetching profile:', error))
+        .finally(() => setLoading(false));
     }
-  }, [isLoaded, user]);
+  }, [user]);
 
-  const fetchProfile = async () => {
+  // Single function replacing 5 identical inline fetch blocks.
+  // title    — portfolio title to create
+  // templateId — template to apply ('dark-professional' | 'elegant-monochrome' |
+  //              'warm-minimalist' | undefined for blank)
+  const createPortfolio = async (title: string, templateId?: string) => {
     try {
-      const response = await fetch('/api/profile');
-      const data = await response.json();
-      if (data.success) {
-        setProfile(data.data);
+      setIsCreating(templateId ?? 'blank');
+      const response = await fetch('/api/portfolios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          content: { sections: [] },
+          template: templateId || 'blank',
+          isPublic: false,
+        }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        const editorUrl = templateId
+          ? `/editor-v2?id=${result.data.id}&template=${templateId}`
+          : `/editor-v2?id=${result.data.id}`;
+        router.push(editorUrl);
+      } else {
+        alert('Failed to create portfolio: ' + result.error);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
+    } catch {
+      alert('Failed to create portfolio. Please try again.');
     } finally {
-      setLoading(false);
+      setIsCreating(null);
     }
   };
 
-  const handleSignOut = () => {
-    signOut(() => router.push('/'));
-  };
 
-  if (!isLoaded || loading) {
+  const handleSignOut = () => { }; // handled by DashboardNav
+
+  if (!user || loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
@@ -84,35 +102,7 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-slate-50/30">
-      {/* Top Bar */}
-      <nav className="bg-white border-b border-slate-200/60 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-lg font-bold text-slate-900 tracking-tight">
-                ProFolio
-              </Link>
-              <span className="text-slate-300">/</span>
-              <span className="text-sm font-semibold text-slate-900">Dashboard</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-500 hidden sm:inline">
-                {user?.firstName || user?.emailAddresses[0]?.emailAddress?.split('@')[0]}
-              </span>
-              {user?.publicMetadata?.role === 'ADMIN' && (
-                <Link href="/admin">
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    Admin
-                  </Button>
-                </Link>
-              )}
-              <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-xs text-slate-600 hover:text-slate-900">
-                Sign Out
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <DashboardNav />
 
       <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 pb-16">
         <div className="space-y-7">
@@ -125,32 +115,12 @@ export default function DashboardPage() {
             <div className="text-center py-20 border border-dashed border-slate-200 rounded-xl bg-white">
               <p className="text-slate-600 mb-6 text-sm">No portfolios yet. Create one to get started.</p>
               <Button
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        title: 'Untitled Portfolio',
-                        content: { sections: [] },
-                        template: 'blank',
-                        isPublic: false,
-                      }),
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      router.push(`/editor-v2?id=${result.data.id}`);
-                    } else {
-                      alert('Failed to create portfolio: ' + result.error);
-                    }
-                  } catch {
-                    alert('Failed to create portfolio. Please try again.');
-                  }
-                }}
+                onClick={() => createPortfolio('Untitled Portfolio')}
+                disabled={isCreating !== null}
                 size="lg"
                 className="bg-slate-900 hover:bg-slate-800 shadow-sm"
               >
-                Create Portfolio
+                {isCreating === 'blank' ? 'Creating...' : 'Create Portfolio'}
               </Button>
             </div>
           ) : (
@@ -185,7 +155,7 @@ export default function DashboardPage() {
                             <Clock className="h-4 w-4" />
                             Updated {new Date(activePortfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </span>
-                          <span className="font-medium text-slate-700">{(activePortfolio.content as { sections?: unknown[] })?.sections?.length || 0} sections added</span>
+                          <span className="font-medium text-slate-700">{activePortfolio.sectionCount} sections added</span>
                         </div>
                         <p className="text-xs text-slate-500">
                           {activePortfolio.isPublic ? 'Live on the web' : 'Last edited by you'}
@@ -231,32 +201,12 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-medium text-slate-500">Recent portfolios</h2>
                   <Button
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/portfolios', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            title: 'Untitled Portfolio',
-                            content: { sections: [] },
-                            template: 'blank',
-                            isPublic: false,
-                          }),
-                        });
-                        const result = await response.json();
-                        if (result.success) {
-                          router.push(`/editor-v2?id=${result.data.id}`);
-                        } else {
-                          alert('Failed to create portfolio: ' + result.error);
-                        }
-                      } catch {
-                        alert('Failed to create portfolio. Please try again.');
-                      }
-                    }}
+                    onClick={() => createPortfolio('Untitled Portfolio')}
+                    disabled={isCreating !== null}
                     variant="outline"
                     size="sm"
                   >
-                    Create New
+                    {isCreating === 'blank' ? 'Creating...' : 'Create New'}
                   </Button>
                 </div>
                 <div className="bg-white border border-slate-200/60 rounded-lg divide-y divide-slate-100">
@@ -283,7 +233,7 @@ export default function DashboardPage() {
                             <div className="flex items-center gap-4 text-xs text-slate-500">
                               <span>Updated {new Date(portfolio.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                               <span>•</span>
-                              <span>{(portfolio.content as { sections?: unknown[] })?.sections?.length || 0} sections</span>
+                              <span>{portfolio.sectionCount} sections</span>
                             </div>
                           </div>
                         </div>
@@ -328,7 +278,7 @@ export default function DashboardPage() {
             </>
           )}
 
-          {/* Templates Section - Secondary */}
+          {/* Templates Section — data-driven from TEMPLATE_REGISTRY */}
           <div className="pt-7 border-t border-slate-200/60">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -342,162 +292,34 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div
-                className="group bg-white border-2 border-slate-900/10 rounded-lg overflow-hidden hover:border-slate-900/20 hover:shadow-lg transition-all text-left relative cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        title: 'Dark Professional Portfolio',
-                        content: { sections: [] },
-                        template: 'dark-professional',
-                        isPublic: false,
-                      }),
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      router.push(`/editor-v2?id=${result.data.id}&template=dark-professional`);
-                    } else {
-                      alert('Failed to create portfolio: ' + result.error);
-                    }
-                  } catch {
-                    alert('Failed to create portfolio. Please try again.');
-                  }
-                }}
-              >
-                <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">Recommended</div>
-                <div className="aspect-[16/10] bg-slate-700 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors"></div>
-                  <span
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-white text-slate-900 hover:bg-white shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
-                  >
-                    Use Template
-                  </span>
+              {[...TEMPLATE_REGISTRY, BLANK_TEMPLATE].map((template) => (
+                <div
+                  key={template.id ?? 'blank'}
+                  className={`group bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all text-left cursor-pointer ${template.badge
+                      ? 'border-2 border-slate-900/10 hover:border-slate-900/20'
+                      : 'border border-slate-200 hover:border-slate-300'
+                    }`}
+                  onClick={() => createPortfolio(template.defaultTitle, template.id ?? undefined)}
+                >
+                  {template.badge && (
+                    <div className="absolute top-2 right-2 bg-slate-900 text-white text-[10px] font-medium px-2 py-0.5 rounded opacity-90">
+                      {template.badge}
+                    </div>
+                  )}
+                  <div className={`aspect-[16/10] ${template.previewBg} flex items-center justify-center relative`}>
+                    <div className={`absolute inset-0 bg-transparent group-hover:${template.hoverOverlay} transition-colors`} />
+                    <span
+                      className={`absolute opacity-0 group-hover:opacity-100 transition-opacity ${template.ctaStyle} inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3`}
+                    >
+                      {template.id ? 'Use Template' : 'Start Blank'}
+                    </span>
+                  </div>
+                  <div className="p-2.5">
+                    <h3 className="text-xs font-medium text-slate-700">{template.label}</h3>
+                    <p className="text-xs text-slate-500 mt-0.5">{template.description}</p>
+                  </div>
                 </div>
-                <div className="p-2.5">
-                  <h3 className="text-xs font-medium text-slate-700">Dark Professional</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Best for developers</p>
-                </div>
-              </div>
-
-              <div
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        title: 'Elegant Monochrome Portfolio',
-                        content: { sections: [] },
-                        template: 'elegant-monochrome',
-                        isPublic: false,
-                      }),
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      router.push(`/editor-v2?id=${result.data.id}&template=elegant-monochrome`);
-                    } else {
-                      alert('Failed to create portfolio: ' + result.error);
-                    }
-                  } catch {
-                    alert('Failed to create portfolio. Please try again.');
-                  }
-                }}
-              >
-                <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
-                  >
-                    Use Template
-                  </span>
-                </div>
-                <div className="p-2.5">
-                  <h3 className="text-xs font-medium text-slate-700">Elegant Monochrome</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Business & consulting</p>
-                </div>
-              </div>
-
-              <div
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        title: 'Warm Minimalist Portfolio',
-                        content: { sections: [] },
-                        template: 'warm-minimalist',
-                        isPublic: false,
-                      }),
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      router.push(`/editor-v2?id=${result.data.id}&template=warm-minimalist`);
-                    } else {
-                      alert('Failed to create portfolio: ' + result.error);
-                    }
-                  } catch {
-                    alert('Failed to create portfolio. Please try again.');
-                  }
-                }}
-              >
-                <div className="aspect-[16/10] bg-amber-50/50 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
-                  >
-                    Use Template
-                  </span>
-                </div>
-                <div className="p-2.5">
-                  <h3 className="text-xs font-medium text-slate-700">Warm Minimalist</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Freelancers & creators</p>
-                </div>
-              </div>
-
-              <div
-                className="group bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 hover:shadow-lg transition-all text-left cursor-pointer"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        title: 'Untitled Portfolio',
-                        content: { sections: [] },
-                        template: 'blank',
-                        isPublic: false,
-                      }),
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      router.push(`/editor-v2?id=${result.data.id}`);
-                    } else {
-                      alert('Failed to create portfolio: ' + result.error);
-                    }
-                  } catch {
-                    alert('Failed to create portfolio. Please try again.');
-                  }
-                }}
-              >
-                <div className="aspect-[16/10] bg-slate-50 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors"></div>
-                  <span
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white hover:bg-slate-800 shadow-lg inline-flex items-center justify-center whitespace-nowrap text-sm font-medium rounded-md h-9 px-3"
-                  >
-                    Start Blank
-                  </span>
-                </div>
-                <div className="p-2.5">
-                  <h3 className="text-xs font-medium text-slate-700">Blank Canvas</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Full control</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -508,32 +330,8 @@ export default function DashboardPage() {
         templateId={previewTemplateId}
         isOpen={!!previewTemplateId}
         onClose={() => setPreviewTemplateId(null)}
-        onUseTemplate={async (templateId) => {
-          try {
-            const templateNames: Record<string, string> = {
-              'dark-professional': 'Dark Professional Portfolio',
-              'elegant-monochrome': 'Elegant Monochrome Portfolio',
-              'warm-minimalist': 'Warm Minimalist Portfolio',
-            };
-            const response = await fetch('/api/portfolios', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                title: templateNames[templateId] || 'Untitled Portfolio',
-                content: { sections: [] },
-                template: templateId,
-                isPublic: false,
-              }),
-            });
-            const result = await response.json();
-            if (result.success) {
-              router.push(`/editor-v2?id=${result.data.id}&template=${templateId}`);
-            } else {
-              alert('Failed to create portfolio: ' + result.error);
-            }
-          } catch {
-            alert('Failed to create portfolio. Please try again.');
-          }
+        onUseTemplate={(templateId) => {
+          createPortfolio(getTemplateName(templateId), templateId);
         }}
       />
 

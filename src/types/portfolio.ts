@@ -26,10 +26,6 @@ export interface AboutData {
     languages: string[];
     interests: string[];
   };
-  // Legacy properties for backward compatibility
-  name?: string;
-  title?: string;
-  description?: string;
 }
 
 export interface Skill {
@@ -248,26 +244,26 @@ export interface PortfolioSection {
   styling: SectionStyling;
 }
 
-export type SectionType = 
-  | 'hero' 
-  | 'about' 
-  | 'skills' 
-  | 'experience' 
-  | 'projects' 
-  | 'education' 
-  | 'contact' 
+export type SectionType =
+  | 'hero'
+  | 'about'
+  | 'skills'
+  | 'experience'
+  | 'projects'
+  | 'education'
+  | 'contact'
   | 'testimonials'
   | 'certifications'
   | 'template'
   | 'custom';
 
-export type SectionData = 
-  | HeroData 
-  | AboutData 
-  | SkillsData 
-  | ExperienceData 
-  | ProjectsData 
-  | EducationData 
+export type SectionData =
+  | HeroData
+  | AboutData
+  | SkillsData
+  | ExperienceData
+  | ProjectsData
+  | EducationData
   | ContactData
   | TemplateSectionData
   | Record<string, unknown>; // for custom sections
@@ -319,12 +315,12 @@ export interface PortfolioTemplate {
   isPremium: boolean;
 }
 
-export type TemplateCategory = 
-  | 'modern' 
-  | 'classic' 
-  | 'creative' 
-  | 'developer' 
-  | 'designer' 
+export type TemplateCategory =
+  | 'modern'
+  | 'classic'
+  | 'creative'
+  | 'developer'
+  | 'designer'
   | 'business'
   | 'academic'
   | 'freelancer';
@@ -392,27 +388,6 @@ export interface PortfolioBackup {
   createdAt: string;
   description: string;
   data: Omit<Portfolio, 'metadata'>;
-}
-
-// ===============================
-// EDITOR TYPES
-// ===============================
-
-export interface EditorState {
-  selectedSection?: string;
-  draggedSection?: string;
-  previewMode: 'desktop' | 'tablet' | 'mobile';
-  showGrid: boolean;
-  zoom: number;
-  history: HistoryState[];
-  historyIndex: number;
-}
-
-export interface HistoryState {
-  id: string;
-  timestamp: string;
-  action: string;
-  portfolio: Portfolio;
 }
 
 // ===============================
