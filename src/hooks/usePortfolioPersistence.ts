@@ -35,7 +35,7 @@ export const usePortfolioPersistence = () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: state,
+          content: { sections: state.sections, portfolioTitle: state.portfolioTitle },
           title: state.portfolioTitle
         }),
       });
@@ -96,7 +96,7 @@ export const usePortfolioPersistence = () => {
         // Mark that we need to save again after current save completes
         pendingSaveRef.current = true;
       }
-    }, 3000); // 3 second debounce
+    }, 5000); // 5 second debounce
 
     return () => {
       if (saveTimerRef.current) {
@@ -114,11 +114,8 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
-      const updateData: {
-        content: unknown;
-        title: string;
-      } = {
-        content: state,
+      const updateData = {
+        content: { sections: state.sections, portfolioTitle: state.portfolioTitle },
         title: title || state.portfolioTitle
       };
 

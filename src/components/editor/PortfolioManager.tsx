@@ -21,18 +21,17 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
-  Undo2,
-  Redo2,
   Edit2,
   Check,
-  X
+  X,
+  Save
 } from 'lucide-react';
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
 
 export const PortfolioManager: React.FC = () => {
   const { user, isLoaded } = useUser();
   const { state } = useEditor();
-  const { undo, redo, updateTitle } = useEditorActions();
+  const { updateTitle } = useEditorActions();
   const {
     saveState,
     isSaving,
@@ -99,21 +98,34 @@ export const PortfolioManager: React.FC = () => {
     }
   };
 
-  // Keyboard shortcuts for undo/redo
+  // Keyboard shortcut: Ctrl+S / ⌘S to save
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'z') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault();
-        undo();
-      } else if ((e.metaKey || e.ctrlKey) && (e.shiftKey && e.key === 'z' || e.key === 'y')) {
-        e.preventDefault();
-        redo();
+        handleQuickSave();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo]);
+  }, []);
+
+  // Quick save — saves immediately without title dialog
+  // If portfolio already exists (has ID), save directly.
+  // If portfolio is new (no ID), show title dialog.
+  const handleQuickSave = async () => {
+    if (portfolioId) {
+      try {
+        await saveToDatabase(state.portfolioTitle);
+        fetchPortfolioDetails();
+      } catch {
+        // Error displayed by saveError state
+      }
+    } else {
+      setShowSaveDialog(true);
+    }
+  };
 
 
   const handleSaveWithTitle = async () => {
@@ -220,53 +232,40 @@ export const PortfolioManager: React.FC = () => {
         )}
       </div>
 
-      {/* Undo / Redo */}
-      <div className="flex items-center gap-1 border-l pl-3">
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={undo}
-          disabled={state.past.length === 0}
-          className="h-8 w-8 p-0"
-          title="Undo (⌘Z)"
-        >
-          <Undo2 className="h-4 w-4" />
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={redo}
-          disabled={state.future.length === 0}
-          className="h-8 w-8 p-0"
-          title="Redo (⌘⇧Z)"
-        >
-          <Redo2 className="h-4 w-4" />
-        </Button>
-      </div>
 
-      {/* Save Status Indicator */}
+      {/* Save Button + Status Indicator */}
       {isLoaded && user && (
-        <div className="flex items-center gap-1.5 text-xs px-2 py-1 border-l pl-3">{saveState === 'saving' ? (
-          <>
-            <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
-            <span className="hidden sm:inline text-slate-500">Saving...</span>
-          </>
-        ) : saveState === 'error' ? (
-          <>
-            <AlertCircle className="w-3.5 h-3.5 text-red-500" />
-            <span className="hidden sm:inline text-red-600">Error</span>
-          </>
-        ) : state.hasUnsavedChanges ? (
-          <>
-            <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-            <span className="hidden sm:inline text-slate-600">Unsaved</span>
-          </>
-        ) : (
-          <>
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="hidden sm:inline text-emerald-600">Saved</span>
-          </>
-        )}
+        <div className="flex items-center gap-1.5 text-xs border-l pl-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleQuickSave}
+            disabled={isSaving || (!state.hasUnsavedChanges && saveState !== 'error')}
+            className="h-7 sm:h-8 px-1.5 sm:px-2 text-xs gap-1"
+            title="Save (Ctrl+S)"
+          >
+            {saveState === 'saving' ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />
+                <span className="hidden sm:inline text-slate-500">Saving...</span>
+              </>
+            ) : saveState === 'error' ? (
+              <>
+                <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                <span className="hidden sm:inline text-red-600">Retry</span>
+              </>
+            ) : state.hasUnsavedChanges ? (
+              <>
+                <Save className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline text-slate-600">Save</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="hidden sm:inline text-emerald-600">Saved</span>
+              </>
+            )}
+          </Button>
         </div>
       )}
 

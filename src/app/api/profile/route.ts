@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
-import { getOrCreateUser } from '@/lib/user-helpers';
+import { getUser } from '@/lib/user-helpers';
 
 export async function GET() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -15,8 +15,8 @@ export async function GET() {
     }
 
     // Ensure user exists in database (creates if doesn't exist)
-    const user = await getOrCreateUser(userId);
-    
+    const user = await getUser(userId);
+
     if (!user) {
       return NextResponse.json(
         { success: false, message: 'Failed to create user' },
@@ -45,7 +45,6 @@ export async function GET() {
 
     // If profile doesn't exist, create it
     if (!profile) {
-      console.log('[Profile API] Creating new profile for user.id:', user.id);
       try {
         profile = await prisma.profile.create({
           data: {
@@ -66,7 +65,6 @@ export async function GET() {
             }
           }
         });
-        console.log('[Profile API] Profile created successfully:', profile.id);
       } catch (createError) {
         console.error('[Profile API] Failed to create profile:', createError);
         throw createError;
@@ -90,7 +88,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, message: 'Unauthorized' },
@@ -99,8 +97,8 @@ export async function PUT(request: NextRequest) {
     }
 
     // Ensure user exists in database
-    const user = await getOrCreateUser(userId);
-    
+    const user = await getUser(userId);
+
     if (!user) {
       return NextResponse.json(
         { success: false, message: 'Failed to create user' },

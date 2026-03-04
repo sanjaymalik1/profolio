@@ -1,14 +1,14 @@
 // Drag and Drop Types for Portfolio Editor
-import { 
-  HeroData, 
-  AboutData, 
-  SkillsData, 
-  ProjectsData, 
-  ContactData, 
-  ExperienceData, 
+import {
+  HeroData,
+  AboutData,
+  SkillsData,
+  ProjectsData,
+  ContactData,
+  ExperienceData,
   EducationData,
   TemplateSectionData,
-  SectionStyling 
+  SectionStyling
 } from './portfolio';
 
 export interface DragItem {
@@ -18,9 +18,9 @@ export interface DragItem {
 }
 
 // Section types that can be dragged
-export type DraggableSectionType = 
+export type DraggableSectionType =
   | 'hero'
-  | 'about' 
+  | 'about'
   | 'skills'
   | 'projects'
   | 'contact'
@@ -100,7 +100,7 @@ interface TemplateEditorSection extends BaseEditorSection {
   data: TemplateSectionData;
 }
 
-export type EditorSection = 
+export type EditorSection =
   | HeroEditorSection
   | AboutEditorSection
   | SkillsEditorSection
@@ -109,16 +109,6 @@ export type EditorSection =
   | ExperienceEditorSection
   | EducationEditorSection
   | TemplateEditorSection;
-
-// History state for undo/redo (excludes history fields to avoid nested history)
-export interface EditorStateSnapshot {
-  sections: EditorSection[];
-  selectedSectionId: string | null;
-  isDragging: boolean;
-  isPreviewMode: boolean;
-  previewDevice: 'desktop' | 'tablet' | 'mobile';
-  portfolioTitle: string;
-}
 
 // Editor context state
 export interface EditorState {
@@ -129,12 +119,10 @@ export interface EditorState {
   previewDevice: 'desktop' | 'tablet' | 'mobile';
   hasUnsavedChanges: boolean;
   portfolioTitle: string;
-  past: EditorStateSnapshot[];
-  future: EditorStateSnapshot[];
 }
 
 // Editor actions
-export type EditorAction = 
+export type EditorAction =
   | { type: 'ADD_SECTION'; payload: { sectionType: DraggableSectionType; index?: number } }
   | { type: 'REMOVE_SECTION'; payload: { sectionId: string } }
   | { type: 'MOVE_SECTION'; payload: { sectionId: string; newIndex: number } }
@@ -149,8 +137,6 @@ export type EditorAction =
   | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string } }
   | { type: 'UPDATE_TITLE'; payload: { title: string } }
   | { type: 'DUPLICATE_SECTION'; payload: { sectionId: string } }
-  | { type: 'UNDO' }
-  | { type: 'REDO' }
   | { type: 'RESET_EDITOR' };
 
 // Component props for drag and drop

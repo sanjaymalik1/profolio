@@ -1,13 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   EditorState,
   EditorAction,
   EditorSection,
-  EditorStateSnapshot,
   DraggableSectionType
 } from '@/types/editor';
 import {
@@ -29,8 +26,6 @@ const initialState: EditorState = {
   previewDevice: 'desktop',
   hasUnsavedChanges: false,
   portfolioTitle: 'Untitled Portfolio',
-  past: [],
-  future: [],
 };
 
 // Default section data generators
@@ -105,44 +100,6 @@ const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
   }
 };
 
-// Helper function for deep cloning
-const deepClone = <T,>(obj: T): T => {
-  if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return new Date(obj.getTime()) as T;
-  if (obj instanceof Array) return obj.map(item => deepClone(item)) as T;
-  if (typeof obj === 'object') {
-    const clonedObj: Record<string, unknown> = {};
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        clonedObj[key] = deepClone((obj as Record<string, unknown>)[key]);
-      }
-    }
-    return clonedObj as T;
-  }
-  return obj;
-};
-
-// Helper to create state snapshot (excludes history fields)
-const createSnapshot = (state: EditorState): EditorStateSnapshot => ({
-  sections: deepClone(state.sections),
-  selectedSectionId: state.selectedSectionId,
-  isDragging: state.isDragging,
-  isPreviewMode: state.isPreviewMode,
-  previewDevice: state.previewDevice,
-  portfolioTitle: state.portfolioTitle,
-});
-
-// Helper to restore from snapshot
-const restoreFromSnapshot = (state: EditorState, snapshot: EditorStateSnapshot): EditorState => ({
-  ...state,
-  sections: deepClone(snapshot.sections),
-  selectedSectionId: snapshot.selectedSectionId,
-  isDragging: snapshot.isDragging,
-  isPreviewMode: snapshot.isPreviewMode,
-  previewDevice: snapshot.previewDevice,
-  portfolioTitle: snapshot.portfolioTitle,
-  hasUnsavedChanges: true, // Undo/redo marks as unsaved
-});
 
 // Reducer function
 const editorReducer = (state: EditorState, action: EditorAction): EditorState => {
@@ -152,7 +109,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const newSection = {
         id: `${sectionType}-${Date.now()}`,
         type: sectionType,
-        data: deepClone(createDefaultSectionData(sectionType)),
+        data: structuredClone(createDefaultSectionData(sectionType)),
         styling: {
           backgroundColor: 'transparent',
           textColor: 'inherit',
@@ -184,8 +141,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         sections: newSections,
         selectedSectionId: newSection.id,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [], // Clear redo stack
       };
     }
 
@@ -200,8 +155,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         sections: newSections,
         selectedSectionId: state.selectedSectionId === sectionId ? null : state.selectedSectionId,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
@@ -223,8 +176,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         sections: newSections,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
@@ -234,7 +185,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         section.id === sectionId
           ? {
             ...section,
-            data: deepClone({ ...section.data, ...data })
+            data: structuredClone({ ...section.data, ...data })
           }
           : section
       ) as EditorSection[];
@@ -243,8 +194,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         sections: newSections,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
@@ -254,7 +203,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         section.id === sectionId
           ? {
             ...section,
-            styling: deepClone({ ...section.styling, ...styling })
+            styling: structuredClone({ ...section.styling, ...styling })
           }
           : section
       ) as EditorSection[];
@@ -263,8 +212,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         sections: newSections,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
@@ -306,21 +253,17 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
     case 'LOAD_SECTIONS': {
       return {
         ...state,
-        sections: deepClone(action.payload.sections),
+        sections: structuredClone(action.payload.sections),
         hasUnsavedChanges: false,
-        past: [], // Clear history on load
-        future: [],
       };
     }
 
     case 'LOAD_PORTFOLIO': {
       return {
         ...state,
-        sections: deepClone(action.payload.sections),
+        sections: structuredClone(action.payload.sections),
         portfolioTitle: action.payload.title,
         hasUnsavedChanges: false,
-        past: [],
-        future: [],
       };
     }
 
@@ -329,8 +272,6 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         ...state,
         portfolioTitle: action.payload.title,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
@@ -343,7 +284,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
       // Create duplicated section with new ID but identical data/styling
       const duplicatedSection: EditorSection = {
-        ...deepClone(section),
+        ...structuredClone(section),
         id: `${section.type}-${Date.now()}`,
         order: sectionIndex + 1
       };
@@ -362,36 +303,9 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         sections: newSections,
         selectedSectionId: duplicatedSection.id,
         hasUnsavedChanges: true,
-        past: [...state.past, createSnapshot(state)],
-        future: [],
       };
     }
 
-    case 'UNDO': {
-      if (state.past.length === 0) return state;
-
-      const previous = state.past[state.past.length - 1];
-      const newPast = state.past.slice(0, -1);
-
-      return {
-        ...restoreFromSnapshot(state, previous),
-        past: newPast,
-        future: [createSnapshot(state), ...state.future],
-      };
-    }
-
-    case 'REDO': {
-      if (state.future.length === 0) return state;
-
-      const next = state.future[0];
-      const newFuture = state.future.slice(1);
-
-      return {
-        ...restoreFromSnapshot(state, next),
-        past: [...state.past, createSnapshot(state)],
-        future: newFuture,
-      };
-    }
 
     case 'RESET_EDITOR': {
       return {
@@ -492,8 +406,7 @@ export const useEditorActions = () => {
 
   const loadPortfolioData = (portfolioData: { sections?: EditorSection[] }) => {
     if (portfolioData && portfolioData.sections) {
-      // Deep clone the portfolio data to prevent reference sharing
-      loadSections(deepClone(portfolioData.sections));
+      loadSections(structuredClone(portfolioData.sections));
     }
   };
 
@@ -509,13 +422,6 @@ export const useEditorActions = () => {
     dispatch({ type: 'LOAD_PORTFOLIO', payload: { sections, title } });
   };
 
-  const undo = () => {
-    dispatch({ type: 'UNDO' });
-  };
-
-  const redo = () => {
-    dispatch({ type: 'REDO' });
-  };
 
   return {
     addSection,
@@ -536,8 +442,6 @@ export const useEditorActions = () => {
     setUnsavedChanges,
     updateTitle,
     loadPortfolio,
-    undo,
-    redo,
   };
 };
 
@@ -605,10 +509,8 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
   }, [isHydrated, portfolioId, templateId]);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <EditorContext.Provider value={{ state, dispatch, isLoading }}>
-        {children}
-      </EditorContext.Provider>
-    </DndProvider>
+    <EditorContext.Provider value={{ state, dispatch, isLoading }}>
+      {children}
+    </EditorContext.Provider>
   );
 };
