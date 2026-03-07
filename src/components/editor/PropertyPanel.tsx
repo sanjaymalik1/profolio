@@ -4,7 +4,7 @@ import React from 'react';
 import { useEditor } from '@/contexts/EditorContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
 import { Settings } from 'lucide-react';
 import { EditorSection } from '@/types/editor';
 import { HeroPropertyForm } from './forms/HeroPropertyForm';

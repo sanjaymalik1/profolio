@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { AboutData, SectionStyling } from '@/types/portfolio';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
 import { CheckCircle2, Quote, User, Briefcase, MapPin, Calendar } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';

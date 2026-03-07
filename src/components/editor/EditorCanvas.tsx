@@ -23,7 +23,7 @@ import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessiona
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
 
-import { Button } from '@/components/ui/button';
+
 import { Badge } from '@/components/ui/badge';
 import {
   GripVertical,

@@ -317,6 +317,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       if (templateSectionIndex >= 0) {
         // --- TEMPLATE MERGE LOGIC ---
         const templateSection = newSections[templateSectionIndex];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const currentTemplateData = (templateSection.data as any).templateData || {};
 
         const mergedTemplateData = {
@@ -335,14 +336,16 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
           data: {
             ...templateSection.data,
             templateData: mergedTemplateData
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any
         };
       } else {
         // --- INDIVIDUAL BUILDER SECTIONS MERGE LOGIC ---
-        const mergeOrAddSection = (type: DraggableSectionType, parsedData: any) => {
-          if (!parsedData) return;
+        const mergeOrAddSection = (type: DraggableSectionType, parsedData: unknown) => {
+          if (!parsedData || typeof parsedData !== 'object') return;
+          const typedData = parsedData as Record<string, unknown>;
 
-          let sectionIndex = newSections.findIndex(s => s.type === type);
+          const sectionIndex = newSections.findIndex(s => s.type === type);
 
           if (sectionIndex >= 0) {
             // Merge data into existing section
@@ -350,15 +353,15 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
               ...newSections[sectionIndex],
               data: {
                 ...newSections[sectionIndex].data,
-                ...parsedData
+                ...typedData
               }
-            };
+            } as unknown as EditorSection;
           } else {
             // Create new section
-            const newSection: EditorSection = {
+            const newSection = {
               id: `${type}-${Date.now()}`,
               type,
-              data: { ...createDefaultSectionData(type), ...parsedData },
+              data: { ...createDefaultSectionData(type), ...typedData },
               styling: {
                 backgroundColor: 'transparent',
                 textColor: 'inherit',
@@ -370,7 +373,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
               },
               isEditable: true,
               order: newSections.length
-            } as EditorSection;
+            } as unknown as EditorSection;
             newSections.push(newSection);
           }
         };

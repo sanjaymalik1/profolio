@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useEditorActions } from '@/contexts/EditorContext';
 import { EditorSection } from '@/types/editor';
-import type { TemplateData } from '@/types/portfolio';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
 
   const handleChange = (path: string[], value: string | unknown) => {
     const newData = JSON.parse(JSON.stringify(formData));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let current: any = newData;
 
     for (let i = 0; i < path.length - 1; i++) {

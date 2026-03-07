@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
 import { useEditor } from '@/contexts/EditorContext';
 import { ParsedResumeResult } from '@/lib/gemini';
 
@@ -99,8 +99,9 @@ export function ResumeImportModal({ isOpen, onClose }: ResumeImportModalProps) {
 
             setParsedData(result.data);
             setStep('review');
-        } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred. Please try again.');
+        } catch (err: unknown) {
+            const error = err as Error;
+            setError(error.message || 'An unexpected error occurred. Please try again.');
             setStep('upload');
         }
     };
@@ -295,7 +296,7 @@ export function ResumeImportModal({ isOpen, onClose }: ResumeImportModalProps) {
                                     <div>
                                         <h4 className="text-sm font-semibold text-emerald-900">Extraction Complete!</h4>
                                         <p className="text-xs text-emerald-700 mt-1">
-                                            Review the sections we've populated. Select which ones you want to add to your portfolio.
+                                            Review the sections we&apos;ve populated. Select which ones you want to add to your portfolio.
                                             Existing data in your portfolio will be preserved and merged.
                                         </p>
                                     </div>

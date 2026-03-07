@@ -98,50 +98,6 @@ export const PortfolioManager: React.FC = () => {
     }
   };
 
-  // Keyboard shortcut: Ctrl+S / ⌘S to save
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
-        handleQuickSave();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Quick save — saves immediately without title dialog
-  // If portfolio already exists (has ID), save directly.
-  // If portfolio is new (no ID), show title dialog.
-  const handleQuickSave = async () => {
-    if (portfolioId) {
-      try {
-        await saveToDatabase(state.portfolioTitle);
-        fetchPortfolioDetails();
-      } catch {
-        // Error displayed by saveError state
-      }
-    } else {
-      setShowSaveDialog(true);
-    }
-  };
-
-
-  const handleSaveWithTitle = async () => {
-    try {
-      const title = saveTitle.trim() || 'Untitled Portfolio';
-      await saveToDatabase(title);
-      setSaveTitle('');
-      setShowSaveDialog(false);
-
-      // Reload portfolio details
-      fetchPortfolioDetails();
-    } catch {
-      // Error already displayed by saveError state
-    }
-  };
-
   // Fetch portfolio details for publishing
   const fetchPortfolioDetails = useCallback(async () => {
     if (portfolioId) {
@@ -160,6 +116,52 @@ export const PortfolioManager: React.FC = () => {
   useEffect(() => {
     fetchPortfolioDetails();
   }, [fetchPortfolioDetails]);
+
+  // Quick save — saves immediately without title dialog
+  // If portfolio already exists (has ID), save directly.
+  // If portfolio is new (no ID), show title dialog.
+  const handleQuickSave = useCallback(async () => {
+    if (portfolioId) {
+      try {
+        await saveToDatabase(state.portfolioTitle);
+        fetchPortfolioDetails();
+      } catch {
+        // Error displayed by saveError state
+      }
+    } else {
+      setShowSaveDialog(true);
+    }
+  }, [portfolioId, state.portfolioTitle, saveToDatabase, fetchPortfolioDetails]);
+
+  // Keyboard shortcut: Ctrl+S / ⌘S to save
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        handleQuickSave();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleQuickSave]);
+
+
+  const handleSaveWithTitle = async () => {
+    try {
+      const title = saveTitle.trim() || 'Untitled Portfolio';
+      await saveToDatabase(title);
+      setSaveTitle('');
+      setShowSaveDialog(false);
+
+      // Reload portfolio details
+      fetchPortfolioDetails();
+    } catch {
+      // Error already displayed by saveError state
+    }
+  };
+
+
 
   const handlePublishClick = () => {
     if (!portfolioId) {

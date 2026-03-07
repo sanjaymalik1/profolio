@@ -171,6 +171,7 @@ export async function parseResumeWithGemini(
             ],
             config: {
                 responseMimeType: 'application/json',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 responseSchema: portfolioSchema as any,
                 temperature: 0.1, // Low temp for more deterministic extraction
             }
@@ -192,6 +193,7 @@ export async function parseResumeWithGemini(
 }
 
 // Helper to map the raw JSON into exact nested structures our frontend expects
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformRawToPortfolioData(raw: any): ParsedResumeResult {
     const result: ParsedResumeResult = {};
 

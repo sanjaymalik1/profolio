@@ -37,11 +37,12 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ data: parsedData });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Resume parsing error:', error);
 
+        const err = error as Error;
         // Check for specific API errors
-        if (error?.message?.includes('GEMINI_API_KEY')) {
+        if (err?.message?.includes('GEMINI_API_KEY')) {
             return NextResponse.json({ error: 'Server configuration error: Gemini API key missing' }, { status: 500 });
         }
 
