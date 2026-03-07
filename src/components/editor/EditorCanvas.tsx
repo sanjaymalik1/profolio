@@ -15,6 +15,8 @@ import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
+import ExperienceSection from '@/components/portfolio/sections/ExperienceSection';
+import EducationSection from '@/components/portfolio/sections/EducationSection';
 
 // Import template components
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
@@ -177,18 +179,28 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             />
           );
         case 'experience':
-          // TypeScript knows section.data is ExperienceData here
           return (
-            <div className="p-8 text-center text-muted-foreground">
-              Experience section component not yet implemented
-            </div>
+            <ExperienceSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
           );
         case 'education':
-          // TypeScript knows section.data is EducationData here
           return (
-            <div className="p-8 text-center text-muted-foreground">
-              Education section component not yet implemented
-            </div>
+            <EducationSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
           );
         default:
           // Exhaustive type check - ensures all section types are handled

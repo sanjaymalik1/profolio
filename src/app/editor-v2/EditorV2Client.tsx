@@ -18,14 +18,17 @@ import {
   Settings,
   Eye,
   LogIn,
-  ArrowLeft
+  ArrowLeft,
+  FileBadge
 } from 'lucide-react';
 import { EditorLoadingSkeleton } from './EditorLoadingSkeleton';
+import { ResumeImportModal } from '@/components/editor/ResumeImportModal';
 
 function EditorLayout() {
   const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = React.useState('canvas');
   const [isMounted, setIsMounted] = React.useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = React.useState(false);
   const { state, isLoading } = useEditor();
 
   // Client-only rendering guard to prevent hydration mismatches
@@ -115,6 +118,17 @@ function EditorLayout() {
               </TabsList>
             </Tabs>
 
+            {/* Import Resume Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsResumeModalOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 h-8 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 bg-indigo-50/50 transition-colors shadow-sm"
+            >
+              <FileBadge className="w-4 h-4" />
+              <span className="text-xs font-semibold">Import Resume</span>
+            </Button>
+
             {/* Portfolio Management */}
             <PortfolioManager />
           </div>
@@ -148,6 +162,12 @@ function EditorLayout() {
         {/* Right Sidebar - Properties Panel (Hidden on small mobile, drawer-style on tablet, sidebar on desktop) */}
         <PropertyPanel />
       </div>
+
+      {/* Modals */}
+      <ResumeImportModal
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+      />
     </div>
   );
 }

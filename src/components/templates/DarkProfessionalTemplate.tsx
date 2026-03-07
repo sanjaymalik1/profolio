@@ -2,15 +2,15 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, MapPin, ExternalLink, Terminal, Code2, Database, Server, Cpu, Zap } from 'lucide-react';
-import type { TemplateData, ProjectsData, Project } from '@/types/portfolio';
+import { Github, Linkedin, Mail, MapPin, ExternalLink, Terminal, Code2, Database, Server, Cpu, Zap, Building2, GraduationCap, Calendar } from 'lucide-react';
+import type { TemplateData, ProjectsData, Project, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
 
 interface DarkProfessionalTemplateProps {
   data?: TemplateData;
   isPreview?: boolean;
 }
 
-export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps) {
+export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfessionalTemplateProps) {
   const heroData = data?.hero || {
     fullName: "Jordan Smith",
     title: "Senior Software Engineer",
@@ -99,6 +99,16 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
         status: "completed" as const
       }
     ] as Project[]
+  };
+
+  const experienceData: ExperienceData = data?.experience || {
+    heading: "Experience",
+    experiences: []
+  };
+
+  const educationData: EducationData = data?.education || {
+    heading: "Education",
+    education: []
   };
 
   const contactData = data?.contact || {
@@ -199,6 +209,9 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
               <motion.a
                 key={index}
                 href={link.url}
+                onClick={(e) => isPreview && e.preventDefault()}
+                target={!isPreview ? "_blank" : undefined}
+                rel={!isPreview ? "noopener noreferrer" : undefined}
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="p-3 bg-slate-800 border border-slate-600 rounded-lg hover:border-blue-500/50 hover:bg-slate-700 transition-all duration-300"
@@ -242,8 +255,6 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="flex items-start gap-3 p-4 bg-slate-800/80 border border-slate-700 rounded-lg"
                     >
-                      <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-slate-300">{highlight}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -273,6 +284,130 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
           </motion.div>
         </div>
       </section>
+
+      {/* Experience Section */}
+      {experienceData.experiences && experienceData.experiences.length > 0 && (
+        <section className="py-20 px-6 bg-slate-900 border-t border-slate-800">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="flex items-center gap-3 mb-12">
+                <Building2 className="w-8 h-8 text-blue-400" />
+                <h2 className="text-4xl font-bold">{experienceData.heading || "Experience"}</h2>
+              </div>
+
+              <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+                {experienceData.experiences.map((exp: Experience, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
+                  >
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-slate-800 text-blue-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                      <Terminal className="w-4 h-4" />
+                    </div>
+
+                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-xl hover:border-blue-500/50 transition-colors">
+                      <div className="flex flex-col gap-1 mb-2">
+                        <h3 className="font-bold text-xl text-slate-100">{exp.position}</h3>
+                        <div className="text-emerald-400 font-medium">{exp.company}</div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-400 mb-4 font-mono">
+                        <Calendar className="w-4 h-4" />
+                        <span>{exp.startDate} - {exp.endDate || 'Present'}</span>
+                      </div>
+                      <p className="text-slate-300 text-sm leading-relaxed mb-4">{exp.description}</p>
+
+                      {exp.responsibilities && exp.responsibilities.length > 0 && (
+                        <ul className="space-y-2 mb-4">
+                          {exp.responsibilities.map((resp, i) => (
+                            <li key={i} className="flex gap-2 text-sm text-slate-300">
+                              <span className="text-blue-500 mt-1">▹</span> {resp}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {exp.technologies && exp.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {exp.technologies.map((tech, i) => (
+                            <span key={i} className="px-2 py-1 bg-slate-900 border border-slate-700 text-xs rounded font-mono text-slate-400">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Education Section */}
+      {educationData.education && educationData.education.length > 0 && (
+        <section className="py-20 px-6 bg-slate-800/30 border-t border-slate-800">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="flex items-center gap-3 mb-12">
+                <GraduationCap className="w-8 h-8 text-emerald-400" />
+                <h2 className="text-4xl font-bold">{educationData.heading || "Education"}</h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                {educationData.education.map((edu: Education, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-slate-800 border border-slate-700 p-6 rounded-lg hover:border-emerald-500/50 transition-colors"
+                  >
+                    <h3 className="font-bold text-xl text-slate-100 mb-1">{edu.degree} {edu.field ? `in ${edu.field}` : ''}</h3>
+                    <div className="text-blue-400 font-medium mb-3">{edu.institution}</div>
+
+                    <div className="flex items-center justify-between text-sm text-slate-400 font-mono mb-4 pb-4 border-b border-slate-700">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{edu.startDate} - {edu.endDate || 'Present'}</span>
+                      </div>
+                      {edu.gpa && <span>GPA: {edu.gpa}</span>}
+                    </div>
+
+                    {edu.coursework && edu.coursework.length > 0 && (
+                      <div className="text-sm">
+                        <span className="text-slate-500 block mb-2 font-mono">Relevant Coursework:</span>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.coursework.map((course, idx) => (
+                            <span key={idx} className="bg-slate-900 border border-slate-700 px-2 py-1 rounded text-slate-300 text-xs">
+                              {course}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Skills Section */}
       <section className="py-20 px-6 bg-slate-900">
@@ -412,6 +547,9 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
                       {project.links.github && (
                         <a
                           href={project.links.github}
+                          onClick={(e) => isPreview && e.preventDefault()}
+                          target={!isPreview ? "_blank" : undefined}
+                          rel={!isPreview ? "noopener noreferrer" : undefined}
                           className="flex items-center gap-2 px-4 py-2 bg-slate-700 border border-slate-600 text-slate-300 rounded hover:bg-slate-600 hover:border-blue-500/50 transition-all duration-300 text-sm"
                         >
                           <Github className="w-4 h-4" />
@@ -421,6 +559,9 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
                       {project.links.live && (
                         <a
                           href={project.links.live}
+                          onClick={(e) => isPreview && e.preventDefault()}
+                          target={!isPreview ? "_blank" : undefined}
+                          rel={!isPreview ? "noopener noreferrer" : undefined}
                           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors text-sm"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -466,6 +607,7 @@ export function DarkProfessionalTemplate({ data }: DarkProfessionalTemplateProps
 
               <motion.a
                 href={`mailto:${contactData.email}`}
+                onClick={(e) => isPreview && e.preventDefault()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-blue-500 hover:to-emerald-500 transition-all duration-300"

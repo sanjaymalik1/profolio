@@ -13,6 +13,8 @@ import {
   SkillsData,
   ProjectsData,
   ContactData,
+  ExperienceData,
+  EducationData,
   SectionStyling,
   SectionData
 } from '@/types/portfolio';
@@ -94,6 +96,44 @@ const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
           ]
         }
       } as ContactData;
+
+    case 'experience':
+      return {
+        heading: 'Work Experience',
+        experiences: [
+          {
+            id: `exp_${Date.now()}`,
+            company: 'Your Company',
+            position: 'Your Role',
+            startDate: 'Jan 2022',
+            description: 'Describe your responsibilities and key contributions in this role.',
+            responsibilities: [
+              'Led cross-functional team projects',
+              'Improved system performance by 40%',
+            ],
+            technologies: ['React', 'TypeScript', 'Node.js'],
+            location: 'Remote',
+          },
+        ],
+      } as ExperienceData;
+
+    case 'education':
+      return {
+        heading: 'Education',
+        education: [
+          {
+            id: `edu_${Date.now()}`,
+            institution: 'Your University',
+            degree: 'Bachelor of Science',
+            field: 'Computer Science',
+            startDate: '2018',
+            endDate: '2022',
+            honors: ["Dean's List"],
+            coursework: ['Data Structures', 'Algorithms', 'Machine Learning'],
+            location: 'Your City',
+          },
+        ],
+      } as EducationData;
 
     default:
       return {};
@@ -264,6 +304,93 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         sections: structuredClone(action.payload.sections),
         portfolioTitle: action.payload.title,
         hasUnsavedChanges: false,
+      };
+    }
+
+    case 'IMPORT_RESUME_DATA': {
+      const { data } = action.payload;
+      const newSections = [...state.sections];
+
+      // Check if the user is using a global 'template' section (like DeveloperTemplate) instead of individual sections
+      const templateSectionIndex = newSections.findIndex(s => s.type === 'template');
+
+      if (templateSectionIndex >= 0) {
+        // --- TEMPLATE MERGE LOGIC ---
+        const templateSection = newSections[templateSectionIndex];
+        const currentTemplateData = (templateSection.data as any).templateData || {};
+
+        const mergedTemplateData = {
+          ...currentTemplateData,
+          hero: data.hero ? { ...(currentTemplateData.hero || {}), ...data.hero } : currentTemplateData.hero,
+          about: data.about ? { ...(currentTemplateData.about || {}), ...data.about } : currentTemplateData.about,
+          experience: data.experience ? { ...(currentTemplateData.experience || {}), ...data.experience } : currentTemplateData.experience,
+          education: data.education ? { ...(currentTemplateData.education || {}), ...data.education } : currentTemplateData.education,
+          skills: data.skills ? { ...(currentTemplateData.skills || {}), ...data.skills } : currentTemplateData.skills,
+          contact: data.contact ? { ...(currentTemplateData.contact || {}), ...data.contact } : currentTemplateData.contact,
+          projects: data.projects ? { ...(currentTemplateData.projects || {}), ...data.projects } : currentTemplateData.projects,
+        };
+
+        newSections[templateSectionIndex] = {
+          ...templateSection,
+          data: {
+            ...templateSection.data,
+            templateData: mergedTemplateData
+          } as any
+        };
+      } else {
+        // --- INDIVIDUAL BUILDER SECTIONS MERGE LOGIC ---
+        const mergeOrAddSection = (type: DraggableSectionType, parsedData: any) => {
+          if (!parsedData) return;
+
+          let sectionIndex = newSections.findIndex(s => s.type === type);
+
+          if (sectionIndex >= 0) {
+            // Merge data into existing section
+            newSections[sectionIndex] = {
+              ...newSections[sectionIndex],
+              data: {
+                ...newSections[sectionIndex].data,
+                ...parsedData
+              }
+            };
+          } else {
+            // Create new section
+            const newSection: EditorSection = {
+              id: `${type}-${Date.now()}`,
+              type,
+              data: { ...createDefaultSectionData(type), ...parsedData },
+              styling: {
+                backgroundColor: 'transparent',
+                textColor: 'inherit',
+                padding: { top: '3rem', right: '2rem', bottom: '3rem', left: '2rem' },
+                margin: { top: '0', bottom: '2rem' },
+                alignment: 'left',
+                layout: 'default',
+                animation: { type: 'slide', duration: 600, delay: 200 }
+              },
+              isEditable: true,
+              order: newSections.length
+            } as EditorSection;
+            newSections.push(newSection);
+          }
+        };
+
+        mergeOrAddSection('hero', data.hero);
+        mergeOrAddSection('about', data.about);
+        mergeOrAddSection('experience', data.experience);
+        mergeOrAddSection('education', data.education);
+        mergeOrAddSection('skills', data.skills);
+        mergeOrAddSection('projects', data.projects);
+        mergeOrAddSection('contact', data.contact);
+
+        // Re-sort just in case order was messed up
+        newSections.forEach((s, idx) => { s.order = idx; });
+      }
+
+      return {
+        ...state,
+        sections: newSections,
+        hasUnsavedChanges: true,
       };
     }
 

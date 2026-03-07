@@ -260,17 +260,25 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
           ]
         },
         about: {
-          heading: "About Me",
-          content: "I'm a passionate full-stack developer with a strong foundation in modern web technologies. I love solving complex problems and building applications that make a real impact. When I'm not coding, you'll find me contributing to open source projects or learning about emerging technologies.",
+          heading: "About",
+          content: "I'm a senior software engineer with a passion for building robust, scalable systems. My expertise spans full-stack development, cloud architecture, and team leadership. I believe in writing clean, maintainable code and fostering collaborative development environments.",
           highlights: [
-            "5+ years of professional experience",
+            "8+ years of professional experience",
             "Built 50+ web applications",
             "Expert in React, Node.js, and TypeScript",
             "AWS Certified Solutions Architect"
           ]
         },
+        experience: {
+          heading: "Experience",
+          experiences: []
+        },
+        education: {
+          heading: "Education",
+          education: []
+        },
         skills: {
-          heading: "Technical Skills",
+          heading: "Technical Expertise",
           skills: [],
           skillCategories: {
             technical: [
@@ -297,7 +305,7 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
           }
         },
         projects: {
-          heading: "Featured Projects",
+          heading: "Projects",
           projects: [
             {
               id: "project-1",
@@ -331,7 +339,7 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
           categories: ["Web Development", "Productivity", "Other"]
         },
         contact: {
-          heading: "Get In Touch",
+          heading: "Contact",
           email: "alex@example.com",
           phone: "+1 (555) 123-4567",
           location: "San Francisco, CA",
@@ -366,6 +374,14 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
             "Certified Project Management Professional",
             "MBA from London Business School"
           ]
+        },
+        experience: {
+          heading: "Professional Experience",
+          experiences: []
+        },
+        education: {
+          heading: "Education",
+          education: []
         },
         skills: {
           heading: "Core Competencies",
@@ -449,6 +465,14 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
             "Featured in Design Weekly magazine",
             "Certified Google Ads specialist"
           ]
+        },
+        experience: {
+          heading: "Experience",
+          experiences: []
+        },
+        education: {
+          heading: "Education",
+          education: []
         },
         skills: {
           heading: "What I Do Best",

@@ -135,6 +135,7 @@ export type EditorAction =
   | { type: 'SET_UNSAVED_CHANGES'; payload: { hasUnsavedChanges: boolean } }
   | { type: 'LOAD_SECTIONS'; payload: { sections: EditorSection[] } }
   | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string } }
+  | { type: 'IMPORT_RESUME_DATA'; payload: { data: Record<string, any> } }
   | { type: 'UPDATE_TITLE'; payload: { title: string } }
   | { type: 'DUPLICATE_SECTION'; payload: { sectionId: string } }
   | { type: 'RESET_EDITOR' };
