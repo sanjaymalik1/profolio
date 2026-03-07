@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, MapPin, Heart, Coffee, Star, Send } from 'lucide-react';
-import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
+import { Github, Linkedin, Mail, MapPin, Heart, Coffee, Star, Send, Building2, GraduationCap, Calendar } from 'lucide-react';
+import type { TemplateData, Project, ProjectsData, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
 
 interface WarmMinimalistTemplateProps {
   data?: TemplateData;
@@ -94,6 +94,16 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
     ] as Project[]
   };
 
+  const experienceData: ExperienceData = data?.experience || {
+    heading: "Experience",
+    experiences: []
+  };
+
+  const educationData: EducationData = data?.education || {
+    heading: "Education",
+    education: []
+  };
+
   const contactData = data?.contact || {
     heading: "Let's Create Together",
     email: "sarah@example.com",
@@ -155,6 +165,9 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
                   <motion.a
                     key={index}
                     href={link.url}
+                    onClick={(e) => isPreview && e.preventDefault()}
+                    target={!isPreview ? "_blank" : undefined}
+                    rel={!isPreview ? "noopener noreferrer" : undefined}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
@@ -326,6 +339,139 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
           </div>
         </div>
       </section>
+
+      {/* Experience Section */}
+      {experienceData.experiences && experienceData.experiences.length > 0 && (
+        <section className="py-20 px-6 bg-orange-50/50">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-16"
+            >
+              <h2 className="text-4xl font-light mb-4 text-amber-800 text-center">{experienceData.heading || "Experience"}</h2>
+              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+            </motion.div>
+
+            <div className="space-y-12">
+              {experienceData.experiences.map((exp: Experience, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-amber-100/50 relative overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-300 to-red-400"></div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="text-2xl font-medium text-amber-900 mb-2">{exp.position}</h3>
+                      <div className="flex items-center gap-2 text-lg text-amber-700">
+                        <Building2 className="w-5 h-5 text-red-400" />
+                        <span>{exp.company}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 px-4 py-2 rounded-full w-fit">
+                      <Calendar className="w-4 h-4" />
+                      <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-amber-800 leading-relaxed mb-6">{exp.description}</p>
+
+                  {exp.responsibilities && exp.responsibilities.length > 0 && (
+                    <div className="space-y-3 mb-8">
+                      {exp.responsibilities.map((resp, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <Star className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                          <p className="text-amber-700 leading-relaxed">{resp}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {exp.technologies && exp.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-6 border-t border-amber-100">
+                      {exp.technologies.map((tech, i) => (
+                        <span key={i} className="px-4 py-1.5 bg-amber-50 text-amber-700 text-sm font-medium rounded-full border border-amber-200/50">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Education Section */}
+      {educationData.education && educationData.education.length > 0 && (
+        <section className="py-20 px-6 bg-amber-50">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl font-light mb-4 text-amber-800">{educationData.heading || "Education"}</h2>
+              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {educationData.education.map((edu: Education, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white rounded-3xl p-8 shadow-sm border border-amber-100/50 flex flex-col h-full"
+                >
+                  <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-amber-600 rotate-3">
+                    <GraduationCap className="w-7 h-7 -rotate-3" />
+                  </div>
+
+                  <h3 className="text-2xl font-medium text-amber-900 mb-2">
+                    {edu.degree} {edu.field ? <span className="font-light text-amber-700 block mt-1">in {edu.field}</span> : ''}
+                  </h3>
+
+                  <div className="text-lg text-amber-600 mb-6">{edu.institution}</div>
+
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-amber-700 font-medium mb-6 pb-6 border-b border-amber-100">
+                    <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
+                      <Calendar className="w-4 h-4 text-amber-500" />
+                      <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
+                    </div>
+                    {edu.gpa && <span className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full">GPA: {edu.gpa}</span>}
+                  </div>
+
+                  {edu.coursework && edu.coursework.length > 0 && (
+                    <div className="mt-auto pt-2">
+                      <span className="text-amber-800 font-medium text-sm block mb-3">Relevant Coursework</span>
+                      <div className="flex flex-wrap gap-2">
+                        {edu.coursework.map((course, idx) => (
+                          <span key={idx} className="bg-amber-50/80 text-amber-700 px-3 py-1.5 rounded-lg text-sm">
+                            {course}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Projects Section */}
       <section className="py-20 px-6 bg-white">

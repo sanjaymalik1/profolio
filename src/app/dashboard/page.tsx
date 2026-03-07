@@ -17,24 +17,7 @@ import { PublishDialog } from '@/components/portfolio/PublishDialog';
 import { DashboardNav } from '@/components/dashboard/DashboardNav';
 import { TEMPLATE_REGISTRY, BLANK_TEMPLATE, getTemplateName } from '@/lib/portfolio/registry';
 
-interface Profile {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  bio?: string;
-  phone?: string;
-  location?: string;
-  website?: string;
-  linkedin?: string;
-  github?: string;
-  twitter?: string;
-  user: {
-    id: string;
-    name?: string;
-    email: string;
-    role: string;
-  };
-}
+
 
 export default function DashboardPage() {
   const { user } = useUser();
@@ -86,8 +69,6 @@ export default function DashboardPage() {
     }
   };
 
-
-  const handleSignOut = () => { }; // handled by DashboardNav
 
   if (!user || loading) {
     return (
@@ -296,8 +277,8 @@ export default function DashboardPage() {
                 <div
                   key={template.id ?? 'blank'}
                   className={`group bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all text-left cursor-pointer ${template.badge
-                      ? 'border-2 border-slate-900/10 hover:border-slate-900/20'
-                      : 'border border-slate-200 hover:border-slate-300'
+                    ? 'border-2 border-slate-900/10 hover:border-slate-900/20'
+                    : 'border border-slate-200 hover:border-slate-300'
                     }`}
                   onClick={() => createPortfolio(template.defaultTitle, template.id ?? undefined)}
                 >

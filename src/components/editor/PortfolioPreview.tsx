@@ -20,6 +20,8 @@ import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
+import ExperienceSection from '@/components/portfolio/sections/ExperienceSection';
+import EducationSection from '@/components/portfolio/sections/EducationSection';
 
 // Import template components
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
@@ -27,7 +29,7 @@ import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochr
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
 
 // Import types
-import type { TemplateSectionData } from '@/types/portfolio';
+import type { TemplateSectionData, ExperienceData, EducationData } from '@/types/portfolio';
 import type { EditorSection } from '@/types/editor';
 
 export type PreviewDevice = 'desktop' | 'tablet' | 'mobile';
@@ -151,18 +153,28 @@ export const PortfolioPreview: React.FC = () => {
         return <ProjectsSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
       case 'contact':
         return <ContactSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
-      default:
+      case 'experience':
         return (
-          <div key={section.id} className="min-h-[400px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-            <div className="text-center text-gray-500">
-              <Eye className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2">Preview Not Available</p>
-              <p className="text-sm">
-                {section.type} section preview is not implemented yet.
-              </p>
-            </div>
-          </div>
+          <ExperienceSection
+            key={section.id}
+            data={section.data as unknown as ExperienceData}
+            styling={section.styling || commonStyling}
+            isEditing={false}
+            isPublicView={true}
+          />
         );
+      case 'education':
+        return (
+          <EducationSection
+            key={section.id}
+            data={section.data as unknown as EducationData}
+            styling={section.styling || commonStyling}
+            isEditing={false}
+            isPublicView={true}
+          />
+        );
+      default:
+        return null;
     }
   };
 

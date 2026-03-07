@@ -4,7 +4,7 @@ import React from 'react';
 import { useEditor } from '@/contexts/EditorContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
 import { Settings } from 'lucide-react';
 import { EditorSection } from '@/types/editor';
 import { HeroPropertyForm } from './forms/HeroPropertyForm';
@@ -13,6 +13,8 @@ import { SkillsPropertyForm } from './forms/SkillsPropertyForm';
 import { ProjectsPropertyForm } from './forms/ProjectsPropertyForm';
 import { ContactPropertyForm } from './forms/ContactPropertyForm';
 import { TemplatePropertyForm } from './forms/TemplatePropertyForm';
+import { ExperiencePropertyForm } from './forms/ExperiencePropertyForm';
+import { EducationPropertyForm } from './forms/EducationPropertyForm';
 
 export const PropertyPanel: React.FC = () => {
   const { state } = useEditor();
@@ -46,30 +48,22 @@ export const PropertyPanel: React.FC = () => {
         return <ProjectsPropertyForm section={selectedSection} />;
       case 'contact':
         return <ContactPropertyForm section={selectedSection} />;
+      case 'experience':
+        return <ExperiencePropertyForm section={selectedSection} />;
+      case 'education':
+        return <EducationPropertyForm section={selectedSection} />;
       default:
         return (
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2 capitalize">
+              <CardTitle className="text-sm flex items-center gap-2">
                 <Settings className="w-4 h-4" />
-                {selectedSection.type} Properties
+                Section Properties
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="text-sm text-gray-600">
-                  <strong>Section ID:</strong> {selectedSection.id}
-                </div>
-                <div className="text-sm text-gray-600">
-                  <strong>Section Type:</strong> {selectedSection.type}
-                </div>
-                <Separator />
-                <div className="text-center text-gray-500 p-4">
-                  <p>Property form for {selectedSection.type} is coming soon!</p>
-                  <p className="text-xs mt-2">
-                    Dynamic forms will be implemented here for editing section content.
-                  </p>
-                </div>
+              <div className="text-center text-gray-500 p-4">
+                <p className="text-sm">Property form coming soon.</p>
               </div>
             </CardContent>
           </Card>

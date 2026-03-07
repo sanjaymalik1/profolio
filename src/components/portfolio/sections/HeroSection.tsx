@@ -5,13 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { HeroData, SectionStyling } from '@/types/portfolio';
-import { Button } from '@/components/ui/button';
-
-import { Github, Linkedin, Twitter, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Github, Linkedin, Twitter, Mail, MapPin, ExternalLink, ArrowDown, Sparkles } from 'lucide-react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
-import { typography, textColors } from '@/design/typography';
-import { spacing } from '@/design/spacing';
 
 interface HeroSectionProps {
   data: HeroData;
@@ -28,7 +25,7 @@ const socialIcons = {
   linkedin: Linkedin,
   twitter: Twitter,
   email: Mail,
-  website: ExternalLink
+  website: ExternalLink,
 } as const;
 
 export default function HeroSection({
@@ -39,70 +36,52 @@ export default function HeroSection({
   onEdit,
   onDataChange,
 }: HeroSectionProps) {
-  // Determine if inline editing is active
   const inlineEditMode = isEditing && !isPublicView && !!onDataChange;
-
-
-  const animationVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: (styling.animation?.duration || 800) / 1000,
-        delay: (styling.animation?.delay || 0) / 1000,
-        ease: "easeOut" as const
-      }
-    }
-  };
 
   const containerStyle = {
     backgroundColor: styling.backgroundColor || 'transparent',
     color: styling.textColor || 'inherit',
-    padding: `${styling.padding?.top || '4rem'} ${styling.padding?.right || '2rem'} ${styling.padding?.bottom || '4rem'} ${styling.padding?.left || '2rem'}`,
-    margin: `${styling.margin?.top || '0'} 0 ${styling.margin?.bottom || '0'} 0`,
-    textAlign: styling.alignment || 'center'
+    padding: `${styling.padding?.top || '0'} ${styling.padding?.right || '0'} ${styling.padding?.bottom || '0'} ${styling.padding?.left || '0'}`,
   } as React.CSSProperties;
 
   return (
     <motion.section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={containerStyle}
-      initial={!isEditing && styling.animation?.type !== 'none' ? "hidden" : "visible"}
-      animate={!isEditing ? "visible" : undefined}
-      variants={!isEditing ? animationVariants : undefined}
+      initial={!isEditing ? { opacity: 0 } : undefined}
+      animate={!isEditing ? { opacity: 1 } : undefined}
+      transition={{ duration: 0.6 }}
       onClick={isEditing ? onEdit : undefined}
     >
-      {/* Background Image */}
+      {/* Subtle background gradient mesh */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-radial from-indigo-100/60 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-radial from-purple-100/40 to-transparent rounded-full blur-3xl pointer-events-none" />
+
+      {/* Background image overlay */}
       {data.backgroundImage && (
         <div className="absolute inset-0 z-0">
-          <Image
-            src={data.backgroundImage}
-            alt="Background"
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/60" />
+          <Image src={data.backgroundImage} alt="Background" fill className="object-cover opacity-10" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-white/80" />
         </div>
       )}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+        <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
 
           {/* Profile Image */}
           {(data.profileImage || inlineEditMode) && (
             <motion.div
               className="flex-shrink-0 relative"
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              transition={{ delay: 0.2, duration: 0.7, type: 'spring', stiffness: 100 }}
             >
-              {/* Subtle decorative ring - thin and lightweight */}
-              <div className="absolute -inset-2 rounded-full border border-current opacity-15 pointer-events-none" />
+              {/* Gradient ring */}
+              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-80 blur-sm" />
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500" />
 
-              {/* Circular clipping container with soft shadow - responsive sizes */}
-              <div className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 xl:w-64 xl:h-64 rounded-full overflow-hidden shadow-lg">
+              <div className="relative w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 lg:w-64 lg:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
                 {inlineEditMode ? (
                   <EditableImage
                     value={data.profileImage || ''}
@@ -113,96 +92,85 @@ export default function HeroSection({
                     aspectRatio="square"
                   />
                 ) : (
-                  <Image
-                    src={data.profileImage!}
-                    alt={data.fullName}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
+                  data.profileImage && (
+                    <Image src={data.profileImage} alt={data.fullName} fill className="object-cover" priority />
+                  )
+                )}
+                {!data.profileImage && !inlineEditMode && (
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                    <span className="text-5xl font-bold text-indigo-400">
+                      {data.fullName?.charAt(0) || '?'}
+                    </span>
+                  </div>
                 )}
               </div>
+
+              {/* Status badge */}
+              <motion.div
+                className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Badge className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 shadow-md border-0 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  Available for Work
+                </Badge>
+              </motion.div>
             </motion.div>
           )}
 
           {/* Content */}
           <div className="flex-1 text-center lg:text-left max-w-3xl">
 
-            {/* Name */}
-            <motion.h1
-              className={`${typography.heroTitle} mb-3 sm:mb-4 bg-gradient-to-r from-current to-current/70 bg-clip-text`}
+            {/* Eyebrow label */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              transition={{ delay: 0.25, duration: 0.5 }}
+              className="flex items-center justify-center lg:justify-start gap-2 mb-4"
+            >
+              <Sparkles className="w-4 h-4 text-indigo-500" />
+              <span className="text-sm font-medium text-indigo-600 tracking-wide uppercase">
+                {data.title || 'Portfolio'}
+              </span>
+            </motion.div>
+
+            {/* Name */}
+            <motion.h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-5 tracking-tight leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
             >
               {inlineEditMode ? (
                 <EditableText
                   value={data.fullName || ''}
                   onChange={(value) => onDataChange?.({ fullName: value })}
                   placeholder="Your Name"
-                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/30 rounded px-2 -mx-2"
                   as="span"
                 />
               ) : (
-                data.fullName || 'Your Name'
+                <span className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-900 bg-clip-text text-transparent">
+                  {data.fullName || 'Your Name'}
+                </span>
               )}
             </motion.h1>
 
-            {/* Title */}
-            <motion.h2
-              className={`${typography.subtitle} mb-2 ${textColors.secondary}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              {inlineEditMode ? (
-                <EditableText
-                  value={data.title || ''}
-                  onChange={(value) => onDataChange?.({ title: value })}
-                  placeholder="Your Professional Title"
-                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
-                  as="span"
-                />
-              ) : (
-                data.title || 'Your Professional Title'
-              )}
-            </motion.h2>
-
-            {/* Subtitle */}
-            {(data.subtitle || inlineEditMode) && (
-              <motion.p
-                className={`${typography.body} ${spacing.marginBottom.medium} ${textColors.muted}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-              >
-                {inlineEditMode ? (
-                  <EditableText
-                    value={data.subtitle || ''}
-                    onChange={(value) => onDataChange?.({ subtitle: value })}
-                    placeholder="Optional subtitle"
-                    className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
-                    as="span"
-                  />
-                ) : (
-                  data.subtitle
-                )}
-              </motion.p>
-            )}
-
             {/* Bio */}
             <motion.p
-              className={`${typography.body} ${spacing.marginBottom.large} ${textColors.secondary} max-w-2xl mx-auto lg:mx-0`}
+              className="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 max-w-2xl mx-auto lg:mx-0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
+              transition={{ delay: 0.45, duration: 0.6 }}
             >
               {inlineEditMode ? (
                 <EditableText
                   value={data.bio || ''}
                   onChange={(value) => onDataChange?.({ bio: value })}
                   placeholder="Brief introduction about yourself and what you do."
-                  className="outline-none focus:ring-2 focus:ring-blue-500/30 rounded px-2 -mx-2"
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/30 rounded px-1 -mx-1"
                   as="span"
                   multiline
                 />
@@ -211,100 +179,97 @@ export default function HeroSection({
               )}
             </motion.p>
 
-            {/* Location & Contact */}
+            {/* Meta row */}
+            {(data.location || data.contactEmail) && (
+              <motion.div
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-7 text-sm text-slate-500"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.5 }}
+              >
+                {data.location && (
+                  <span className="flex items-center gap-1.5 bg-slate-100 rounded-full px-3 py-1">
+                    <MapPin size={13} className="text-indigo-500" />
+                    {data.location}
+                  </span>
+                )}
+                {data.contactEmail && (
+                  <span className="flex items-center gap-1.5 bg-slate-100 rounded-full px-3 py-1">
+                    <Mail size={13} className="text-indigo-500" />
+                    {data.contactEmail}
+                  </span>
+                )}
+              </motion.div>
+            )}
+
+            {/* CTA Buttons */}
             <motion.div
-              className={`flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 lg:gap-6 ${spacing.marginBottom.large} text-sm sm:text-base ${textColors.muted}`}
-              initial={{ opacity: 0, y: 20 }}
+              className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3 mb-8"
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.6 }}
+              transition={{ delay: 0.65, duration: 0.5 }}
             >
-              {data.location && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin size={16} className="flex-shrink-0" />
-                  <span className="truncate max-w-[150px] sm:max-w-none">{data.location}</span>
-                </div>
-              )}
               {data.contactEmail && (
-                <div className="flex items-center gap-1.5">
-                  <Mail size={16} className="flex-shrink-0" />
-                  <span className="truncate max-w-[200px] sm:max-w-none">{data.contactEmail}</span>
-                </div>
+                <a
+                  href={`mailto:${data.contactEmail}`}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <Mail size={16} />
+                  Get In Touch
+                </a>
               )}
+              <a
+                href="#projects"
+                className="inline-flex items-center gap-2 border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-semibold text-sm hover:border-indigo-300 hover:text-indigo-700 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <ExternalLink size={16} />
+                View Work
+              </a>
             </motion.div>
 
-            {/* Social Links */}
+            {/* Social links */}
             {data.socialLinks && data.socialLinks.length > 0 && (
               <motion.div
-                className={`flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 ${spacing.marginBottom.large}`}
-                initial={{ opacity: 0, y: 20 }}
+                className="flex items-center justify-center lg:justify-start gap-3"
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8, duration: 0.6 }}
+                transition={{ delay: 0.75, duration: 0.5 }}
               >
-                {data.socialLinks.map((social, index) => {
-                  const IconComponent = socialIcons[social.platform as keyof typeof socialIcons];
-                  if (!IconComponent || !social.url) return null;
-
+                {data.socialLinks.map((social, i) => {
+                  const Icon = socialIcons[social.platform as keyof typeof socialIcons];
+                  if (!Icon || !social.url) return null;
                   return (
                     <Link
-                      key={index}
+                      key={i}
                       href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2.5 sm:p-3 rounded-full bg-current/10 hover:bg-current/20 transition-all duration-300 hover:scale-110"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:scale-110 transition-all duration-200 border border-slate-200 hover:border-indigo-200"
                     >
-                      <IconComponent size={18} className="sm:w-5 sm:h-5" />
+                      <Icon size={17} />
                     </Link>
                   );
                 })}
               </motion.div>
             )}
-
-            {/* CTA Buttons - responsive sizes and layout */}
-            <motion.div
-              className="flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-            >
-              {data.contactEmail && (
-                <Button size="lg" className="w-full sm:w-auto px-6 sm:px-8 text-sm sm:text-base">
-                  <Mail className="mr-2" size={18} />
-                  Get In Touch
-                </Button>
-              )}
-              <Button variant="outline" size="lg" className="w-full sm:w-auto px-6 sm:px-8 text-sm sm:text-base">
-                <ExternalLink className="mr-2" size={18} />
-                View Work
-              </Button>
-            </motion.div>
           </div>
         </div>
-
-        {/* Scroll Indicator - Hidden in editor preview, public view, and mobile */}
-        {!isEditing && !isPublicView && (
-          <motion.div
-            className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
-          >
-            <div className="flex flex-col items-center gap-2 text-current/50">
-              <span className="text-xs sm:text-sm">Scroll to explore</span>
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="w-5 h-8 sm:w-6 sm:h-10 border-2 border-current/30 rounded-full flex justify-center"
-              >
-                <motion.div
-                  animate={{ y: [0, 12, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-1 h-2 sm:h-3 bg-current/50 rounded-full mt-2"
-                />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
       </div>
+
+      {/* Scroll cue */}
+      {!isEditing && !isPublicView && (
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-slate-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          <span className="text-xs tracking-widest uppercase">Scroll</span>
+          <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.8, repeat: Infinity }}>
+            <ArrowDown size={16} />
+          </motion.div>
+        </motion.div>
+      )}
     </motion.section>
   );
 }

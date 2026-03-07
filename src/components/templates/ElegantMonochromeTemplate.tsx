@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, Mail, MapPin, Award, Briefcase, User } from 'lucide-react';
-import type { TemplateData, Project, ProjectsData } from '@/types/portfolio';
+import { Linkedin, Mail, MapPin, Award, Briefcase, User, Building2, GraduationCap, Calendar } from 'lucide-react';
+import type { TemplateData, Project, ProjectsData, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
 
 interface ElegantMonochromeTemplateProps {
   data?: TemplateData;
@@ -93,6 +93,16 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
     ] as Project[]
   };
 
+  const experienceData: ExperienceData = data?.experience || {
+    heading: "Professional Experience",
+    experiences: []
+  };
+
+  const educationData: EducationData = data?.education || {
+    heading: "Education",
+    education: []
+  };
+
   const contactData = data?.contact || {
     heading: "Get In Touch",
     email: "victoria@example.com",
@@ -139,6 +149,9 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
                   <motion.a
                     key={index}
                     href={link.url}
+                    onClick={(e) => isPreview && e.preventDefault()}
+                    target={!isPreview ? "_blank" : undefined}
+                    rel={!isPreview ? "noopener noreferrer" : undefined}
                     whileHover={{ scale: 1.05 }}
                     className="p-3 border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
                   >
@@ -290,6 +303,139 @@ export function ElegantMonochromeTemplate({ data, isPreview = false }: ElegantMo
           </div>
         </div>
       </section>
+
+      {/* Experience Section */}
+      {experienceData.experiences && experienceData.experiences.length > 0 && (
+        <section className="py-20 px-6 bg-white border-t border-gray-100">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl font-light mb-12 text-center">{experienceData.heading || "Experience"}</h2>
+              <div className="w-16 h-px bg-gray-800 mx-auto -mt-8 mb-16"></div>
+
+              <div className="space-y-12">
+                {experienceData.experiences.map((exp: Experience, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="relative pl-8 md:pl-0"
+                  >
+                    <div className="hidden md:block absolute left-[50%] top-0 bottom-0 w-px bg-gray-200 -translate-x-1/2"></div>
+
+                    <div className={`md:flex items-center justify-between w-full ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                      <div className="hidden md:block w-5 h-5 absolute left-[50%] -translate-x-1/2 rounded-full border-4 border-white bg-gray-800 z-10 top-1"></div>
+
+                      <div className="md:w-[45%] bg-gray-50 p-8 rounded-2xl hover:shadow-md transition-shadow">
+                        <div className="flex flex-col mb-4">
+                          <h3 className="text-2xl font-light text-gray-900">{exp.position}</h3>
+                          <span className="text-lg font-medium text-gray-600 mt-1 flex items-center gap-2">
+                            <Building2 className="w-4 h-4" /> {exp.company}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 font-medium tracking-wide">
+                          <Calendar className="w-4 h-4" />
+                          <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
+                        </div>
+
+                        <p className="text-gray-600 leading-relaxed mb-6">{exp.description}</p>
+
+                        {exp.responsibilities && exp.responsibilities.length > 0 && (
+                          <ul className="space-y-3 mb-6">
+                            {exp.responsibilities.map((resp, i) => (
+                              <li key={i} className="flex gap-3 text-gray-600">
+                                <span className="text-gray-400 mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-300 flex-shrink-0"></span>
+                                <span className="leading-relaxed">{resp}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {exp.technologies && exp.technologies.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+                            {exp.technologies.map((tech, i) => (
+                              <span key={i} className="px-3 py-1 bg-white border border-gray-200 text-xs font-medium text-gray-600 rounded-full">
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Education Section */}
+      {educationData.education && educationData.education.length > 0 && (
+        <section className="py-20 px-6 bg-gray-50 border-t border-gray-200">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl font-light mb-12 text-center">{educationData.heading || "Education"}</h2>
+              <div className="w-16 h-px bg-gray-800 mx-auto -mt-8 mb-16"></div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {educationData.education.map((edu: Education, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-white p-8 border border-gray-100 rounded-2xl hover:border-gray-300 transition-colors shadow-sm hover:shadow-md"
+                  >
+                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-800">
+                      <GraduationCap className="w-6 h-6" />
+                    </div>
+
+                    <h3 className="text-2xl font-light text-gray-900 mb-2 leading-tight">
+                      {edu.degree} {edu.field ? <span className="text-gray-500 font-medium text-lg block mt-1">in {edu.field}</span> : ''}
+                    </h3>
+                    <div className="text-lg text-gray-700 font-medium mb-4">{edu.institution}</div>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 font-medium mb-6 pb-6 border-b border-gray-100">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
+                      </div>
+                      {edu.gpa && <span className="bg-gray-100 px-2 py-1 rounded text-gray-700">GPA: {edu.gpa}</span>}
+                    </div>
+
+                    {edu.coursework && edu.coursework.length > 0 && (
+                      <div>
+                        <span className="text-gray-500 text-sm font-medium uppercase tracking-wider block mb-3">Key Coursework</span>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.coursework.map((course, idx) => (
+                            <span key={idx} className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-100">
+                              {course}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Projects Section */}
       <section className="py-20 px-6">

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { EditorSection } from '@/types/editor';
-import { HeroData, AboutData, SkillsData, ProjectsData, ContactData } from '@/types/portfolio';
+import { HeroData, AboutData, SkillsData, ProjectsData, ContactData, ExperienceData, EducationData } from '@/types/portfolio';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
@@ -12,6 +12,8 @@ import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
 import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
+import ExperienceSection from '@/components/portfolio/sections/ExperienceSection';
+import EducationSection from '@/components/portfolio/sections/EducationSection';
 
 interface PortfolioRendererProps {
   sections: EditorSection[];
@@ -75,6 +77,18 @@ export function PortfolioRenderer({ sections }: PortfolioRendererProps) {
             return (
               <ErrorBoundary key={section.id} label="Contact">
                 <ContactSection data={section.data as unknown as ContactData} styling={section.styling} isEditing={false} isPublicView={true} />
+              </ErrorBoundary>
+            );
+          case 'experience':
+            return (
+              <ErrorBoundary key={section.id} label="Experience">
+                <ExperienceSection data={section.data as unknown as ExperienceData} styling={section.styling} isEditing={false} isPublicView={true} />
+              </ErrorBoundary>
+            );
+          case 'education':
+            return (
+              <ErrorBoundary key={section.id} label="Education">
+                <EducationSection data={section.data as unknown as EducationData} styling={section.styling} isEditing={false} isPublicView={true} />
               </ErrorBoundary>
             );
           default:

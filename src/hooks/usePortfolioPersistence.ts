@@ -31,14 +31,26 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
+      // Strip undefined values so MongoDB / Prisma never sees them.
+      // JSON.parse(JSON.stringify(...)) is the safest way to do this
+      // because structuredClone preserves undefined while JSON does not.
+      const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
+
       const response = await fetch(`/api/portfolios/${portfolioId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: { sections: state.sections, portfolioTitle: state.portfolioTitle },
+          content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
           title: state.portfolioTitle
         }),
       });
+
+      // Guard against HTML error pages (e.g. Next.js 500 page) being returned
+      // instead of JSON — without this, response.json() throws a SyntaxError.
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(`Server error (${response.status}) — expected JSON but received ${contentType || 'HTML'}`);
+      }
 
       const result = await response.json();
 
@@ -77,6 +89,7 @@ export const usePortfolioPersistence = () => {
     }
   }, [portfolioId, state, setUnsavedChanges]);
 
+
   // Debounced auto-save with queue
   useEffect(() => {
     if (!autoSaveEnabled || !portfolioId) return;
@@ -114,8 +127,11 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
+      // Strip undefined values before sending (same as auto-save)
+      const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
+
       const updateData = {
-        content: { sections: state.sections, portfolioTitle: state.portfolioTitle },
+        content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
         title: title || state.portfolioTitle
       };
 
@@ -124,6 +140,12 @@ export const usePortfolioPersistence = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
       });
+
+      // Guard against HTML error pages
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(`Server error (${response.status})`);
+      }
 
       const result = await response.json();
 
