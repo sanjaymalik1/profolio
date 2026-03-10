@@ -45,10 +45,10 @@ export async function GET() {
       },
     });
 
-    // Strip content from the response — replace it with a lightweight sectionCount.
-    // The dashboard only needs to know how many sections exist, not the data inside them.
+    // Include content for dashboard previews, plus a lightweight sectionCount.
     const portfolioList = portfolios.map(({ content, ...rest }) => ({
       ...rest,
+      content: content ?? null,
       sectionCount: (content as { sections?: unknown[] } | null)?.sections?.length ?? 0,
     }));
 

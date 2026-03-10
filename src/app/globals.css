@@ -159,8 +159,13 @@
   }
 
   /* Help cursor for elements with additional info */
-  [title]:not(a):not(button), [data-tooltip] {
+  [title]:not(a):not(button):not([href]):not(img) {
     cursor: help;
+  }
+
+  /* Elements with title nested inside interactive areas should stay pointer */
+  a [title], button [title], [role="button"] [title] {
+    cursor: pointer;
   }
 
   /* Ensure text is selectable in appropriate areas */

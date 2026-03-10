@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 import { enhancedPortfolioTemplates } from "@/lib/portfolio/enhanced-templates";
 import { getAllTemplates } from "@/components/templates";
 import { TemplatePreview } from "@/components/templates/TemplatePreview";
+import { ScaledTemplatePreview } from "@/components/templates/ScaledPreview";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, Clock, Zap, Crown, Eye, ArrowLeft } from "lucide-react";
+import { Star, Clock, Zap, Crown, Eye, ArrowLeft, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export default function TemplatesPage() {
@@ -20,21 +21,6 @@ export default function TemplatesPage() {
   const availableTemplates = enhancedPortfolioTemplates.filter(template => 
     actualTemplates.some(actualTemplate => actualTemplate.id === template.id)
   );
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'developer':
-        return 'from-blue-500 to-indigo-600';
-      case 'creative':
-        return 'from-purple-500 to-pink-600';
-      case 'business':
-        return 'from-gray-600 to-gray-800';
-      case 'freelancer':
-        return 'from-green-500 to-teal-600';
-      default:
-        return 'from-blue-500 to-purple-600';
-    }
-  };
 
   const getDifficultyIcon = (difficulty: string) => {
     switch (difficulty) {
@@ -97,47 +83,35 @@ export default function TemplatesPage() {
               >
                 <Card className="overflow-hidden cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 border-0 relative h-full flex flex-col group">
                   <div className="relative">
-                    <div className={`h-48 bg-gradient-to-br ${getCategoryColor(template.category)} flex items-center justify-center relative overflow-hidden`}>
-                      {/* Template Preview Placeholder */}
-                      <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      
-                      {/* Template Name */}
-                      <div className="text-white text-center z-10">
-                        <h3 className="text-lg font-semibold mb-1">{template.name}</h3>
-                        <p className="text-white/80 text-sm capitalize">{template.category}</p>
-                      </div>
+                    <div className="relative h-48 overflow-hidden bg-white">
+                      <ScaledTemplatePreview templateId={template.id} />
 
-                      {/* Premium Badge */}
+                      {/* Badges */}
                       {template.isPremium && (
-                        <div className="absolute top-3 right-3">
-                          <Badge variant="secondary" className="bg-yellow-500 text-yellow-900 border-0">
+                        <div className="absolute top-3 right-3 z-10">
+                          <Badge variant="secondary" className="bg-yellow-500 text-yellow-900 border-0 text-[10px]">
                             <Crown className="w-3 h-3 mr-1" />
                             Pro
                           </Badge>
                         </div>
                       )}
-
-                      {/* Popular Badge */}
                       {template.isPopular && !template.isPremium && (
-                        <div className="absolute top-3 right-3">
-                          <Badge variant="secondary" className="bg-orange-500 text-orange-900 border-0">
+                        <div className="absolute top-3 right-3 z-10">
+                          <Badge variant="secondary" className="bg-slate-900 text-white border-0 text-[10px]">
                             <Star className="w-3 h-3 mr-1" />
                             Popular
                           </Badge>
                         </div>
                       )}
 
-                      {/* Hover Preview Button */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setPreviewTemplateId(template.id);
-                          }}
-                          className="bg-white text-gray-900 px-4 py-2 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0"
+                      {/* Hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/[0.06] transition-all duration-300 flex items-center justify-center">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPreviewTemplateId(template.id); }}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-900 text-xs font-semibold rounded-full shadow-xl opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300"
                         >
-                          <Eye className="w-4 h-4" />
-                          Preview Template
+                          <Eye className="w-3.5 h-3.5" />
+                          Preview
                         </button>
                       </div>
                     </div>
@@ -177,14 +151,12 @@ export default function TemplatesPage() {
                       </div>
 
                       {/* Action Button */}
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPreviewTemplateId(template.id);
-                        }}
-                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm mt-auto"
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setPreviewTemplateId(template.id); }}
+                        className="w-full bg-slate-900 text-white py-2 px-4 rounded-lg font-medium hover:bg-slate-800 transition-colors text-xs mt-auto flex items-center justify-center gap-1.5"
                       >
                         Preview Template
+                        <ArrowUpRight className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </CardContent>
