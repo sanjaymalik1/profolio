@@ -21,7 +21,7 @@ export const templateComponents: Record<string, TemplateComponent> = {
     previewData: {
       hero: {
         fullName: "Jordan Smith",
-        title: "Senior Software Engineer", 
+        title: "Senior Software Engineer",
         bio: "Building scalable systems and leading development teams with clean code practices.",
         location: "Seattle, WA"
       }

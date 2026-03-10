@@ -9,7 +9,8 @@ interface Portfolio {
   customSlug?: string;
   template: string;
   isPublic: boolean;
-  sectionCount: number;   // computed server-side; content is excluded from list API
+  content?: { sections?: Array<{ type: string; data: Record<string, unknown> }> } | null;
+  sectionCount: number;
   viewCount: number;
   lastPublishedAt?: string;
   createdAt: string;
