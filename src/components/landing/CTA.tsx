@@ -26,9 +26,8 @@ export default function CTA() {
           </p>
 
           <h2 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
-            Ready to make your
-            <br className="hidden sm:block" />
-            portfolio shine?
+            Ready to make your{" "}
+            <span className="block sm:inline">portfolio shine?</span>
           </h2>
 
           <p className="text-lg text-slate-500 mb-10 max-w-xl mx-auto leading-relaxed">
