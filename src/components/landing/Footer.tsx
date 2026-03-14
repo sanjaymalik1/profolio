@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 
 export default function Footer() {
   const [year, setYear] = React.useState(2025);
@@ -14,9 +15,9 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm sm:text-base">
           <div className="text-center md:text-left">© {year} Profolio — All rights reserved.</div>
           <div className="flex gap-4 sm:gap-6 text-sm sm:text-base">
-            <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">Contact</a>
+            <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
+            <Link href="/contact" className="hover:text-gray-900 transition-colors">Contact</Link>
           </div>
         </div>
       </div>
