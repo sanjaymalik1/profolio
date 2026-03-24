@@ -27,7 +27,12 @@ export const usePortfolios = () => {
 
   const loadPortfolios = async () => {
     try {
-      const response = await fetch('/api/portfolios');
+      const response = await fetch(`/api/portfolios?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
 
       // Handle auth errors gracefully
       if (response.status === 401) {

@@ -17,11 +17,15 @@ import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
 import ExperienceSection from '@/components/portfolio/sections/ExperienceSection';
 import EducationSection from '@/components/portfolio/sections/EducationSection';
+import NavbarSection from '@/components/portfolio/sections/NavbarSection';
+import FooterSection from '@/components/portfolio/sections/FooterSection';
 
-// Import template components
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
+import { ExecutiveProTemplate } from '@/components/templates/ExecutiveProTemplate';
+import { portfolioTemplates } from '@/lib/portfolio/templates';
+import { getTemplate } from '@/components/templates';
 
 
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +55,10 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
   // Block selection state (separate from section selection for PropertyPanel)
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+
+  // Get active template config
+  const activeTemplate = state.templateId ? portfolioTemplates.find(t => t.id === state.templateId) : null;
+  const ActiveTemplateComponent = state.templateId ? getTemplate(state.templateId)?.component : null;
 
   // Get selected section info for orientation feedback
   const selectedSection = state.sections.find(s => s.id === selectedBlockId);
@@ -83,8 +91,10 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     }
   };
 
-  const renderSection = (section: EditorSection, index: number) => {
+  const renderSection = (section: EditorSection, index: number, templateContent?: React.ReactNode) => {
     const isSelected = state.selectedSectionId === section.id;
+    const isNavbarOrFooter = section.type === 'navbar' || section.type === 'footer';
+    const isSingleInstance = ['hero', 'about', 'skills', 'projects', 'contact', 'navbar', 'footer', 'experience', 'education'].includes(section.type);
 
     const dragItem: EditorSectionDragItem = {
       type: 'editor-section',
@@ -96,6 +106,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
 
     // Render the appropriate section component
     const SectionComponent = () => {
+      if (templateContent) return <>{templateContent}</>;
       switch (section.type) {
         case 'template':
           // TypeScript now knows section.data is TemplateSectionData
@@ -107,6 +118,9 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           }
           if (section.data.templateId === 'warm-minimalist') {
             return <WarmMinimalistTemplate data={section.data.templateData} isPreview={false} />;
+          }
+          if (section.data.templateId === 'executive-pro') {
+            return <ExecutiveProTemplate data={section.data.templateData} isPreview={false} />;
           }
           return (
             <div className="p-8 text-center text-muted-foreground">
@@ -202,6 +216,30 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
               onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
             />
           );
+        case 'navbar':
+          return (
+            <NavbarSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
+        case 'footer':
+          return (
+            <FooterSection
+              data={section.data}
+              styling={section.styling}
+              isEditing={true}
+              isPublicView={false}
+              onEdit={() => selectSection(section.id)}
+              onDataChange={(newData) => updateSectionData(section.id, newData)}
+              onStylingChange={(newStyling) => updateSectionStyling(section.id, newStyling)}
+            />
+          );
         default:
           // Exhaustive type check - ensures all section types are handled
           void (section as never);
@@ -210,15 +248,17 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
     };
 
     return (
-      <div key={section.id} className="relative group">
-        {/* Drop zone above section - subtle */}
-        <Droppable
-          accept={['palette-section', 'editor-section']}
-          onDrop={(item) => handleSectionDrop(item, index)}
-          className="h-1.5 -mb-1.5 relative z-10 opacity-0 group-hover:opacity-100"
-        >
-          <div className="h-full bg-blue-400 rounded-full mx-4" />
-        </Droppable>
+      <section key={section.id} className="relative group scroll-mt-24" id={section.type}>
+        {/* Drop zone above section - subtle - Hide for navbar */}
+        {!isNavbarOrFooter && (
+          <Droppable
+            accept={['palette-section', 'editor-section']}
+            onDrop={(item) => handleSectionDrop(item, index)}
+            className="h-1.5 -mb-1.5 relative z-10 opacity-0 group-hover:opacity-100"
+          >
+            <div className="h-full bg-blue-400 rounded-full mx-4" />
+          </Droppable>
+        )}
 
         {/* EditorBlock wrapper for block-level interactions */}
         <EditorBlock
@@ -226,12 +266,12 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           sectionType={section.type}
           isSelected={selectedBlockId === section.id}
           onSelect={() => setSelectedBlockId(section.id)}
-          onDuplicate={() => duplicateSection(section.id)}
-          onDelete={() => removeSection(section.id)}
-          onMoveUp={() => moveSectionUp(section.id)}
-          onMoveDown={() => moveSectionDown(section.id)}
-          canMoveUp={index > 0}
-          canMoveDown={index < state.sections.length - 1}
+          onDuplicate={!isSingleInstance ? () => duplicateSection(section.id) : undefined}
+          onDelete={!isNavbarOrFooter ? () => removeSection(section.id) : undefined}
+          onMoveUp={!isNavbarOrFooter && index > 0 ? () => moveSectionUp(section.id) : undefined}
+          onMoveDown={!isNavbarOrFooter && index < state.sections.length - 1 ? () => moveSectionDown(section.id) : undefined}
+          canMoveUp={!isNavbarOrFooter && index > 0}
+          canMoveDown={!isNavbarOrFooter && index < state.sections.length - 1}
         >
           {/* Section wrapper - Webflow-style subtle borders */}
           <div className={`
@@ -240,24 +280,26 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             ${state.isDragging ? 'border-dashed border-slate-300' : ''}
           `}>
 
-            {/* Drag handle - minimal */}
-            <Draggable
-              dragItem={dragItem}
-              onDragStart={() => setDragging(true)}
-              onDragEnd={() => setDragging(false)}
-            >
-              <div className={`
+            {/* Drag handle - minimal - Hide for navbar and footer */}
+            {!isNavbarOrFooter && (
+              <Draggable
+                dragItem={dragItem}
+                onDragStart={() => setDragging(true)}
+                onDragEnd={() => setDragging(false)}
+              >
+                <div className={`
               absolute left-2 top-2 z-20 p-1.5 rounded-md bg-white/95 border border-slate-200/60 shadow-sm backdrop-blur-sm
               cursor-grab active:cursor-grabbing transition-opacity
               ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
             `}>
-                <GripVertical className="h-4 w-4 text-slate-400" />
-              </div>
-            </Draggable>
+                  <GripVertical className="h-4 w-4 text-slate-400" />
+                </div>
+              </Draggable>
+            )}
 
             {/* Section type badge */}
             <div className={`
-            absolute top-3 left-14 z-20 transition-opacity
+            absolute top-3 ${isNavbarOrFooter ? 'left-2' : 'left-14'} z-20 transition-opacity
             ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
           `}>
               <Badge variant="secondary" className="bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-sm capitalize">
@@ -273,7 +315,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             </div>
           </div>
         </EditorBlock>
-      </div>
+      </section>
     );
   };
 
@@ -331,8 +373,26 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
                 <span className="lg:hidden">Add sections to get started</span>
               </p>
             </div>
+          ) : ActiveTemplateComponent ? (
+            <ActiveTemplateComponent 
+              sections={state?.sections || []} 
+              renderSection={(section, index, content) => renderSection(section, index, content)} 
+            />
           ) : (
-            <div className="space-y-0">
+            <div className={`space-y-0 ${activeTemplate ? `template-${activeTemplate.id} bg-[${activeTemplate.colorScheme?.background || '#ffffff'}]` : ''}`}>
+              {/* Template Global Navbar Placeholder */}
+              {activeTemplate && (
+                <div className="w-full py-4 px-6 border-b border-opacity-10 pointer-events-none sticky top-0 z-10 bg-inherit shadow-sm flex items-center justify-between">
+                  <div className="font-bold text-lg opacity-50">{state.portfolioTitle || 'Portfolio'}</div>
+                  <div className="flex gap-4 text-sm font-medium opacity-50">
+                    <div>Home</div>
+                    <div>About</div>
+                    <div>Work</div>
+                    <div>Contact</div>
+                  </div>
+                </div>
+              )}
+
               {(state?.sections || [])
                 .sort((a, b) => a.order - b.order)
                 .map((section, index) => renderSection(section, index))}

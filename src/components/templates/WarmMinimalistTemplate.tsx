@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, Heart, Coffee, Star, Send, Building2, GraduationCap, Calendar } from 'lucide-react';
+import type { EditorSection } from '@/types/editor';
 import type { TemplateData, Project, ProjectsData, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
 
 interface WarmMinimalistTemplateProps {
   data?: TemplateData;
   isPreview?: boolean;
+  sections?: EditorSection[];
+  renderSection?: (section: EditorSection, index: number, content: React.ReactNode) => React.ReactNode;
 }
 
-export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimalistTemplateProps) {
+export function WarmMinimalistTemplate({ data, isPreview = false, sections, renderSection }: WarmMinimalistTemplateProps) {
   const heroData = data?.hero || {
     fullName: "Sarah Martinez",
     title: "Creative Freelancer & Brand Designer",
@@ -104,7 +108,7 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
     education: []
   };
 
-  const contactData = data?.contact || {
+  const contactData: any = data?.contact || {
     heading: "Let's Create Together",
     email: "sarah@example.com",
     phone: "+1 (512) 555-0123",
@@ -113,464 +117,997 @@ export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimali
 
   return (
     <div className={`min-h-screen bg-amber-50 text-amber-900 ${isPreview ? 'pointer-events-none' : ''}`}>
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-amber-50 to-orange-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center">
-            {/* Profile Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="mb-8"
-            >
-              <div className="w-32 h-32 mx-auto relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full"></div>
-                <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                  <Heart className="w-12 h-12 text-amber-500" />
-                </div>
-              </div>
-            </motion.div>
+      {sections ? (
+        sections.map((section, index) => {
+          let content: React.ReactNode = null;
+          switch (section.type) {
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-8"
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-sm font-medium text-amber-700 mb-6 shadow-sm">
-                <Coffee className="w-4 h-4" />
-                Available for new projects
-              </div>
+            case 'hero': {
+              const heroData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
 
-              <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
-                Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
-              </h1>
+                  {/* Hero Section */}
+                  <section className="relative py-24 px-6 bg-gradient-to-br from-amber-50 to-orange-50">
+                    <div className="max-w-6xl mx-auto">
+                      <div className="text-center">
+                        {/* Profile Image */}
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.8 }}
+                          className="mb-8"
+                        >
+                          <div className="w-32 h-32 mx-auto relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full"></div>
+                            <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                              <Heart className="w-12 h-12 text-amber-500" />
+                            </div>
+                          </div>
+                        </motion.div>
 
-              <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
-                {heroData.title}
-              </h2>
+                        <motion.div
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.8, delay: 0.2 }}
+                          className="mb-8"
+                        >
+                          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-sm font-medium text-amber-700 mb-6 shadow-sm">
+                            <Coffee className="w-4 h-4" />
+                            Available for new projects
+                          </div>
 
-              <p className="text-lg text-amber-800 leading-relaxed mb-8 max-w-2xl mx-auto">
-                {heroData.bio}
-              </p>
+                          <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
+                            Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
+                          </h1>
 
-              <div className="flex items-center justify-center gap-2 text-amber-600 mb-8">
-                <MapPin className="w-5 h-5" />
-                <span>{heroData.location}</span>
-              </div>
+                          <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
+                            {heroData.title}
+                          </h2>
 
-              <div className="flex justify-center gap-4 mb-8">
-                {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
-                  <motion.a
-                    key={index}
-                    href={link.url}
-                    onClick={(e) => isPreview && e.preventDefault()}
-                    target={!isPreview ? "_blank" : undefined}
-                    rel={!isPreview ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
-                  >
-                    {link.platform === 'github' && <Github className="w-5 h-5 text-amber-700" />}
-                    {link.platform === 'linkedin' && <Linkedin className="w-5 h-5 text-blue-600" />}
-                    {link.platform === 'email' && <Mail className="w-5 h-5 text-red-500" />}
-                  </motion.a>
-                ))}
-              </div>
+                          <p className="text-lg text-amber-800 leading-relaxed mb-8 max-w-2xl mx-auto">
+                            {heroData.bio}
+                          </p>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-red-500 text-white font-medium rounded-full hover:bg-red-600 transition-colors shadow-lg"
-              >
-                Let&apos;s Work Together
-              </motion.button>
-            </motion.div>
-          </div>
-        </div>
+                          <div className="flex items-center justify-center gap-2 text-amber-600 mb-8">
+                            <MapPin className="w-5 h-5" />
+                            <span>{heroData.location}</span>
+                          </div>
 
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-4 h-4 bg-amber-300 rounded-full opacity-60"></div>
-        <div className="absolute top-40 right-20 w-6 h-6 bg-red-300 rounded-full opacity-40"></div>
-        <div className="absolute bottom-20 left-20 w-3 h-3 bg-orange-300 rounded-full opacity-50"></div>
-      </section>
+                          <div className="flex justify-center gap-4 mb-8">
+                            {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
+                              <motion.a
+                                key={index}
+                                href={link.url}
+                                onClick={(e) => isPreview && e.preventDefault()}
+                                target={!isPreview ? "_blank" : undefined}
+                                rel={!isPreview ? "noopener noreferrer" : undefined}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                              >
+                                {link.platform === 'github' && <Github className="w-5 h-5 text-amber-700" />}
+                                {link.platform === 'linkedin' && <Linkedin className="w-5 h-5 text-blue-600" />}
+                                {link.platform === 'email' && <Mail className="w-5 h-5 text-red-500" />}
+                              </motion.a>
+                            ))}
+                          </div>
 
-      {/* About Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800">{aboutData.heading}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <p className="text-lg text-amber-800 leading-relaxed mb-8">
-                {aboutData.content}
-              </p>
-
-              <div className="space-y-4">
-                {(aboutData.highlights || []).map((highlight: string, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="flex items-start gap-3"
-                  >
-                    <Star className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <p className="text-amber-700">{highlight}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
-              <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <Heart className="w-24 h-24 text-red-400 mx-auto mb-4" />
-                  <p className="text-amber-700 font-medium">Passionate about meaningful design</p>
-                </div>
-              </div>
-              {/* Decorative dots */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-red-400 rounded-full opacity-60"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-amber-400 rounded-full opacity-60"></div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section className="py-20 px-6 bg-amber-50">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-light mb-4 text-amber-800">{skillsData.heading}</h2>
-            <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Creative Skills */}
-            <div>
-              <h3 className="text-2xl font-light mb-8 text-amber-800">Creative Skills</h3>
-              <div className="space-y-6">
-                {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl p-6 shadow-sm"
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-amber-800">{skill.name}</span>
-                      <span className="text-sm text-amber-600">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-amber-100 rounded-full h-3">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.1 }}
-                        className="bg-gradient-to-r from-red-400 to-amber-400 h-3 rounded-full"
-                      ></motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tools */}
-            <div>
-              <h3 className="text-2xl font-light mb-8 text-amber-800">Favorite Tools</h3>
-              <div className="space-y-6">
-                {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl p-6 shadow-sm"
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-amber-800">{skill.name}</span>
-                      <span className="text-sm text-amber-600">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-amber-100 rounded-full h-3">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.1 }}
-                        className="bg-gradient-to-r from-amber-400 to-orange-400 h-3 rounded-full"
-                      ></motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Experience Section */}
-      {experienceData.experiences && experienceData.experiences.length > 0 && (
-        <section className="py-20 px-6 bg-orange-50/50">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mb-16"
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800 text-center">{experienceData.heading || "Experience"}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
-
-            <div className="space-y-12">
-              {experienceData.experiences.map((exp: Experience, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-amber-100/50 relative overflow-hidden"
-                >
-                  <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-300 to-red-400"></div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-                    <div>
-                      <h3 className="text-2xl font-medium text-amber-900 mb-2">{exp.position}</h3>
-                      <div className="flex items-center gap-2 text-lg text-amber-700">
-                        <Building2 className="w-5 h-5 text-red-400" />
-                        <span>{exp.company}</span>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-8 py-3 bg-red-500 text-white font-medium rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                          >
+                            Let&apos;s Work Together
+                          </motion.button>
+                        </motion.div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 px-4 py-2 rounded-full w-fit">
-                      <Calendar className="w-4 h-4" />
-                      <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
+                    {/* Floating Elements */}
+                    <div className="absolute top-20 left-10 w-4 h-4 bg-amber-300 rounded-full opacity-60"></div>
+                    <div className="absolute top-40 right-20 w-6 h-6 bg-red-300 rounded-full opacity-40"></div>
+                    <div className="absolute bottom-20 left-20 w-3 h-3 bg-orange-300 rounded-full opacity-50"></div>
+                  </section>
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'about': {
+              const aboutData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* About Section */}
+                  <section className="py-24 px-6 bg-white">
+                    <div className="max-w-6xl mx-auto">
+                      <div className="text-center mb-16">
+                        <motion.div
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <h2 className="text-4xl font-light mb-4 text-amber-800">{aboutData.heading}</h2>
+                          <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                        </motion.div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <motion.div
+                          initial={{ opacity: 0, x: -30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                        >
+                          <p className="text-lg text-amber-800 leading-relaxed mb-8">
+                            {aboutData.content}
+                          </p>
+
+                          <div className="space-y-4">
+                            {(aboutData.highlights || []).map((highlight: string, index: number) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="flex items-start gap-3"
+                              >
+                                <Star className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                                <p className="text-amber-700">{highlight}</p>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, x: 30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                          className="relative"
+                        >
+                          <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 flex items-center justify-center">
+                            <div className="text-center">
+                              <Heart className="w-24 h-24 text-red-400 mx-auto mb-4" />
+                              <p className="text-amber-700 font-medium">Passionate about meaningful design</p>
+                            </div>
+                          </div>
+                          {/* Decorative dots */}
+                          <div className="absolute -top-4 -right-4 w-8 h-8 bg-red-400 rounded-full opacity-60"></div>
+                          <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-amber-400 rounded-full opacity-60"></div>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </section>
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'skills': {
+              const skillsData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* Skills Section */}
+                  <section className="py-24 px-6 bg-amber-50">
+                    <div className="max-w-6xl mx-auto">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-16"
+                      >
+                        <h2 className="text-4xl font-light mb-4 text-amber-800">{skillsData.heading}</h2>
+                        <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                      </motion.div>
+
+                      <div className="grid md:grid-cols-2 gap-12">
+                        {/* Creative Skills */}
+                        <div>
+                          <h3 className="text-2xl font-light mb-8 text-amber-800">Creative Skills</h3>
+                          <div className="space-y-6">
+                            {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="bg-white rounded-2xl p-6 shadow-sm"
+                              >
+                                <div className="flex justify-between items-center mb-3">
+                                  <span className="font-medium text-amber-800">{skill.name}</span>
+                                  <span className="text-sm text-amber-600">{skill.level}%</span>
+                                </div>
+                                <div className="w-full bg-amber-100 rounded-full h-3">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: `${skill.level}%` }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 1, delay: index * 0.1 }}
+                                    className="bg-gradient-to-r from-red-400 to-amber-400 h-3 rounded-full"
+                                  ></motion.div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Tools */}
+                        <div>
+                          <h3 className="text-2xl font-light mb-8 text-amber-800">Favorite Tools</h3>
+                          <div className="space-y-6">
+                            {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
+                                className="bg-white rounded-2xl p-6 shadow-sm"
+                              >
+                                <div className="flex justify-between items-center mb-3">
+                                  <span className="font-medium text-amber-800">{skill.name}</span>
+                                  <span className="text-sm text-amber-600">{skill.level}%</span>
+                                </div>
+                                <div className="w-full bg-amber-100 rounded-full h-3">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: `${skill.level}%` }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 1, delay: index * 0.1 }}
+                                    className="bg-gradient-to-r from-amber-400 to-orange-400 h-3 rounded-full"
+                                  ></motion.div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'projects': {
+              const projectsData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* Projects Section */}
+                  <section className="py-24 px-6 bg-white">
+                    <div className="max-w-6xl mx-auto">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-16"
+                      >
+                        <h2 className="text-4xl font-light mb-4 text-amber-800">{projectsData.heading}</h2>
+                        <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                      </motion.div>
+
+                      <div className="grid md:grid-cols-3 gap-8">
+                        {(projectsData.projects || []).map((project: any, index: number) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                            className="bg-amber-50 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+                          >
+                            <div className="aspect-video bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center group-hover:from-amber-300 group-hover:to-orange-300 transition-all duration-300">
+                              <div className="text-center">
+                                <Heart className="w-12 h-12 text-white mx-auto mb-2" />
+                                <p className="text-white font-medium">{project.category}</p>
+                              </div>
+                            </div>
+
+                            <div className="p-6">
+                              <h3 className="text-xl font-medium mb-3 text-amber-800">{project.title}</h3>
+                              <p className="text-amber-700 text-sm leading-relaxed mb-4">
+                                {project.description}
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {(project.technologies || []).map((tech: string, techIndex: number) => (
+                                  <span
+                                    key={techIndex}
+                                    className="px-3 py-1 bg-white rounded-full text-xs text-amber-700 border border-amber-200"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'contact': {
+              const contactData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* Contact Section */}
+                  <section className="py-24 px-6 bg-amber-100">
+                    <div className="max-w-6xl mx-auto">
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center"
+                      >
+                        <h2 className="text-4xl font-light text-amber-900 mb-4">{contactData.heading}</h2>
+                        <div className="w-16 h-1 bg-amber-400 mx-auto rounded-full mb-8"></div>
+
+                        <p className="text-xl text-amber-800 mb-12 max-w-2xl mx-auto">
+                          {contactData.availability || "Have a project in mind? I'd love to hear about it! Let's create something beautiful together."}
+                        </p>
+
+                        <div className="bg-white border border-amber-200 rounded-2xl p-8 max-w-2xl mx-auto shadow-sm">
+                          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-8">
+                            <div className="flex items-center gap-3 text-amber-800">
+                              <Mail className="w-5 h-5 text-amber-600" />
+                              <span>{contactData.email}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-amber-800">
+                              <MapPin className="w-5 h-5 text-amber-600" />
+                              <span>{contactData.location}</span>
+                            </div>
+                          </div>
+
+                          <motion.a
+                            href={`mailto:${contactData.email}`}
+                            onClick={(e) => isPreview && e.preventDefault()}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="inline-flex items-center gap-3 px-8 py-4 bg-amber-600 text-white rounded-full font-medium hover:bg-amber-500 transition-all duration-300"
+                          >
+                            <Send className="w-5 h-5" />
+                            Get In Touch
+                          </motion.a>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </section>
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'experience': {
+              const experienceData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* Experience Section */}
+                  {experienceData.experiences && experienceData.experiences.length > 0 && (
+                    <section className="py-24 px-6 bg-orange-50/50">
+                      <div className="max-w-6xl mx-auto">
+                        <motion.div
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                          className="mb-16"
+                        >
+                          <h2 className="text-4xl font-light mb-4 text-amber-800 text-center">{experienceData.heading || "Experience"}</h2>
+                          <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                        </motion.div>
+
+                        <div className="space-y-12">
+                          {experienceData.experiences.map((exp: Experience, index: number) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.5, delay: index * 0.1 }}
+                              className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-amber-100/50 relative overflow-hidden"
+                            >
+                              <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-300 to-red-400"></div>
+
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                                <div>
+                                  <h3 className="text-2xl font-medium text-amber-900 mb-2">{exp.position}</h3>
+                                  <div className="flex items-center gap-2 text-lg text-amber-700">
+                                    <Building2 className="w-5 h-5 text-red-400" />
+                                    <span>{exp.company}</span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 px-4 py-2 rounded-full w-fit">
+                                  <Calendar className="w-4 h-4" />
+                                  <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
+                                </div>
+                              </div>
+
+                              <p className="text-amber-800 leading-relaxed mb-6">{exp.description}</p>
+
+                              {exp.responsibilities && exp.responsibilities.length > 0 && (
+                                <div className="space-y-3 mb-8">
+                                  {exp.responsibilities.map((resp, i) => (
+                                    <div key={i} className="flex items-start gap-3">
+                                      <Star className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                                      <p className="text-amber-700 leading-relaxed">{resp}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {exp.technologies && exp.technologies.length > 0 && (
+                                <div className="flex flex-wrap gap-2 pt-6 border-t border-amber-100">
+                                  {exp.technologies.map((tech, i) => (
+                                    <span key={i} className="px-4 py-1.5 bg-amber-50 text-amber-700 text-sm font-medium rounded-full border border-amber-200/50">
+                                      {tech}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  )}
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'education': {
+              const educationData = section.data as any;
+              content = (
+                <React.Fragment key={section.id || index}>
+
+
+                  {/* Education Section */}
+                  {educationData.education && educationData.education.length > 0 && (
+                    <section className="py-24 px-6 bg-amber-50">
+                      <div className="max-w-6xl mx-auto">
+                        <motion.div
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6 }}
+                          className="text-center mb-16"
+                        >
+                          <h2 className="text-4xl font-light mb-4 text-amber-800">{educationData.heading || "Education"}</h2>
+                          <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                        </motion.div>
+
+                        <div className="grid md:grid-cols-2 gap-8">
+                          {educationData.education.map((edu: Education, index: number) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.5, delay: index * 0.1 }}
+                              className="bg-white rounded-3xl p-8 shadow-sm border border-amber-100/50 flex flex-col h-full"
+                            >
+                              <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-amber-600 rotate-3">
+                                <GraduationCap className="w-7 h-7 -rotate-3" />
+                              </div>
+
+                              <h3 className="text-2xl font-medium text-amber-900 mb-2">
+                                {edu.degree} {edu.field ? <span className="font-light text-amber-700 block mt-1">in {edu.field}</span> : ''}
+                              </h3>
+
+                              <div className="text-lg text-amber-600 mb-6">{edu.institution}</div>
+
+                              <div className="flex flex-wrap items-center gap-4 text-sm text-amber-700 font-medium mb-6 pb-6 border-b border-amber-100">
+                                <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
+                                  <Calendar className="w-4 h-4 text-amber-500" />
+                                  <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
+                                </div>
+                                {edu.gpa && <span className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full">GPA: {edu.gpa}</span>}
+                              </div>
+
+                              {edu.coursework && edu.coursework.length > 0 && (
+                                <div className="mt-auto pt-2">
+                                  <span className="text-amber-800 font-medium text-sm block mb-3">Relevant Coursework</span>
+                                  <div className="flex flex-wrap gap-2">
+                                    {edu.coursework.map((course, idx) => (
+                                      <span key={idx} className="bg-amber-50/80 text-amber-700 px-3 py-1.5 rounded-lg text-sm">
+                                        {course}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+                  )}
+                </React.Fragment>
+              );
+              break;
+            }
+            default:
+              return null;
+          }
+          return renderSection ? renderSection(section, index, content) : content;
+        })
+      ) : (
+        <>
+
+          {/* Hero Section */}
+          <section className="relative py-24 px-6 bg-gradient-to-br from-amber-50 to-orange-50">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center">
+                {/* Profile Image */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8 }}
+                  className="mb-8"
+                >
+                  <div className="w-32 h-32 mx-auto relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full"></div>
+                    <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                      <Heart className="w-12 h-12 text-amber-500" />
                     </div>
                   </div>
-
-                  <p className="text-amber-800 leading-relaxed mb-6">{exp.description}</p>
-
-                  {exp.responsibilities && exp.responsibilities.length > 0 && (
-                    <div className="space-y-3 mb-8">
-                      {exp.responsibilities.map((resp, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <Star className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                          <p className="text-amber-700 leading-relaxed">{resp}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {exp.technologies && exp.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-6 border-t border-amber-100">
-                      {exp.technologies.map((tech, i) => (
-                        <span key={i} className="px-4 py-1.5 bg-amber-50 text-amber-700 text-sm font-medium rounded-full border border-amber-200/50">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
-      {/* Education Section */}
-      {educationData.education && educationData.education.length > 0 && (
-        <section className="py-20 px-6 bg-amber-50">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800">{educationData.heading || "Education"}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {educationData.education.map((edu: Education, index: number) => (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="mb-8"
+                >
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-sm font-medium text-amber-700 mb-6 shadow-sm">
+                    <Coffee className="w-4 h-4" />
+                    Available for new projects
+                  </div>
+
+                  <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
+                    Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
+                  </h1>
+
+                  <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
+                    {heroData.title}
+                  </h2>
+
+                  <p className="text-lg text-amber-800 leading-relaxed mb-8 max-w-2xl mx-auto">
+                    {heroData.bio}
+                  </p>
+
+                  <div className="flex items-center justify-center gap-2 text-amber-600 mb-8">
+                    <MapPin className="w-5 h-5" />
+                    <span>{heroData.location}</span>
+                  </div>
+
+                  <div className="flex justify-center gap-4 mb-8">
+                    {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
+                      <motion.a
+                        key={index}
+                        href={link.url}
+                        onClick={(e) => isPreview && e.preventDefault()}
+                        target={!isPreview ? "_blank" : undefined}
+                        rel={!isPreview ? "noopener noreferrer" : undefined}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                      >
+                        {link.platform === 'github' && <Github className="w-5 h-5 text-amber-700" />}
+                        {link.platform === 'linkedin' && <Linkedin className="w-5 h-5 text-blue-600" />}
+                        {link.platform === 'email' && <Mail className="w-5 h-5 text-red-500" />}
+                      </motion.a>
+                    ))}
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-3 bg-red-500 text-white font-medium rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  >
+                    Let&apos;s Work Together
+                  </motion.button>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Floating Elements */}
+            <div className="absolute top-20 left-10 w-4 h-4 bg-amber-300 rounded-full opacity-60"></div>
+            <div className="absolute top-40 right-20 w-6 h-6 bg-red-300 rounded-full opacity-40"></div>
+            <div className="absolute bottom-20 left-20 w-3 h-3 bg-orange-300 rounded-full opacity-50"></div>
+          </section>
+
+          {/* About Section */}
+          <section className="py-24 px-6 bg-white">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-3xl p-8 shadow-sm border border-amber-100/50 flex flex-col h-full"
+                  transition={{ duration: 0.6 }}
                 >
-                  <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-amber-600 rotate-3">
-                    <GraduationCap className="w-7 h-7 -rotate-3" />
+                  <h2 className="text-4xl font-light mb-4 text-amber-800">{aboutData.heading}</h2>
+                  <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                </motion.div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <p className="text-lg text-amber-800 leading-relaxed mb-8">
+                    {aboutData.content}
+                  </p>
+
+                  <div className="space-y-4">
+                    {(aboutData.highlights || []).map((highlight: string, index: number) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="flex items-start gap-3"
+                      >
+                        <Star className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-amber-700">{highlight}</p>
+                      </motion.div>
+                    ))}
                   </div>
+                </motion.div>
 
-                  <h3 className="text-2xl font-medium text-amber-900 mb-2">
-                    {edu.degree} {edu.field ? <span className="font-light text-amber-700 block mt-1">in {edu.field}</span> : ''}
-                  </h3>
-
-                  <div className="text-lg text-amber-600 mb-6">{edu.institution}</div>
-
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-amber-700 font-medium mb-6 pb-6 border-b border-amber-100">
-                    <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
-                      <Calendar className="w-4 h-4 text-amber-500" />
-                      <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="relative"
+                >
+                  <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 flex items-center justify-center">
+                    <div className="text-center">
+                      <Heart className="w-24 h-24 text-red-400 mx-auto mb-4" />
+                      <p className="text-amber-700 font-medium">Passionate about meaningful design</p>
                     </div>
-                    {edu.gpa && <span className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full">GPA: {edu.gpa}</span>}
                   </div>
+                  {/* Decorative dots */}
+                  <div className="absolute -top-4 -right-4 w-8 h-8 bg-red-400 rounded-full opacity-60"></div>
+                  <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-amber-400 rounded-full opacity-60"></div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
 
-                  {edu.coursework && edu.coursework.length > 0 && (
-                    <div className="mt-auto pt-2">
-                      <span className="text-amber-800 font-medium text-sm block mb-3">Relevant Coursework</span>
+          {/* Skills Section */}
+          <section className="py-24 px-6 bg-amber-50">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl font-light mb-4 text-amber-800">{skillsData.heading}</h2>
+                <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-12">
+                {/* Creative Skills */}
+                <div>
+                  <h3 className="text-2xl font-light mb-8 text-amber-800">Creative Skills</h3>
+                  <div className="space-y-6">
+                    {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="bg-white rounded-2xl p-6 shadow-sm"
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="font-medium text-amber-800">{skill.name}</span>
+                          <span className="text-sm text-amber-600">{skill.level}%</span>
+                        </div>
+                        <div className="w-full bg-amber-100 rounded-full h-3">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${skill.level}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: index * 0.1 }}
+                            className="bg-gradient-to-r from-red-400 to-amber-400 h-3 rounded-full"
+                          ></motion.div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tools */}
+                <div>
+                  <h3 className="text-2xl font-light mb-8 text-amber-800">Favorite Tools</h3>
+                  <div className="space-y-6">
+                    {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="bg-white rounded-2xl p-6 shadow-sm"
+                      >
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="font-medium text-amber-800">{skill.name}</span>
+                          <span className="text-sm text-amber-600">{skill.level}%</span>
+                        </div>
+                        <div className="w-full bg-amber-100 rounded-full h-3">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${skill.level}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: index * 0.1 }}
+                            className="bg-gradient-to-r from-amber-400 to-orange-400 h-3 rounded-full"
+                          ></motion.div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Experience Section */}
+          {experienceData.experiences && experienceData.experiences.length > 0 && (
+            <section className="py-24 px-6 bg-orange-50/50">
+              <div className="max-w-6xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="mb-16"
+                >
+                  <h2 className="text-4xl font-light mb-4 text-amber-800 text-center">{experienceData.heading || "Experience"}</h2>
+                  <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                </motion.div>
+
+                <div className="space-y-12">
+                  {experienceData.experiences.map((exp: Experience, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-amber-100/50 relative overflow-hidden"
+                    >
+                      <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-300 to-red-400"></div>
+
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                        <div>
+                          <h3 className="text-2xl font-medium text-amber-900 mb-2">{exp.position}</h3>
+                          <div className="flex items-center gap-2 text-lg text-amber-700">
+                            <Building2 className="w-5 h-5 text-red-400" />
+                            <span>{exp.company}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 px-4 py-2 rounded-full w-fit">
+                          <Calendar className="w-4 h-4" />
+                          <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-amber-800 leading-relaxed mb-6">{exp.description}</p>
+
+                      {exp.responsibilities && exp.responsibilities.length > 0 && (
+                        <div className="space-y-3 mb-8">
+                          {exp.responsibilities.map((resp, i) => (
+                            <div key={i} className="flex items-start gap-3">
+                              <Star className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                              <p className="text-amber-700 leading-relaxed">{resp}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {exp.technologies && exp.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-6 border-t border-amber-100">
+                          {exp.technologies.map((tech, i) => (
+                            <span key={i} className="px-4 py-1.5 bg-amber-50 text-amber-700 text-sm font-medium rounded-full border border-amber-200/50">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Education Section */}
+          {educationData.education && educationData.education.length > 0 && (
+            <section className="py-24 px-6 bg-amber-50">
+              <div className="max-w-6xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="text-center mb-16"
+                >
+                  <h2 className="text-4xl font-light mb-4 text-amber-800">{educationData.heading || "Education"}</h2>
+                  <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+                </motion.div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                  {educationData.education.map((edu: Education, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-white rounded-3xl p-8 shadow-sm border border-amber-100/50 flex flex-col h-full"
+                    >
+                      <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-amber-600 rotate-3">
+                        <GraduationCap className="w-7 h-7 -rotate-3" />
+                      </div>
+
+                      <h3 className="text-2xl font-medium text-amber-900 mb-2">
+                        {edu.degree} {edu.field ? <span className="font-light text-amber-700 block mt-1">in {edu.field}</span> : ''}
+                      </h3>
+
+                      <div className="text-lg text-amber-600 mb-6">{edu.institution}</div>
+
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-amber-700 font-medium mb-6 pb-6 border-b border-amber-100">
+                        <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
+                          <Calendar className="w-4 h-4 text-amber-500" />
+                          <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
+                        </div>
+                        {edu.gpa && <span className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full">GPA: {edu.gpa}</span>}
+                      </div>
+
+                      {edu.coursework && edu.coursework.length > 0 && (
+                        <div className="mt-auto pt-2">
+                          <span className="text-amber-800 font-medium text-sm block mb-3">Relevant Coursework</span>
+                          <div className="flex flex-wrap gap-2">
+                            {edu.coursework.map((course, idx) => (
+                              <span key={idx} className="bg-amber-50/80 text-amber-700 px-3 py-1.5 rounded-lg text-sm">
+                                {course}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Projects Section */}
+          <section className="py-24 px-6 bg-white">
+            <div className="max-w-6xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl font-light mb-4 text-amber-800">{projectsData.heading}</h2>
+                <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+              </motion.div>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                {(projectsData.projects || []).map((project, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="bg-amber-50 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+                  >
+                    <div className="aspect-video bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center group-hover:from-amber-300 group-hover:to-orange-300 transition-all duration-300">
+                      <div className="text-center">
+                        <Heart className="w-12 h-12 text-white mx-auto mb-2" />
+                        <p className="text-white font-medium">{project.category}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-6">
+                      <h3 className="text-xl font-medium mb-3 text-amber-800">{project.title}</h3>
+                      <p className="text-amber-700 text-sm leading-relaxed mb-4">
+                        {project.description}
+                      </p>
                       <div className="flex flex-wrap gap-2">
-                        {edu.coursework.map((course, idx) => (
-                          <span key={idx} className="bg-amber-50/80 text-amber-700 px-3 py-1.5 rounded-lg text-sm">
-                            {course}
+                        {(project.technologies || []).map((tech: string, techIndex: number) => (
+                          <span
+                            key={techIndex}
+                            className="px-3 py-1 bg-white rounded-full text-xs text-amber-700 border border-amber-200"
+                          >
+                            {tech}
                           </span>
                         ))}
                       </div>
                     </div>
-                  )}
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
 
-      {/* Projects Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-light mb-4 text-amber-800">{projectsData.heading}</h2>
-            <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {(projectsData.projects || []).map((project, index) => (
+          {/* Contact Section */}
+          <section className="py-24 px-6 bg-amber-100">
+            <div className="max-w-6xl mx-auto">
               <motion.div
-                key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-amber-50 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+                transition={{ duration: 0.6 }}
+                className="text-center"
               >
-                <div className="aspect-video bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center group-hover:from-amber-300 group-hover:to-orange-300 transition-all duration-300">
-                  <div className="text-center">
-                    <Heart className="w-12 h-12 text-white mx-auto mb-2" />
-                    <p className="text-white font-medium">{project.category}</p>
-                  </div>
-                </div>
+                <h2 className="text-4xl font-light text-amber-900 mb-4">{contactData.heading}</h2>
+                <div className="w-16 h-1 bg-amber-400 mx-auto rounded-full mb-8"></div>
 
-                <div className="p-6">
-                  <h3 className="text-xl font-medium mb-3 text-amber-800">{project.title}</h3>
-                  <p className="text-amber-700 text-sm leading-relaxed mb-4">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {(project.technologies || []).map((tech: string, techIndex: number) => (
-                      <span
-                        key={techIndex}
-                        className="px-3 py-1 bg-white rounded-full text-xs text-amber-700 border border-amber-200"
-                      >
-                        {tech}
-                      </span>
-                    ))}
+                <p className="text-xl text-amber-800 mb-12 max-w-2xl mx-auto">
+                  {contactData.availability || "Have a project in mind? I'd love to hear about it! Let's create something beautiful together."}
+                </p>
+
+                <div className="bg-white border border-amber-200 rounded-2xl p-8 max-w-2xl mx-auto shadow-sm">
+                  <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-8">
+                    <div className="flex items-center gap-3 text-amber-800">
+                      <Mail className="w-5 h-5 text-amber-600" />
+                      <span>{contactData.email}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-amber-800">
+                      <MapPin className="w-5 h-5 text-amber-600" />
+                      <span>{contactData.location}</span>
+                    </div>
                   </div>
+
+                  <motion.a
+                    href={`mailto:${contactData.email}`}
+                    onClick={(e) => isPreview && e.preventDefault()}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-amber-600 text-white rounded-full font-medium hover:bg-amber-500 transition-all duration-300"
+                  >
+                    <Send className="w-5 h-5" />
+                    Get In Touch
+                  </motion.a>
                 </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-20 px-6 bg-red-500 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl font-light mb-8">{contactData.heading}</h2>
-            <div className="w-16 h-1 bg-white mx-auto rounded-full mb-12"></div>
-
-            <p className="text-xl mb-12 max-w-2xl mx-auto opacity-90">
-              Have a project in mind? I&apos;d love to hear about it! Let&apos;s create something beautiful together.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <Mail className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Email</p>
-                <p className="font-medium">{contactData.email}</p>
-              </div>
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <MapPin className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Location</p>
-                <p className="font-medium">{contactData.location}</p>
-              </div>
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <Coffee className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Status</p>
-                <p className="font-medium">Available</p>
-              </div>
             </div>
+          </section>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-white text-red-500 font-medium rounded-full hover:bg-amber-50 transition-all duration-300 inline-flex items-center gap-2"
-            >
-              <Send className="w-5 h-5" />
-              Start a Project
-            </motion.button>
-          </motion.div>
-        </div>
-      </section>
+        </>
+      )}
     </div>
   );
 }

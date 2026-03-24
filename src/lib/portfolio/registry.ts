@@ -56,6 +56,16 @@ export const TEMPLATE_REGISTRY: TemplateDefinition[] = [
         hoverOverlay: 'bg-slate-900/5',
         ctaStyle: 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg',
     },
+    {
+        id: 'executive-pro',
+        defaultTitle: 'Executive Pro Portfolio',
+        label: 'Executive Pro',
+        description: 'Premium choice for leaders',
+        previewBg: 'bg-white',
+        hoverOverlay: 'bg-slate-900/5',
+        ctaStyle: 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg',
+        badge: 'New',
+    },
 ];
 
 /** Blank canvas — listed separately since it has no templateId */

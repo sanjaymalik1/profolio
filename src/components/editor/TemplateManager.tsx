@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Layout, Wand2, Sparkles } from 'lucide-react';
+import type { EditorSection } from '@/types/editor';
 
 export function TemplateManager() {
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
@@ -35,8 +36,12 @@ export function TemplateManager() {
       await applyTemplateToEditor(selectedTemplateId, {
         clearEditor: resetEditor,
         loadState: (state: unknown) => {
-          // The state should be an array of EditorSection
-          if (Array.isArray(state)) {
+          // The state object contains sections and templateId
+          if (state && typeof state === 'object' && 'sections' in state) {
+            const { sections, templateId } = state as { sections: EditorSection[], templateId?: string };
+            loadSections(sections, templateId);
+          } else if (Array.isArray(state)) {
+            // Fallback for array (if used elsewhere)
             loadSections(state);
           }
         }

@@ -69,6 +69,33 @@ export const colorSchemes: Record<string, ColorScheme> = {
       muted: '#71717A'
     },
     border: '#E4E4E7'
+  },
+  'modern-developer': {
+    primary: '#1E293B',
+    secondary: '#475569',
+    accent: '#2563EB',
+    background: '#FFFFFF',
+    surface: '#F8FAFC',
+    text: { primary: '#0F172A', secondary: '#334155', muted: '#64748B' },
+    border: '#E2E8F0'
+  },
+  'sidebar-resume': {
+    primary: '#111827',
+    secondary: '#374151',
+    accent: '#059669',
+    background: '#FFFFFF',
+    surface: '#F9FAFB',
+    text: { primary: '#111827', secondary: '#4B5563', muted: '#9CA3AF' },
+    border: '#D1D5DB'
+  },
+  'creative-minimal': {
+    primary: '#000000',
+    secondary: '#525252',
+    accent: '#000000',
+    background: '#FAFAFA',
+    surface: '#FFFFFF',
+    text: { primary: '#171717', secondary: '#737373', muted: '#A3A3A3' },
+    border: '#E5E5E5'
   }
 };
 
@@ -216,6 +243,24 @@ export const typographyConfigs: Record<string, Typography> = {
       normal: 1.5,
       relaxed: 1.8
     }
+  },
+  'modern-developer': {
+    fontFamily: { heading: 'Inter, sans-serif', body: 'Inter, sans-serif', mono: 'JetBrains Mono, monospace' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' },
+    fontWeight: { normal: 400, medium: 500, semibold: 600, bold: 700 },
+    lineHeight: { tight: 1.25, normal: 1.6, relaxed: 1.75 }
+  },
+  'sidebar-resume': {
+    fontFamily: { heading: 'Roboto, sans-serif', body: 'Roboto, sans-serif', mono: 'Fira Code, monospace' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' },
+    fontWeight: { normal: 400, medium: 500, semibold: 600, bold: 700 },
+    lineHeight: { tight: 1.25, normal: 1.6, relaxed: 1.75 }
+  },
+  'creative-minimal': {
+    fontFamily: { heading: 'Outfit, sans-serif', body: 'Inter, sans-serif', mono: 'SF Mono, monospace' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.5rem', '2xl': '2rem', '3xl': '3rem', '4xl': '4rem' },
+    fontWeight: { normal: 300, medium: 400, semibold: 500, bold: 700 },
+    lineHeight: { tight: 1.1, normal: 1.5, relaxed: 1.8 }
   }
 };
 
@@ -313,6 +358,24 @@ export const layoutConfigs: Record<string, LayoutConfig> = {
       md: '0 8px 25px -5px rgb(0 0 0 / 0.1)',
       lg: '0 25px 50px -12px rgb(0 0 0 / 0.25)'
     }
+  },
+  'modern-developer': {
+    maxWidth: '1100px',
+    spacing: { section: '5rem', element: '1.5rem' },
+    borderRadius: { sm: '0.25rem', md: '0.5rem', lg: '0.75rem', xl: '1rem' },
+    shadows: { sm: 'none', md: 'none', lg: 'none' } // Flat, clean design
+  },
+  'sidebar-resume': {
+    maxWidth: '1200px',
+    spacing: { section: '4rem', element: '2rem' },
+    borderRadius: { sm: '0', md: '0', lg: '0', xl: '0' }, // Sharp edges for elegant resume
+    shadows: { sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)', md: '0 4px 6px -1px rgb(0 0 0 / 0.1)', lg: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }
+  },
+  'creative-minimal': {
+    maxWidth: '1400px',
+    spacing: { section: '8rem', element: '3rem' }, // Lots of whitespace
+    borderRadius: { sm: '0', md: '0', lg: '0', xl: '0' },
+    shadows: { sm: 'none', md: 'none', lg: 'none' } // Completely flat
   }
 };
 
@@ -518,6 +581,66 @@ const createDefaultSections = (templateId: string): PortfolioSection[] => {
           duration: 600
         }
       }
+    },
+    {
+      id: `${baseId}-experience`,
+      type: 'experience',
+      title: 'Experience Section',
+      enabled: true,
+      order: 5,
+      data: {
+        heading: 'Professional Experience',
+        experiences: [
+          {
+            id: `exp_${Date.now()}`,
+            company: 'Company Name',
+            position: 'Professional Title',
+            startDate: 'Jan 2020',
+            endDate: 'Present',
+            description: 'Describe your key responsibilities and achievements in this role.',
+            responsibilities: [
+              'Led a team of developers',
+              'Shipped products on time'
+            ],
+            technologies: ['React', 'TypeScript']
+          }
+        ]
+      },
+      styling: {
+        alignment: 'left',
+        layout: 'timeline',
+        padding: { top: '3rem', bottom: '3rem', left: '2rem', right: '2rem' },
+        margin: { top: '0', bottom: '0' },
+        animation: { type: 'slide', delay: 1000, duration: 600 }
+      }
+    },
+    {
+      id: `${baseId}-education`,
+      type: 'education',
+      title: 'Education Section',
+      enabled: true,
+      order: 6,
+      data: {
+        heading: 'Education',
+        education: [
+          {
+            id: `edu_${Date.now()}`,
+            institution: 'University Name',
+            degree: 'Bachelor of Science',
+            field: 'Computer Science',
+            startDate: '2016',
+            endDate: '2020',
+            coursework: ['Data Structures', 'Algorithms']
+          }
+        ]
+      },
+      styling: {
+        alignment: 'left',
+        layout: 'default',
+        padding: { top: '3rem', bottom: '3rem', left: '2rem', right: '2rem' },
+        margin: { top: '0', bottom: '0' },
+        animation: { type: 'slide', delay: 1200, duration: 600 }
+      }
     }
   ];
 };
@@ -675,6 +798,92 @@ export const portfolioTemplates: PortfolioTemplate[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     isPopular: false,
+    isPremium: true
+  },
+  {
+    id: 'modern-developer',
+    name: 'Modern Developer',
+    description: 'Clean, grid-based, professional layout perfect for software engineers. Neutral slate tones.',
+    category: 'developer',
+    thumbnail: '/templates/modern-developer-thumb.jpg',
+    previewImages: [],
+    tags: ['developer', 'clean', 'grid', 'modern', 'slate'],
+    sections: createDefaultSections('modern-developer'),
+    colorScheme: colorSchemes['modern-developer'],
+    typography: typographyConfigs['modern-developer'],
+    layout: layoutConfigs['modern-developer'],
+    features: ['Grid layouts', 'Clean typography', 'Neutral colors', 'Code snippets friendly', 'Optimized spacing'],
+    difficulty: 'beginner',
+    estimatedTime: '20 minutes',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPopular: true,
+    isPremium: true
+  },
+  {
+    id: 'sidebar-resume',
+    name: 'Sidebar Resume',
+    description: 'A professional two-column layout with a sticky sidebar for profile info and right-side scroll for content.',
+    category: 'modern',
+    thumbnail: '/templates/sidebar-resume-thumb.jpg',
+    previewImages: [],
+    tags: ['resume', 'professional', 'sidebar', 'sticky', 'corporate'],
+    sections: createDefaultSections('sidebar-resume'),
+    colorScheme: colorSchemes['sidebar-resume'],
+    typography: typographyConfigs['sidebar-resume'],
+    layout: layoutConfigs['sidebar-resume'],
+    features: ['Sticky sidebar', 'Two-column layout', 'Compact resume style', 'Print friendly'],
+    difficulty: 'intermediate',
+    estimatedTime: '30 minutes',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPopular: true,
+    isPremium: true
+  },
+  {
+    id: 'creative-minimal',
+    name: 'Creative Minimal',
+    description: 'A striking minimal template using stark contrasts, huge whitespace, and elegant typography.',
+    category: 'creative',
+    thumbnail: '/templates/creative-minimal-thumb.jpg',
+    previewImages: [],
+    tags: ['minimal', 'clean', 'white', 'creative', 'typography'],
+    sections: createDefaultSections('creative-minimal'),
+    colorScheme: colorSchemes['creative-minimal'],
+    typography: typographyConfigs['creative-minimal'],
+    layout: layoutConfigs['creative-minimal'],
+    features: ['Strong typography', 'Abundant whitespace', 'High contrast', 'Gallery-like feel'],
+    difficulty: 'beginner',
+    estimatedTime: '20 minutes',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPopular: true,
+    isPremium: false
+  },
+  {
+    id: 'executive-pro',
+    name: 'Executive Pro',
+    description: 'A premium, modern SaaS aesthetic template that feels like a deployable portfolio website.',
+    category: 'developer',
+    thumbnail: '/templates/dark-professional-thumb.jpg', 
+    previewImages: [],
+    tags: ['premium', 'saas', 'modern', 'clean', 'professional'],
+    sections: createDefaultSections('executive-pro'),
+    colorScheme: colorSchemes.classic,
+    typography: typographyConfigs.classic,
+    layout: layoutConfigs.modern,
+    features: [
+      'Premium SaaS aesthetic',
+      'Sticky Navbar with smooth scroll',
+      'Vertical timeline experience layout',
+      'Tag-based skills display',
+      'Clean contact CTA'
+    ],
+    difficulty: 'intermediate',
+    estimatedTime: '30 minutes',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPopular: true,
     isPremium: true
   }
 ];

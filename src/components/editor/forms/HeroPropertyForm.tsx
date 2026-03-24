@@ -88,16 +88,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="subtitle" className="text-sm font-medium text-slate-700">Subtitle</Label>
-            <Input
-              id="subtitle"
-              value={heroData.subtitle || ''}
-              onChange={(e) => handleInputChange('subtitle', e.target.value)}
-              placeholder="Passionate about creating amazing experiences"
-              className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
+
 
           <div className="space-y-2">
             <Label htmlFor="bio" className="text-sm font-medium text-slate-700">Bio</Label>
@@ -122,17 +113,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-4">
-          <div className="space-y-2">
-            <Label htmlFor="contactEmail" className="text-sm font-medium text-slate-700">Email</Label>
-            <Input
-              id="contactEmail"
-              type="email"
-              value={heroData.contactEmail || ''}
-              onChange={(e) => handleInputChange('contactEmail', e.target.value)}
-              placeholder="john@example.com"
-              className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
+
 
           <div className="space-y-2">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">Location</Label>
@@ -167,16 +148,6 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="backgroundImage" className="text-sm font-medium text-slate-700">Background Image URL</Label>
-            <Input
-              id="backgroundImage"
-              value={heroData.backgroundImage || ''}
-              onChange={(e) => handleInputChange('backgroundImage', e.target.value)}
-              placeholder="https://example.com/background.jpg"
-              className="border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
         </CardContent>
       </Card>
 

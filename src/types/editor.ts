@@ -7,6 +7,8 @@ import {
   ContactData,
   ExperienceData,
   EducationData,
+  NavbarData,
+  FooterData,
   TemplateSectionData,
   SectionStyling
 } from './portfolio';
@@ -26,6 +28,8 @@ export type DraggableSectionType =
   | 'contact'
   | 'experience'
   | 'education'
+  | 'navbar'
+  | 'footer'
   | 'template';
 
 // Drag item for new sections from palette
@@ -100,6 +104,16 @@ interface TemplateEditorSection extends BaseEditorSection {
   data: TemplateSectionData;
 }
 
+interface NavbarEditorSection extends BaseEditorSection {
+  type: 'navbar';
+  data: NavbarData;
+}
+
+interface FooterEditorSection extends BaseEditorSection {
+  type: 'footer';
+  data: FooterData;
+}
+
 export type EditorSection =
   | HeroEditorSection
   | AboutEditorSection
@@ -108,11 +122,14 @@ export type EditorSection =
   | ContactEditorSection
   | ExperienceEditorSection
   | EducationEditorSection
+  | NavbarEditorSection
+  | FooterEditorSection
   | TemplateEditorSection;
 
 // Editor context state
 export interface EditorState {
   sections: EditorSection[];
+  templateId?: string | null;
   selectedSectionId: string | null;
   isDragging: boolean;
   isPreviewMode: boolean;
@@ -133,8 +150,8 @@ export type EditorAction =
   | { type: 'SET_PREVIEW_MODE'; payload: { isPreviewMode: boolean } }
   | { type: 'SET_PREVIEW_DEVICE'; payload: { device: 'desktop' | 'tablet' | 'mobile' } }
   | { type: 'SET_UNSAVED_CHANGES'; payload: { hasUnsavedChanges: boolean } }
-  | { type: 'LOAD_SECTIONS'; payload: { sections: EditorSection[] } }
-  | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string } }
+  | { type: 'LOAD_SECTIONS'; payload: { sections: EditorSection[], templateId?: string | null } }
+  | { type: 'LOAD_PORTFOLIO'; payload: { sections: EditorSection[]; title: string; templateId?: string } }
   | { type: 'IMPORT_RESUME_DATA'; payload: { data: Record<string, unknown> } }
   | { type: 'UPDATE_TITLE'; payload: { title: string } }
   | { type: 'DUPLICATE_SECTION'; payload: { sectionId: string } }

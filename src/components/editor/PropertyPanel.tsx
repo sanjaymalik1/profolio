@@ -15,6 +15,8 @@ import { ContactPropertyForm } from './forms/ContactPropertyForm';
 import { TemplatePropertyForm } from './forms/TemplatePropertyForm';
 import { ExperiencePropertyForm } from './forms/ExperiencePropertyForm';
 import { EducationPropertyForm } from './forms/EducationPropertyForm';
+import { NavbarPropertyForm } from './forms/NavbarPropertyForm';
+import { FooterPropertyForm } from './forms/FooterPropertyForm';
 
 export const PropertyPanel: React.FC = () => {
   const { state } = useEditor();
@@ -52,6 +54,10 @@ export const PropertyPanel: React.FC = () => {
         return <ExperiencePropertyForm section={selectedSection} />;
       case 'education':
         return <EducationPropertyForm section={selectedSection} />;
+      case 'navbar':
+        return <NavbarPropertyForm section={selectedSection} />;
+      case 'footer':
+        return <FooterPropertyForm section={selectedSection} />;
       default:
         return (
           <Card>

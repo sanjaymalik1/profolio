@@ -15,12 +15,15 @@ import {
   ContactData,
   ExperienceData,
   EducationData,
+  NavbarData,
+  FooterData,
   SectionStyling,
   SectionData
 } from '@/types/portfolio';
 
 // Initial editor state
 const initialState: EditorState = {
+  templateId: null,
   sections: [],
   selectedSectionId: null,
   isDragging: false,
@@ -40,10 +43,8 @@ const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
         title: 'Your Title',
         bio: 'Brief description about yourself and what you do.',
         profileImage: '',
-        backgroundImage: '',
-        socialLinks: [],
-        contactEmail: '',
-        location: ''
+        location: '',
+        socialLinks: []
       } as HeroData;
 
     case 'about':
@@ -83,18 +84,10 @@ const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
       return {
         heading: 'Get In Touch',
         email: 'your.email@example.com',
-        phone: '',
         location: 'Your Location',
         availability: 'Available for work',
         socialLinks: [],
-        contactForm: {
-          enabled: true,
-          fields: [
-            { name: 'name', type: 'text', label: 'Name', required: true, placeholder: 'Your name' },
-            { name: 'email', type: 'email', label: 'Email', required: true, placeholder: 'your.email@example.com' },
-            { name: 'message', type: 'textarea', label: 'Message', required: true, placeholder: 'Your message...' }
-          ]
-        }
+        contactForm: { enabled: false, fields: [] }
       } as ContactData;
 
     case 'experience':
@@ -135,17 +128,199 @@ const createDefaultSectionData = (type: DraggableSectionType): SectionData => {
         ],
       } as EducationData;
 
+    case 'navbar':
+      return {
+        name: 'Your Name',
+        logo: '',
+        autoGenerateLinks: true,
+        links: [
+          { label: 'About', href: '#about' },
+          { label: 'Experience', href: '#experience' },
+          { label: 'Projects', href: '#projects' },
+          { label: 'Skills', href: '#skills' },
+        ],
+        cta: {
+          label: 'Hire me',
+          href: '#contact'
+        }
+      } as NavbarData;
+
+    case 'footer':
+      return {
+        name: 'Your Name',
+        copyrightText: '',
+        links: [
+          { label: 'Privacy', href: '/privacy' },
+          { label: 'Terms', href: '/terms' }
+        ]
+      } as FooterData;
+
     default:
       return {};
   }
 };
 
 
+// Utility function to ensure proper section ordering (navbar first, footer last)
+const ensureSectionOrder = (sections: EditorSection[]): EditorSection[] => {
+  const navbar = sections.find(s => s.type === 'navbar');
+  const footer = sections.find(s => s.type === 'footer');
+  const otherSections = sections.filter(s => s.type !== 'navbar' && s.type !== 'footer');
+
+  const orderedSections: EditorSection[] = [];
+
+  if (navbar) orderedSections.push(navbar);
+  orderedSections.push(...otherSections);
+  if (footer) orderedSections.push(footer);
+
+  // Update order property
+  return orderedSections.map((section, index) => ({
+    ...section,
+    order: index
+  }));
+};
+
+// Default styling for structural sections (navbar/footer)
+const structuralSectionStyling = {
+  backgroundColor: 'transparent',
+  textColor: 'inherit',
+  padding: { top: '0', right: '0', bottom: '0', left: '0' },
+  margin: { top: '0', bottom: '0' },
+  alignment: 'left' as const,
+  layout: 'default' as const,
+  animation: { type: 'slide' as const, duration: 600, delay: 200 }
+};
+
+// Create a navbar section
+const createNavbarSection = (): EditorSection => ({
+  id: `navbar-${Date.now()}`,
+  type: 'navbar',
+  data: createDefaultSectionData('navbar'),
+  styling: structuralSectionStyling,
+  isEditable: true,
+  order: 0
+} as EditorSection);
+
+// Create a footer section
+const createFooterSection = (order: number): EditorSection => ({
+  id: `footer-${Date.now() + 1}`,
+  type: 'footer',
+  data: createDefaultSectionData('footer'),
+  styling: structuralSectionStyling,
+  isEditable: true,
+  order
+} as EditorSection);
+
+/**
+ * Automatically calculates navbar links based on the current sections 
+ * if autoGenerateLinks is enabled OR links is empty.
+ */
+const updateNavbarLinks = (sections: EditorSection[]): EditorSection[] => {
+  const navbarIndex = sections.findIndex(s => s.type === 'navbar');
+  if (navbarIndex === -1) return sections;
+
+  const navbar = sections[navbarIndex];
+  const navData = navbar.data as NavbarData;
+  const isAutoMode = navData.autoGenerateLinks === true || 
+    (navData.autoGenerateLinks === undefined && (!navData.links || navData.links.length === 0));
+
+  if (!isAutoMode) return sections;
+
+  const linkMapping: Record<string, string> = {
+    about: 'About',
+    experience: 'Experience',
+    projects: 'Projects',
+    skills: 'Skills',
+  };
+
+  const NAVBAR_SECTIONS = ['about', 'projects', 'experience', 'skills'];
+
+  // Get unique section types to prevent duplicate links
+  const uniqueSectionTypes = new Set<string>();
+  const autoLinks: { label: string; href: string }[] = [];
+
+  // Important: Custom logic to enforce strict ordering specifically for the navbar
+  const orderedSections = [...sections].sort((a, b) => {
+    const aIndex = NAVBAR_SECTIONS.indexOf(a.type);
+    const bIndex = NAVBAR_SECTIONS.indexOf(b.type);
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+    return aIndex - bIndex;
+  });
+
+  orderedSections
+    .filter(s => NAVBAR_SECTIONS.includes(s.type))
+    .forEach(s => {
+      if (!uniqueSectionTypes.has(s.type)) {
+        uniqueSectionTypes.add(s.type);
+        autoLinks.push({
+          label: linkMapping[s.type] || s.type.charAt(0).toUpperCase() + s.type.slice(1),
+          href: `#${s.type}`
+        });
+      }
+    });
+
+  const newSections = [...sections];
+  newSections[navbarIndex] = {
+    ...navbar,
+    data: {
+      ...navData,
+      links: autoLinks
+    }
+  } as EditorSection;
+
+  return newSections;
+};
+
+/**
+ * Ensures navbar and footer exist and are properly ordered.
+ * - Adds navbar at start if missing
+ * - Adds footer at end if missing
+ * - Orders: navbar → other sections → footer
+ */
+const ensureStructure = (sections: EditorSection[]): EditorSection[] => {
+  let result = [...sections];
+
+  // Add navbar if missing
+  const hasNavbar = result.some(s => s.type === 'navbar');
+  if (!hasNavbar) {
+    result.unshift(createNavbarSection());
+  }
+
+  // Add footer if missing
+  const hasFooter = result.some(s => s.type === 'footer');
+  if (!hasFooter) {
+    result.push(createFooterSection(result.length));
+  }
+
+  // Ensure proper ordering (navbar first, footer last)
+  result = ensureSectionOrder(result);
+  
+  // Update navbar links if auto mode is enabled
+  return updateNavbarLinks(result);
+};
+
 // Reducer function
 const editorReducer = (state: EditorState, action: EditorAction): EditorState => {
   switch (action.type) {
     case 'ADD_SECTION': {
       const { sectionType, index } = action.payload;
+
+      // Prevent duplicate sections for section types we only want one of
+      const singleInstanceTypes = ['hero', 'about', 'skills', 'projects', 'contact', 'navbar', 'footer', 'experience', 'education'];
+      if (singleInstanceTypes.includes(sectionType) && state.sections.some(s => s.type === sectionType)) {
+        // Return without adding if it already exists
+        return state;
+      }
+
+      // Prevent duplicate navbar or footer (backup check)
+      if (sectionType === 'navbar' && state.sections.some(s => s.type === 'navbar')) {
+        return state; // Already exists, do nothing
+      }
+      if (sectionType === 'footer' && state.sections.some(s => s.type === 'footer')) {
+        return state; // Already exists, do nothing
+      }
+
       const newSection = {
         id: `${sectionType}-${Date.now()}`,
         type: sectionType,
@@ -163,18 +338,17 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
         order: index !== undefined ? index : state.sections.length
       } as EditorSection;
 
-      const newSections = [...state.sections];
+      let newSections = [...state.sections];
       if (index !== undefined) {
         // Insert at specific index
         newSections.splice(index, 0, newSection);
-        // Update order for subsequent sections
-        newSections.forEach((section, idx) => {
-          section.order = idx;
-        });
       } else {
         // Add to end
         newSections.push(newSection);
       }
+
+      // Ensure structure (navbar first, footer last) and add if missing
+      newSections = ensureStructure(newSections);
 
       return {
         ...state,
@@ -186,9 +360,19 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
     case 'REMOVE_SECTION': {
       const { sectionId } = action.payload;
-      const newSections = state.sections
+      const sectionToRemove = state.sections.find(s => s.id === sectionId);
+
+      // Prevent deletion of navbar and footer
+      if (sectionToRemove && (sectionToRemove.type === 'navbar' || sectionToRemove.type === 'footer')) {
+        return state; // Cannot delete navbar or footer
+      }
+
+      let newSections = state.sections
         .filter(section => section.id !== sectionId)
         .map((section, index) => ({ ...section, order: index }));
+
+      // Update navbar links if a section was removed
+      newSections = updateNavbarLinks(newSections);
 
       return {
         ...state,
@@ -203,25 +387,30 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
       if (sectionIndex === -1) return state;
 
+      const section = state.sections[sectionIndex];
+
+      // Prevent moving navbar or footer
+      if (section.type === 'navbar' || section.type === 'footer') {
+        return state; // Navbar and footer cannot be moved
+      }
+
       const newSections = [...state.sections];
       const [movedSection] = newSections.splice(sectionIndex, 1);
       newSections.splice(newIndex, 0, movedSection);
 
-      // Update order
-      newSections.forEach((section, index) => {
-        section.order = index;
-      });
+      // Ensure structure (navbar first, footer last)
+      const orderedSections = ensureStructure(newSections);
 
       return {
         ...state,
-        sections: newSections,
+        sections: orderedSections,
         hasUnsavedChanges: true,
       };
     }
 
     case 'UPDATE_SECTION_DATA': {
       const { sectionId, data } = action.payload;
-      const newSections = state.sections.map(section =>
+      let newSections = state.sections.map(section =>
         section.id === sectionId
           ? {
             ...section,
@@ -229,6 +418,8 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
           }
           : section
       ) as EditorSection[];
+
+      newSections = updateNavbarLinks(newSections);
 
       return {
         ...state,
@@ -291,18 +482,30 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
     }
 
     case 'LOAD_SECTIONS': {
+      const sections = structuredClone(action.payload.sections);
+
+      // Ensure navbar and footer exist and are properly ordered
+      const structuredSections = ensureStructure(sections);
+
       return {
         ...state,
-        sections: structuredClone(action.payload.sections),
+        sections: structuredSections,
+        templateId: action.payload.templateId !== undefined ? action.payload.templateId : state.templateId,
         hasUnsavedChanges: false,
       };
     }
 
     case 'LOAD_PORTFOLIO': {
+      const sections = structuredClone(action.payload.sections);
+
+      // Ensure navbar and footer exist and are properly ordered
+      const structuredSections = ensureStructure(sections);
+
       return {
         ...state,
-        sections: structuredClone(action.payload.sections),
+        sections: structuredSections,
         portfolioTitle: action.payload.title,
+        templateId: action.payload.templateId !== undefined ? action.payload.templateId : state.templateId,
         hasUnsavedChanges: false,
       };
     }
@@ -392,7 +595,7 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
       return {
         ...state,
-        sections: newSections,
+        sections: ensureStructure(newSections),
         hasUnsavedChanges: true,
       };
     }
@@ -409,6 +612,12 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
       const { sectionId } = action.payload;
       const section = state.sections.find(s => s.id === sectionId);
       if (!section) return state;
+
+      // Prevent duplicating single-instance sections
+      const singleInstanceTypes = ['hero', 'about', 'skills', 'projects', 'contact', 'navbar', 'footer', 'experience', 'education'];
+      if (singleInstanceTypes.includes(section.type)) {
+        return state;
+      }
 
       const sectionIndex = state.sections.findIndex(s => s.id === sectionId);
 
@@ -438,8 +647,10 @@ const editorReducer = (state: EditorState, action: EditorAction): EditorState =>
 
 
     case 'RESET_EDITOR': {
+      // Reset editor with navbar and footer
       return {
-        ...initialState
+        ...initialState,
+        sections: ensureStructure([])
       };
     }
 
@@ -526,8 +737,8 @@ export const useEditorActions = () => {
     dispatch({ type: 'SET_PREVIEW_DEVICE', payload: { device } });
   };
 
-  const loadSections = (sections: EditorSection[]) => {
-    dispatch({ type: 'LOAD_SECTIONS', payload: { sections } });
+  const loadSections = (sections: EditorSection[], templateId?: string | null) => {
+    dispatch({ type: 'LOAD_SECTIONS', payload: { sections, templateId } });
   };
 
   const resetEditor = () => {
@@ -548,8 +759,8 @@ export const useEditorActions = () => {
     dispatch({ type: 'UPDATE_TITLE', payload: { title } });
   };
 
-  const loadPortfolio = (sections: EditorSection[], title: string) => {
-    dispatch({ type: 'LOAD_PORTFOLIO', payload: { sections, title } });
+  const loadPortfolio = (sections: EditorSection[], title: string, templateId?: string) => {
+    dispatch({ type: 'LOAD_PORTFOLIO', payload: { sections, title, templateId } });
   };
 
 
@@ -606,7 +817,7 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
           const sections = convertTemplateToSections(templateId);
           dispatch({
             type: 'LOAD_SECTIONS',
-            payload: { sections }
+            payload: { sections, templateId }
           });
           setIsLoading(false);
           return;
@@ -618,19 +829,50 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
           const result = await response.json();
 
           if (result.success && result.data.content?.sections) {
+            let sections = result.data.content.sections;
+            let loadedTemplateId = result.data.template || undefined;
+
+            // Check for legacy monolithic structure
+            const templateSection = sections.find((s: EditorSection) => s.type === 'template');
+            if (templateSection) {
+              const { convertTemplateToSections } = await import('@/lib/templateConverter');
+              const tId = templateSection.data?.templateId || loadedTemplateId || 'dark-professional';
+              const tData = templateSection.data?.templateData || templateSection.data || {};
+              sections = convertTemplateToSections(tId, tData);
+              loadedTemplateId = tId;
+            }
+
             dispatch({
               type: 'LOAD_PORTFOLIO',
               payload: {
-                sections: result.data.content.sections,
-                title: result.data.title || 'Untitled Portfolio'
+                sections,
+                title: result.data.title || 'Untitled Portfolio',
+                templateId: loadedTemplateId
               }
             });
+          } else {
+            // Portfolio exists but has no sections - initialize with navbar/footer
+            dispatch({
+              type: 'LOAD_SECTIONS',
+              payload: { sections: [] }
+            });
           }
+        } else {
+          // No portfolioId, no templateId - initialize fresh with navbar/footer
+          dispatch({
+            type: 'LOAD_SECTIONS',
+            payload: { sections: [] }
+          });
         }
 
         setIsLoading(false);
       } catch (error) {
         console.error('Error loading portfolio:', error);
+        // On error, still initialize with navbar/footer
+        dispatch({
+          type: 'LOAD_SECTIONS',
+          payload: { sections: [] }
+        });
         setIsLoading(false);
       }
     };

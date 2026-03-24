@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, ExternalLink, Terminal, Code2, Database, Server, Cpu, Zap, Building2, GraduationCap, Calendar } from 'lucide-react';
+import type { EditorSection } from '@/types/editor';
 import type { TemplateData, ProjectsData, Project, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
 
 interface DarkProfessionalTemplateProps {
   data?: TemplateData;
   isPreview?: boolean;
+  sections?: EditorSection[];
+  renderSection?: (section: EditorSection, index: number, content: React.ReactNode) => React.ReactNode;
 }
 
-export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfessionalTemplateProps) {
+export function DarkProfessionalTemplate({ data, isPreview = false , sections, renderSection }: DarkProfessionalTemplateProps) {
   const heroData = data?.hero || {
     fullName: "Jordan Smith",
     title: "Senior Software Engineer",
@@ -120,6 +124,16 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-mono overflow-x-hidden">
+      {sections ? (
+        sections.map((section, index) => {
+          let content: React.ReactNode = null;
+          switch (section.type) {
+
+                  case 'hero': {
+                    const heroData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative">
         {/* Grid Background */}
@@ -154,7 +168,577 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
           ))}
         </div>
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
+            {/* Terminal Window */}
+            <div className="bg-slate-800 rounded-lg border border-slate-600 shadow-2xl mx-auto max-w-md mb-8">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-600">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-slate-400 text-sm ml-2">~/portfolio</span>
+              </div>
+              <div className="p-6 text-left">
+                <div className="text-green-400 mb-2">
+                  <span className="text-slate-400">$</span> whoami
+                </div>
+                <div className="text-blue-300 mb-2">{heroData.fullName}</div>
+                <div className="text-green-400 mb-2">
+                  <span className="text-slate-400">$</span> cat role.txt
+                </div>
+                <div className="text-blue-300 mb-2">{heroData.title}</div>
+                <div className="text-green-400">
+                  <span className="text-slate-400">$</span> <span className="animate-pulse">_</span>
+                </div>
+              </div>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+              {heroData.fullName}
+            </h1>
+            <h2 className="text-xl md:text-2xl text-slate-300 mb-8 font-light">
+              {heroData.title}
+            </h2>
+            <p className="text-lg text-slate-400 max-w-3xl mx-auto mb-8 leading-relaxed">
+              {heroData.bio}
+            </p>
+            <div className="flex items-center justify-center gap-2 text-slate-400 mb-8">
+              <MapPin className="w-5 h-5" />
+              <span>{heroData.location}</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="flex justify-center gap-6"
+          >
+            {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
+              <motion.a
+                key={index}
+                href={link.url}
+                onClick={(e) => isPreview && e.preventDefault()}
+                target={!isPreview ? "_blank" : undefined}
+                rel={!isPreview ? "noopener noreferrer" : undefined}
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-3 bg-slate-800 border border-slate-600 rounded-lg hover:border-blue-500/50 hover:bg-slate-700 transition-all duration-300"
+              >
+                {link.platform === 'github' && <Github className="w-6 h-6 text-slate-300" />}
+                {link.platform === 'linkedin' && <Linkedin className="w-6 h-6 text-blue-400" />}
+                {link.platform === 'email' && <Mail className="w-6 h-6 text-emerald-400" />}
+              </motion.a>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'about': {
+                    const aboutData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* About Section */}
+      <section id="about" className="py-24 px-6 bg-slate-800/50">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center gap-3 mb-12">
+              <Terminal className="w-8 h-8 text-blue-400" />
+              <h2 className="text-4xl font-bold">{aboutData.heading}</h2>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-12 items-start">
+              <div className="lg:col-span-2">
+                <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+                  {aboutData.content}
+                </p>
+
+                <div className="grid gap-4">
+                  {(aboutData.highlights || []).map((highlight: string, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex items-start gap-3 p-4 bg-slate-800/80 border border-slate-700 rounded-lg"
+                    >
+                      <Zap className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-300">{highlight}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Code2 className="w-6 h-6 text-emerald-400" />
+                  <h3 className="text-xl font-semibold">Current Focus</h3>
+                </div>
+                <ul className="space-y-3 text-slate-300">
+                  <li className="flex items-center gap-2">
+                    <Cpu className="w-4 h-4 text-blue-400" />
+                    Distributed Systems
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Server className="w-4 h-4 text-emerald-400" />
+                    Cloud Architecture
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    Performance Optimization
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'skills': {
+                    const skillsData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* Skills Section */}
+      <section id="skills" className="py-24 px-6 bg-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center gap-3 mb-12">
+              <Database className="w-8 h-8 text-emerald-400" />
+              <h2 className="text-4xl font-bold">{skillsData.heading}</h2>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Programming Languages & Frameworks */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
+                  <Code2 className="w-6 h-6 text-blue-400" />
+                  Languages & Frameworks
+                </h3>
+                <div className="space-y-6">
+                  {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-slate-800 border border-slate-700 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="font-medium text-slate-200">{skill.name}</span>
+                        <span className="text-sm text-blue-400 font-mono">{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <motion.div
+                          className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, delay: index * 0.1 }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tools & Infrastructure */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
+                  <Server className="w-6 h-6 text-emerald-400" />
+                  Tools & Infrastructure
+                </h3>
+                <div className="space-y-6">
+                  {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="bg-slate-800 border border-slate-700 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="font-medium text-slate-200">{skill.name}</span>
+                        <span className="text-sm text-emerald-400 font-mono">{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <motion.div
+                          className="bg-gradient-to-r from-emerald-500 to-teal-400 h-2 rounded-full"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, delay: index * 0.1 }}
+                        />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'projects': {
+                    const projectsData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* Projects Section */}
+      <section id="projects" className="py-24 px-6 bg-slate-800/50">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-center gap-3 mb-12">
+              <Terminal className="w-8 h-8 text-blue-400" />
+              <h2 className="text-4xl font-bold">{projectsData.heading}</h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {(projectsData.projects || []).map((project: Project, index: number) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                  className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden hover:border-blue-500/50 transition-all duration-300 group"
+                >
+                  <div className="h-48 bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-emerald-500/10 group-hover:from-blue-500/20 group-hover:to-emerald-500/20 transition-all duration-500"></div>
+                    <Terminal className="w-16 h-16 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-3 text-slate-100 group-hover:text-blue-300 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-slate-400 mb-4 leading-relaxed text-sm">
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {(project.technologies || []).map((tech: string, techIndex: number) => (
+                        <span
+                          key={techIndex}
+                          className="px-3 py-1 bg-slate-700 border border-slate-600 text-slate-300 rounded text-xs font-mono"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-3">
+                      {project.links.github && (
+                        <a
+                          href={project.links.github}
+                          onClick={(e) => isPreview && e.preventDefault()}
+                          target={!isPreview ? "_blank" : undefined}
+                          rel={!isPreview ? "noopener noreferrer" : undefined}
+                          className="flex items-center gap-2 px-4 py-2 bg-slate-700 border border-slate-600 text-slate-300 rounded hover:bg-slate-600 hover:border-blue-500/50 transition-all duration-300 text-sm"
+                        >
+                          <Github className="w-4 h-4" />
+                          Code
+                        </a>
+                      )}
+                      {project.links.live && (
+                        <a
+                          href={project.links.live}
+                          onClick={(e) => isPreview && e.preventDefault()}
+                          target={!isPreview ? "_blank" : undefined}
+                          rel={!isPreview ? "noopener noreferrer" : undefined}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition-colors text-sm"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                          Live
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'contact': {
+                    const contactData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* Contact Section */}
+      <section id="contact" className="py-24 px-6 bg-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Mail className="w-8 h-8 text-blue-400" />
+              <h2 className="text-4xl font-bold">{contactData.heading}</h2>
+            </div>
+
+            <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+              {contactData.availability}
+            </p>
+
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
+                <div className="flex items-center gap-3 text-slate-300">
+                  <Mail className="w-5 h-5 text-blue-400" />
+                  <span className="font-mono">{contactData.email}</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300">
+                  <MapPin className="w-5 h-5 text-emerald-400" />
+                  <span>{contactData.location}</span>
+                </div>
+              </div>
+
+              <motion.a
+                href={`mailto:${contactData.email}`}
+                onClick={(e) => isPreview && e.preventDefault()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-all duration-300"
+              >
+                <Mail className="w-6 h-6" />
+                Get In Touch
+              </motion.a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'experience': {
+                    const experienceData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* Experience Section */}
+      {experienceData.experiences && experienceData.experiences.length > 0 && (
+        <section className="py-24 px-6 bg-slate-900 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="flex items-center gap-3 mb-12">
+                <Building2 className="w-8 h-8 text-blue-400" />
+                <h2 className="text-4xl font-bold">{experienceData.heading || "Experience"}</h2>
+              </div>
+
+              <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+                {experienceData.experiences.map((exp: Experience, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
+                  >
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-900 bg-slate-800 text-blue-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                      <Terminal className="w-4 h-4" />
+                    </div>
+
+                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-xl hover:border-blue-500/50 transition-colors">
+                      <div className="flex flex-col gap-1 mb-2">
+                        <h3 className="font-bold text-xl text-slate-100">{exp.position}</h3>
+                        <div className="text-emerald-400 font-medium">{exp.company}</div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-400 mb-4 font-mono">
+                        <Calendar className="w-4 h-4" />
+                        <span>{exp.startDate} - {exp.endDate || 'Present'}</span>
+                      </div>
+                      <p className="text-slate-300 text-sm leading-relaxed mb-4">{exp.description}</p>
+
+                      {exp.responsibilities && exp.responsibilities.length > 0 && (
+                        <ul className="space-y-2 mb-4">
+                          {exp.responsibilities.map((resp, i) => (
+                            <li key={i} className="flex gap-2 text-sm text-slate-300">
+                              <span className="text-blue-500 mt-1">▹</span> {resp}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {exp.technologies && exp.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {exp.technologies.map((tech, i) => (
+                            <span key={i} className="px-2 py-1 bg-slate-900 border border-slate-700 text-xs rounded font-mono text-slate-400">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+                  case 'education': {
+                    const educationData = section.data as any;
+                    content = (
+                      <React.Fragment key={section.id || index}>
+
+
+      {/* Education Section */}
+      {educationData.education && educationData.education.length > 0 && (
+        <section className="py-24 px-6 bg-slate-800/30 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="flex items-center gap-3 mb-12">
+                <GraduationCap className="w-8 h-8 text-emerald-400" />
+                <h2 className="text-4xl font-bold">{educationData.heading || "Education"}</h2>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                {educationData.education.map((edu: Education, index: number) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="bg-slate-800 border border-slate-700 p-6 rounded-lg hover:border-emerald-500/50 transition-colors"
+                  >
+                    <h3 className="font-bold text-xl text-slate-100 mb-1">{edu.degree} {edu.field ? `in ${edu.field}` : ''}</h3>
+                    <div className="text-blue-400 font-medium mb-3">{edu.institution}</div>
+
+                    <div className="flex items-center justify-between text-sm text-slate-400 font-mono mb-4 pb-4 border-b border-slate-700">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{edu.startDate} - {edu.endDate || 'Present'}</span>
+                      </div>
+                      {edu.gpa && <span>GPA: {edu.gpa}</span>}
+                    </div>
+
+                    {edu.coursework && edu.coursework.length > 0 && (
+                      <div className="text-sm">
+                        <span className="text-slate-500 block mb-2 font-mono">Relevant Coursework:</span>
+                        <div className="flex flex-wrap gap-2">
+                          {edu.coursework.map((course, idx) => (
+                            <span key={idx} className="bg-slate-900 border border-slate-700 px-2 py-1 rounded text-slate-300 text-xs">
+                              {course}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+                      </React.Fragment>
+                    );
+                    break;
+                  }
+            default:
+              return null;
+          }
+          return renderSection ? renderSection(section, index, content) : content;
+        })
+      ) : (
+        <>
+
+      {/* Hero Section */}
+      <section className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative">
+        {/* Grid Background */}
+        <div className="absolute inset-0 bg-slate-900 opacity-90" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0)`,
+          backgroundSize: '30px 30px'
+        }}></div>
+
+        {/* Animated Code Lines */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-blue-400/20 text-xs font-mono whitespace-nowrap"
+              animate={{
+                x: [-200, typeof window !== 'undefined' ? window.innerWidth : 1200],
+              }}
+              transition={{
+                duration: 15 + i * 2,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                top: `${10 + i * 12}%`,
+              }}
+            >
+              {i % 4 === 0 && "const buildApp = async () => { return await deploy(); }"}
+              {i % 4 === 1 && "function optimizePerformance() { /* magic happens */ }"}
+              {i % 4 === 2 && "git commit -m 'feat: implement new architecture'"}
+              {i % 4 === 3 && "docker run --rm -p 8080:8080 awesome-app:latest"}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -226,8 +810,8 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-6 bg-slate-800/50">
-        <div className="max-w-5xl mx-auto">
+      <section id="about" className="py-24 px-6 bg-slate-800/50">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -255,6 +839,8 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="flex items-start gap-3 p-4 bg-slate-800/80 border border-slate-700 rounded-lg"
                     >
+                      <Zap className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-300">{highlight}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -287,8 +873,8 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
 
       {/* Experience Section */}
       {experienceData.experiences && experienceData.experiences.length > 0 && (
-        <section className="py-20 px-6 bg-slate-900 border-t border-slate-800">
-          <div className="max-w-4xl mx-auto">
+        <section className="py-24 px-6 bg-slate-900 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -355,8 +941,8 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
 
       {/* Education Section */}
       {educationData.education && educationData.education.length > 0 && (
-        <section className="py-20 px-6 bg-slate-800/30 border-t border-slate-800">
-          <div className="max-w-4xl mx-auto">
+        <section className="py-24 px-6 bg-slate-800/30 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -410,7 +996,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
       )}
 
       {/* Skills Section */}
-      <section className="py-20 px-6 bg-slate-900">
+      <section id="skills" className="py-24 px-6 bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -497,7 +1083,7 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
       </section>
 
       {/* Projects Section */}
-      <section className="py-20 px-6 bg-slate-800/50">
+      <section id="projects" className="py-24 px-6 bg-slate-800/50">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -578,29 +1164,32 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 px-6 bg-slate-900">
-        <div className="max-w-4xl mx-auto text-center">
+      <section id="contact" className="py-24 px-6 bg-slate-900">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
+            className="text-center"
           >
-            <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 mb-8">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Terminal className="w-8 h-8 text-emerald-400" />
-                <h2 className="text-4xl font-bold">{contactData.heading}</h2>
-              </div>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Mail className="w-8 h-8 text-blue-400" />
+              <h2 className="text-4xl font-bold">{contactData.heading}</h2>
+            </div>
 
-              <p className="text-xl text-slate-300 mb-8">{contactData.availability}</p>
+            <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
+              {contactData.availability}
+            </p>
 
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 max-w-2xl mx-auto">
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-                <div className="flex items-center gap-3 text-slate-400">
-                  <Mail className="w-5 h-5" />
+                <div className="flex items-center gap-3 text-slate-300">
+                  <Mail className="w-5 h-5 text-blue-400" />
                   <span className="font-mono">{contactData.email}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-400">
-                  <MapPin className="w-5 h-5" />
+                <div className="flex items-center gap-3 text-slate-300">
+                  <MapPin className="w-5 h-5 text-emerald-400" />
                   <span>{contactData.location}</span>
                 </div>
               </div>
@@ -610,31 +1199,18 @@ export function DarkProfessionalTemplate({ data, isPreview = false }: DarkProfes
                 onClick={(e) => isPreview && e.preventDefault()}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-blue-500 hover:to-emerald-500 transition-all duration-300"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold transition-all duration-300"
               >
                 <Mail className="w-6 h-6" />
                 Get In Touch
               </motion.a>
             </div>
-
-            {/* Terminal Footer */}
-            <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-left max-w-md mx-auto">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              </div>
-              <div className="text-green-400 text-sm">
-                <span className="text-slate-400">$</span> echo &quot;Thanks for visiting!&quot;
-              </div>
-              <div className="text-blue-300 text-sm mb-1">Thanks for visiting!</div>
-              <div className="text-green-400 text-sm">
-                <span className="text-slate-400">$</span> <span className="animate-pulse">_</span>
-              </div>
-            </div>
           </motion.div>
         </div>
       </section>
-    </div>
+    
+        </>
+      )}
+</div>
   );
 }

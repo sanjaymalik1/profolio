@@ -74,7 +74,7 @@ export default function PrivacyPage() {
             <p className="text-slate-600 leading-relaxed">
               Sign-in and session management are powered by{" "}
               <span className="font-medium text-slate-700">Clerk</span>. When you log in, Clerk
-              handles credential verification and issues a session token. Clerk's own privacy policy
+              handles credential verification and issues a session token. Clerk&apos;s own privacy policy
               governs how they process authentication data. We receive basic identity information (name,
               email) from Clerk after a successful login.
             </p>
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">9. Changes to This Policy</h2>
             <p className="text-slate-600 leading-relaxed">
-              We may update this policy from time to time. When we do, we will revise the "Last updated"
+              We may update this policy from time to time. When we do, we will revise the &quot;Last updated&quot;
               date at the top of this page. Continued use of Profolio after changes are posted
               constitutes acceptance of the revised policy.
             </p>

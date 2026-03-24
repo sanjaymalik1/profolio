@@ -1,5 +1,10 @@
 "use client";
 
+import { DarkProfessionalTemplate } from "@/components/templates/DarkProfessionalTemplate";
+import { ElegantMonochromeTemplate } from "@/components/templates/ElegantMonochromeTemplate";
+import { WarmMinimalistTemplate } from "@/components/templates/WarmMinimalistTemplate";
+import { ExecutiveProTemplate } from "@/components/templates/ExecutiveProTemplate";
+
 import React from 'react';
 import { useEditor } from '@/contexts/EditorContext';
 
@@ -22,14 +27,14 @@ import ProjectsSection from '@/components/portfolio/sections/ProjectsSection';
 import ContactSection from '@/components/portfolio/sections/ContactSection';
 import ExperienceSection from '@/components/portfolio/sections/ExperienceSection';
 import EducationSection from '@/components/portfolio/sections/EducationSection';
+import NavbarSection from '@/components/portfolio/sections/NavbarSection';
+import FooterSection from '@/components/portfolio/sections/FooterSection';
 
 // Import template components
-import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
-import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
-import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
-
+import { portfolioTemplates } from '@/lib/portfolio/templates';
+import { getTemplate } from '@/components/templates';
 // Import types
-import type { TemplateSectionData, ExperienceData, EducationData } from '@/types/portfolio';
+import type { TemplateSectionData, ExperienceData, EducationData, NavbarData, FooterData } from '@/types/portfolio';
 import type { EditorSection } from '@/types/editor';
 
 export type PreviewDevice = 'desktop' | 'tablet' | 'mobile';
@@ -51,6 +56,10 @@ export const PortfolioPreview: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [showPreview, setShowPreview] = React.useState(true);
   const previewContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Get active template config
+  const activeTemplate = state.templateId ? portfolioTemplates.find(t => t.id === state.templateId) : null;
+  const ActiveTemplateComponent = state.templateId ? getTemplate(state.templateId)?.component : null;
 
   // Handle fullscreen toggle
   React.useEffect(() => {
@@ -130,6 +139,9 @@ export const PortfolioPreview: React.FC = () => {
           if (templateId === 'warm-minimalist') {
             return <WarmMinimalistTemplate key={section.id} data={templateData} isPreview={true} />;
           }
+          if (templateId === 'executive-pro') {
+            return <ExecutiveProTemplate key={section.id} data={templateData} isPreview={true} />;
+          }
         }
         return (
           <div key={section.id} className="min-h-[400px] flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
@@ -144,33 +156,75 @@ export const PortfolioPreview: React.FC = () => {
         );
       }
       case 'hero':
-        return <HeroSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
+        return (
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <HeroSection data={section.data} styling={commonStyling} isEditing={false} />
+          </section>
+        );
       case 'about':
-        return <AboutSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
+        return (
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <AboutSection data={section.data} styling={commonStyling} isEditing={false} />
+          </section>
+        );
       case 'skills':
-        return <SkillsSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
+        return (
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <SkillsSection data={section.data} styling={commonStyling} isEditing={false} />
+          </section>
+        );
       case 'projects':
-        return <ProjectsSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
+        return (
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <ProjectsSection data={section.data} styling={commonStyling} isEditing={false} />
+          </section>
+        );
       case 'contact':
-        return <ContactSection key={section.id} data={section.data} styling={commonStyling} isEditing={false} />;
+        return (
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <ContactSection data={section.data} styling={commonStyling} isEditing={false} />
+          </section>
+        );
       case 'experience':
         return (
-          <ExperienceSection
-            key={section.id}
-            data={section.data as unknown as ExperienceData}
-            styling={section.styling || commonStyling}
-            isEditing={false}
-            isPublicView={true}
-          />
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <ExperienceSection
+              data={section.data as unknown as ExperienceData}
+              styling={section.styling || commonStyling}
+              isEditing={false}
+              isPublicView={true}
+            />
+          </section>
         );
       case 'education':
         return (
-          <EducationSection
+          <section key={section.id} id={section.type} className="scroll-mt-24">
+            <EducationSection
+              data={section.data as unknown as EducationData}
+              styling={section.styling || commonStyling}
+              isEditing={false}
+              isPublicView={true}
+            />
+          </section>
+        );
+      case 'navbar':
+        return (
+          <NavbarSection
             key={section.id}
-            data={section.data as unknown as EducationData}
+            data={section.data as unknown as NavbarData}
             styling={section.styling || commonStyling}
             isEditing={false}
-            isPublicView={true}
+            isPublicView={false}
+          />
+        );
+      case 'footer':
+        return (
+          <FooterSection
+            key={section.id}
+            data={section.data as unknown as FooterData}
+            styling={section.styling || commonStyling}
+            isEditing={false}
+            isPublicView={false}
           />
         );
       default:
@@ -266,8 +320,34 @@ export const PortfolioPreview: React.FC = () => {
           >
             {/* Portfolio Sections - Static preview with no interactions */}
             {state.sections.length > 0 ? (
-              <div className="w-full [&_*]:pointer-events-none [&_*]:!transition-none [&_*]:!animation-none">
-                {state.sections.map((section) => renderSection(section))}
+              <div className={`w-full [&_*]:pointer-events-none [&_*]:!transition-none [&_*]:!animation-none`}>
+                {ActiveTemplateComponent ? (
+                  <ActiveTemplateComponent 
+                    sections={state.sections}
+                    isPreview={true}
+                    renderSection={(section: EditorSection, index: number, content: React.ReactNode) => (
+                      <div key={section.id}>
+                        {content || renderSection(section)}
+                      </div>
+                    )}
+                  />
+                ) : (
+                  <div className={`space-y-0 ${activeTemplate ? `template-${activeTemplate.id}` : ''}`}>
+                    {/* Template Global Navbar Placeholder */}
+                    {activeTemplate && (
+                      <div className="w-full py-4 px-6 border-b border-opacity-10 bg-inherit shadow-sm flex items-center justify-between">
+                        <div className="font-bold text-lg">{state.portfolioTitle || 'Portfolio'}</div>
+                        <div className="flex gap-4 text-sm font-medium">
+                          <div>Home</div>
+                          <div>About</div>
+                          <div>Work</div>
+                          <div>Contact</div>
+                        </div>
+                      </div>
+                    )}
+                    {state.sections.map((section) => renderSection(section))}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="min-h-[600px] flex items-center justify-center">

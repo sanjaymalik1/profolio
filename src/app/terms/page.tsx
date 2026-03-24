@@ -22,8 +22,8 @@ export default function TermsPage() {
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">1. Acceptance of Terms</h2>
             <p className="text-slate-600 leading-relaxed">
-              These Terms of Service ("Terms") govern your access to and use of the Profolio platform
-              ("Service"). By creating an account or using Profolio in any way, you agree to these Terms.
+              These Terms of Service (&quot;Terms&quot;) govern your access to and use of the Profolio platform
+              (&quot;Service&quot;). By creating an account or using Profolio in any way, you agree to these Terms.
               If you do not agree, do not use the Service.
             </p>
           </section>
@@ -50,8 +50,8 @@ export default function TermsPage() {
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">4. User Content</h2>
             <p className="text-slate-600 leading-relaxed mb-4">
-              You retain ownership of the content you create and publish through Profolio ("User
-              Content"). By publishing content, you grant Profolio a non-exclusive, worldwide,
+              You retain ownership of the content you create and publish through Profolio (&quot;User
+              Content&quot;). By publishing content, you grant Profolio a non-exclusive, worldwide,
               royalty-free license to host, display, and distribute that content solely for the purpose
               of operating the Service.
             </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">8. Disclaimer of Warranties</h2>
             <p className="text-slate-600 leading-relaxed">
-              The Service is provided "as is" and "as available" without any warranties of any kind,
+              The Service is provided &quot;as is&quot; and &quot;as available&quot; without any warranties of any kind,
               express or implied, including but not limited to warranties of merchantability, fitness for
               a particular purpose, or non-infringement. We do not warrant that the Service will be
               error-free or that defects will be corrected.
@@ -129,7 +129,7 @@ export default function TermsPage() {
           <section className="mb-10">
             <h2 className="text-lg font-semibold text-slate-800 mb-3">11. Changes to Terms</h2>
             <p className="text-slate-600 leading-relaxed">
-              We may revise these Terms at any time. When we do, we will update the "Last updated" date
+              We may revise these Terms at any time. When we do, we will update the &quot;Last updated&quot; date
               at the top of this page. Continued use of the Service after changes are posted constitutes
               your acceptance of the updated Terms. We encourage you to review this page periodically.
             </p>

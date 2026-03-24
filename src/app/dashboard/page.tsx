@@ -173,32 +173,12 @@ export default function DashboardPage() {
   }, [user]);
 
   const createPortfolio = async (title: string, templateId?: string) => {
-    try {
-      setIsCreating(templateId ?? 'blank');
-      const response = await fetch('/api/portfolios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          content: { sections: [] },
-          template: templateId || 'blank',
-          isPublic: false,
-        }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        const editorUrl = templateId
-          ? `/editor-v2?id=${result.data.id}&template=${templateId}`
-          : `/editor-v2?id=${result.data.id}`;
-        router.push(editorUrl);
-      } else {
-        alert('Failed to create portfolio: ' + result.error);
-      }
-    } catch {
-      alert('Failed to create portfolio. Please try again.');
-    } finally {
-      setIsCreating(null);
-    }
+    setIsCreating(templateId ?? 'blank');
+    // Lazy creation: Just push to the editor without writing to the database
+    const editorUrl = templateId
+      ? `/editor-v2?template=${templateId}`
+      : `/editor-v2`;
+    router.push(editorUrl);
   };
 
   if (!user || loading) {

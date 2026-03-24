@@ -3,6 +3,7 @@ import React from "react";
 import { DarkProfessionalTemplate } from "./DarkProfessionalTemplate";
 import { ElegantMonochromeTemplate } from "./ElegantMonochromeTemplate";
 import { WarmMinimalistTemplate } from "./WarmMinimalistTemplate";
+import { ExecutiveProTemplate } from "./ExecutiveProTemplate";
 import { PortfolioRenderer } from "@/app/p/[slug]/PortfolioRenderer";
 import type { EditorSection } from "@/types/editor";
 
@@ -17,6 +18,7 @@ const TEMPLATE_MAP: Record<string, PreviewComponent> = {
   "dark-professional": DarkProfessionalTemplate,
   "elegant-monochrome": ElegantMonochromeTemplate,
   "warm-minimalist": WarmMinimalistTemplate,
+  "executive-pro": ExecutiveProTemplate,
 };
 
 interface ScaledTemplatePreviewProps {
@@ -39,7 +41,28 @@ interface ScaledTemplatePreviewProps {
 export function ScaledTemplatePreview({ templateId, data, sections }: ScaledTemplatePreviewProps) {
   const Component = templateId ? TEMPLATE_MAP[templateId] : undefined;
 
-  // ── Case 1: Known template component ────────────────────────────────────
+  // ── Case 1: Portfolio with user sections (always use PortfolioRenderer) ───────────────────
+  if (sections && sections.length > 0) {
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: INNER_W,
+            transform: `scale(${SCALE})`,
+            transformOrigin: "top left",
+            pointerEvents: "none",
+          }}
+        >
+          <PortfolioRenderer sections={sections} templateId={templateId} />
+        </div>
+      </div>
+    );
+  }
+
+  // ── Case 2: Template Gallery Showcase (Known template component) ────────────────────────────────────
   if (Component) {
     return (
       <div className="absolute inset-0 overflow-hidden">
@@ -55,27 +78,6 @@ export function ScaledTemplatePreview({ templateId, data, sections }: ScaledTemp
           }}
         >
           <Component data={data} isPreview />
-        </div>
-      </div>
-    );
-  }
-
-  // ── Case 2: Blank-canvas portfolio with user sections ───────────────────
-  if (sections && sections.length > 0) {
-    return (
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: INNER_W,
-            transform: `scale(${SCALE})`,
-            transformOrigin: "top left",
-            pointerEvents: "none",
-          }}
-        >
-          <PortfolioRenderer sections={sections} />
         </div>
       </div>
     );

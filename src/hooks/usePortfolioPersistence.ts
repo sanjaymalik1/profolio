@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useEditor, useEditorActions } from '@/contexts/EditorContext';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -11,7 +11,14 @@ export const usePortfolioPersistence = () => {
   const { state } = useEditor();
   const { setUnsavedChanges } = useEditorActions();
   const searchParams = useSearchParams();
-  const portfolioId = searchParams.get('id');
+  const router = useRouter();
+  
+  const initialId = searchParams.get('id');
+  const [activePortfolioId, setActivePortfolioId] = useState<string | null>(initialId);
+
+  useEffect(() => {
+    setActivePortfolioId(initialId);
+  }, [initialId]);
 
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -24,26 +31,34 @@ export const usePortfolioPersistence = () => {
   const pendingSaveRef = useRef(false);
 
   const performAutoSave = useCallback(async () => {
-    if (!portfolioId) return;
-
     isSavingRef.current = true;
     setSaveState('saving');
     setSaveError(null);
 
     try {
       // Strip undefined values so MongoDB / Prisma never sees them.
-      // JSON.parse(JSON.stringify(...)) is the safest way to do this
-      // because structuredClone preserves undefined while JSON does not.
       const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
 
-      const response = await fetch(`/api/portfolios/${portfolioId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
-          title: state.portfolioTitle
-        }),
-      });
+      const payload = {
+        content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
+        title: state.portfolioTitle || 'Untitled Portfolio',
+        template: state.templateId || 'default'
+      };
+
+      let response;
+      if (activePortfolioId) {
+        response = await fetch(`/api/portfolios/${activePortfolioId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        response = await fetch(`/api/portfolios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
 
       // Guard against HTML error pages (e.g. Next.js 500 page) being returned
       // instead of JSON — without this, response.json() throws a SyntaxError.
@@ -55,6 +70,11 @@ export const usePortfolioPersistence = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        if (!activePortfolioId) {
+          setActivePortfolioId(result.data.id);
+          router.replace(`/editor-v2?id=${result.data.id}`, { scroll: false });
+        }
+
         setSaveState('saved');
         setLastSaved(new Date());
         setSaveError(null);
@@ -87,12 +107,12 @@ export const usePortfolioPersistence = () => {
         setTimeout(() => performAutoSave(), 100);
       }
     }
-  }, [portfolioId, state, setUnsavedChanges]);
+  }, [activePortfolioId, state, setUnsavedChanges, router]);
 
 
   // Debounced auto-save with queue
   useEffect(() => {
-    if (!autoSaveEnabled || !portfolioId) return;
+    if (!autoSaveEnabled) return;
     if (state.sections.length === 0) return; // Don't save empty portfolios
     if (!state.hasUnsavedChanges) return;
 
@@ -116,13 +136,9 @@ export const usePortfolioPersistence = () => {
         clearTimeout(saveTimerRef.current);
       }
     };
-  }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, portfolioId, autoSaveEnabled, performAutoSave]);
+  }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, activePortfolioId, autoSaveEnabled, performAutoSave]);
 
   const saveToDatabase = useCallback(async (title?: string) => {
-    if (!portfolioId) {
-      throw new Error('No portfolio ID available');
-    }
-
     setSaveState('saving');
     setSaveError(null);
 
@@ -130,16 +146,26 @@ export const usePortfolioPersistence = () => {
       // Strip undefined values before sending (same as auto-save)
       const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
 
-      const updateData = {
+      const payload = {
         content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
-        title: title || state.portfolioTitle
+        title: title || state.portfolioTitle || 'Untitled Portfolio',
+        template: state.templateId || 'default'
       };
 
-      const response = await fetch(`/api/portfolios/${portfolioId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData),
-      });
+      let response;
+      if (activePortfolioId) {
+        response = await fetch(`/api/portfolios/${activePortfolioId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        response = await fetch(`/api/portfolios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      }
 
       // Guard against HTML error pages
       const contentType = response.headers.get('content-type') || '';
@@ -154,6 +180,11 @@ export const usePortfolioPersistence = () => {
       }
 
       if (result.success) {
+        if (!activePortfolioId) {
+          setActivePortfolioId(result.data.id);
+          router.replace(`/editor-v2?id=${result.data.id}`, { scroll: false });
+        }
+
         setSaveState('saved');
         setLastSaved(new Date());
         setSaveError(null);
@@ -165,7 +196,7 @@ export const usePortfolioPersistence = () => {
           setSaveState('idle');
         }, 2000);
 
-        return portfolioId;
+        return result.data.id;
       } else {
         throw new Error(result.error || 'Failed to save');
       }
@@ -175,7 +206,7 @@ export const usePortfolioPersistence = () => {
       setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
       throw error;
     }
-  }, [state, portfolioId, setUnsavedChanges]);
+  }, [state, activePortfolioId, setUnsavedChanges, router]);
 
   const loadFromDatabase = useCallback(async (id: string) => {
     try {
@@ -227,7 +258,7 @@ export const usePortfolioPersistence = () => {
     lastSaved,
     saveError,
     autoSaveEnabled,
-    portfolioId,
+    portfolioId: activePortfolioId, // Backward compatibility
 
     // Actions
     saveToDatabase,
