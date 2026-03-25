@@ -33,9 +33,9 @@ export function PortfolioRenderer({ sections, templateId }: PortfolioRendererPro
 
   if (ActiveTemplateComponent) {
     return (
-      <ActiveTemplateComponent 
-        isPreview={true} 
-        sections={sections} 
+      <ActiveTemplateComponent
+        isPreview={false}
+        sections={sections}
         renderSection={(section: EditorSection, index: number, content: React.ReactNode) => {
           if (content) return <React.Fragment key={section.id}>{content}</React.Fragment>;
           // Default section render logic
@@ -63,13 +63,13 @@ export function PortfolioRenderer({ sections, templateId }: PortfolioRendererPro
 
     switch (templateId) {
       case 'dark-professional':
-        return <DarkProfessionalTemplate data={templateData} isPreview={true} />;
+        return <DarkProfessionalTemplate data={templateData} isPreview={false} />;
       case 'elegant-monochrome':
-        return <ElegantMonochromeTemplate data={templateData} isPreview={true} />;
+        return <ElegantMonochromeTemplate data={templateData} isPreview={false} />;
       case 'warm-minimalist':
-        return <WarmMinimalistTemplate data={templateData} isPreview={true} />;
+        return <WarmMinimalistTemplate data={templateData} isPreview={false} />;
       case 'executive-pro':
-        return <ExecutiveProTemplate data={templateData} isPreview={true} />;
+        return <ExecutiveProTemplate data={templateData} isPreview={false} />;
       default:
         return (
           <div className="min-h-screen flex items-center justify-center">

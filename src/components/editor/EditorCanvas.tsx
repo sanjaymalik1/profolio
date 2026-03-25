@@ -376,23 +376,11 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           ) : ActiveTemplateComponent ? (
             <ActiveTemplateComponent 
               sections={state?.sections || []} 
-              renderSection={(section, index, content) => renderSection(section, index, content)} 
+              isPreview={true}
+              renderSection={(section, index, content) => renderSection(section, index, content)}
             />
           ) : (
             <div className={`space-y-0 ${activeTemplate ? `template-${activeTemplate.id} bg-[${activeTemplate.colorScheme?.background || '#ffffff'}]` : ''}`}>
-              {/* Template Global Navbar Placeholder */}
-              {activeTemplate && (
-                <div className="w-full py-4 px-6 border-b border-opacity-10 pointer-events-none sticky top-0 z-10 bg-inherit shadow-sm flex items-center justify-between">
-                  <div className="font-bold text-lg opacity-50">{state.portfolioTitle || 'Portfolio'}</div>
-                  <div className="flex gap-4 text-sm font-medium opacity-50">
-                    <div>Home</div>
-                    <div>About</div>
-                    <div>Work</div>
-                    <div>Contact</div>
-                  </div>
-                </div>
-              )}
-
               {(state?.sections || [])
                 .sort((a, b) => a.order - b.order)
                 .map((section, index) => renderSection(section, index))}

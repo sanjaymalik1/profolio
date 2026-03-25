@@ -333,18 +333,6 @@ export const PortfolioPreview: React.FC = () => {
                   />
                 ) : (
                   <div className={`space-y-0 ${activeTemplate ? `template-${activeTemplate.id}` : ''}`}>
-                    {/* Template Global Navbar Placeholder */}
-                    {activeTemplate && (
-                      <div className="w-full py-4 px-6 border-b border-opacity-10 bg-inherit shadow-sm flex items-center justify-between">
-                        <div className="font-bold text-lg">{state.portfolioTitle || 'Portfolio'}</div>
-                        <div className="flex gap-4 text-sm font-medium">
-                          <div>Home</div>
-                          <div>About</div>
-                          <div>Work</div>
-                          <div>Contact</div>
-                        </div>
-                      </div>
-                    )}
                     {state.sections.map((section) => renderSection(section))}
                   </div>
                 )}
