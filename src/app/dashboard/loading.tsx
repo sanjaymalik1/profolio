@@ -2,9 +2,9 @@
 // to the dashboard before the page component renders.
 export default function DashboardLoading() {
     return (
-        <div className="bg-slate-50/30">
+        <div className="landing-editorial min-h-screen">
             {/* Nav skeleton */}
-            <div className="bg-white border-b border-slate-200/60 h-14" />
+            <div className="bg-[#f5f1ea] border-b border-[#d8d0c6] h-16" />
 
             <main className="max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 pb-16">
                 <div className="space-y-7 animate-pulse">

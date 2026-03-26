@@ -128,10 +128,10 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
               <IconComponent className="w-4 h-4 text-slate-600" />
             </div>
             <div className="flex-1 min-w-0 pr-12">
-              <h4 className="font-medium text-sm mb-0.5 text-slate-700 flex items-center gap-2">
+              <h4 className="font-semibold text-[0.98rem] mb-0.5 text-[#2d2a26] flex items-center gap-2">
                 {section.displayName}
               </h4>
-              <p className="text-xs text-slate-500 leading-snug truncate pr-2">
+              <p className="text-[0.76rem] text-[#5c554d] leading-snug truncate pr-2">
                 {section.description}
               </p>
             </div>
@@ -167,10 +167,10 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
   };
 
   return (
-    <div className={`space-y-5 ${className}`}>
+    <div className={`space-y-5 editor-typography ${className}`}>
       <div>
-        <h3 className="text-sm font-medium mb-1 text-slate-700">Sections</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-lg font-semibold mb-1">Sections</h3>
+        <p className="text-[0.72rem] uppercase tracking-[0.11em] text-[#5c554d]">
           Drag to canvas to build your portfolio
         </p>
       </div>
@@ -178,7 +178,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Basic Sections */}
       <div>
         <div className="flex items-center gap-2 mb-2.5">
-          <h4 className="font-medium text-xs text-slate-600">Essential</h4>
+          <h4 className="font-semibold text-[0.72rem] uppercase tracking-[0.12em] text-[#5c554d]">Essential</h4>
         </div>
         <div className="space-y-2">
           {basicSections.map(renderSection)}
@@ -188,7 +188,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Advanced Sections */}
       <div>
         <div className="flex items-center gap-2 mb-2.5">
-          <h4 className="font-medium text-xs text-slate-600">Advanced</h4>
+          <h4 className="font-semibold text-[0.72rem] uppercase tracking-[0.12em] text-[#5c554d]">Advanced</h4>
         </div>
         <div className="space-y-2">
           {advancedSections.map(renderSection)}
@@ -197,7 +197,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
 
       {/* Tips - subtle */}
       <div className="p-3 bg-slate-50/50 border border-slate-200/50 rounded-md">
-        <p className="text-xs text-slate-500 leading-relaxed">
+        <p className="text-[0.78rem] text-[#5c554d] leading-relaxed">
           Drag sections to canvas, click to edit, reorder anytime
         </p>
       </div>

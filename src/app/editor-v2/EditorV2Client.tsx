@@ -36,6 +36,13 @@ function EditorLayout() {
     setIsMounted(true);
   }, []);
 
+  React.useEffect(() => {
+    document.body.classList.add('editor-mode');
+    return () => {
+      document.body.classList.remove('editor-mode');
+    };
+  }, []);
+
   // Unsaved changes protection
   React.useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -64,18 +71,18 @@ function EditorLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f5f1ea] editor-typography">
       {/* Editor Header - Responsive Minimal Design */}
-      <header className="border-b border-slate-200/60 bg-white">
-        <div className="flex h-12 sm:h-14 items-center justify-between px-3 sm:px-4 lg:px-6">
+      <header className="border-b border-[#d8d0c6] bg-[#f5f1ea]">
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
-                <span className="text-white font-bold text-xs sm:text-sm">P</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#cfc4b7] bg-[#ece4da] flex items-center justify-center">
+                <span className="text-[#2d2a26] font-semibold text-xs sm:text-sm">P</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-sm font-semibold text-slate-900 tracking-tight">Profolio</h1>
-                <p className="text-xs text-slate-500 hidden lg:block">Design your professional portfolio</p>
+                <h1 className="text-base font-semibold tracking-tight">Profolio</h1>
+                <p className="text-[0.7rem] uppercase tracking-[0.11em] text-[#5c554d] hidden lg:block">Design your professional portfolio</p>
               </div>
             </div>
           </div>
@@ -86,7 +93,7 @@ function EditorLayout() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-slate-500 hover:text-slate-700 hover:bg-slate-50 h-7 sm:h-8 px-1.5 sm:px-2 text-xs rounded-md"
+                className="text-[#5c554d] hover:text-[#2d2a26] hover:bg-[#ece4da] h-7 sm:h-8 px-1.5 sm:px-2 text-[0.74rem] uppercase tracking-[0.1em] rounded-md"
                 asChild
               >
                 <Link href="/dashboard">
@@ -98,20 +105,20 @@ function EditorLayout() {
 
             {/* Auth Status - Subtle */}
             {isLoaded && !user && (
-              <div className="text-xs text-slate-500 px-2 py-1 rounded-md hidden md:flex items-center gap-1.5">
+              <div className="text-[0.74rem] uppercase tracking-[0.1em] text-[#5c554d] px-2 py-1 rounded-md hidden md:flex items-center gap-1.5">
                 <LogIn className="h-3.5 w-3.5" />
-                <Link href="/sign-in" className="hover:text-slate-700">Sign in</Link>
+                <Link href="/sign-in" className="hover:text-[#2d2a26]">Sign in</Link>
               </div>
             )}
 
             {/* Canvas/Preview Toggle - Responsive */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-auto">
-              <TabsList className="grid w-full grid-cols-2 h-7 sm:h-8 bg-slate-100/50 p-0.5">
-                <TabsTrigger value="canvas" className="text-xs font-medium px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-sm">
+              <TabsList className="grid w-full grid-cols-2 h-7 sm:h-8 bg-[#ece4da] p-0.5 border border-[#d8d0c6]">
+                <TabsTrigger value="canvas" className="text-[0.74rem] uppercase tracking-[0.1em] font-medium px-2 sm:px-3 data-[state=active]:bg-[#f8f4ee] data-[state=active]:text-[#2d2a26] rounded-sm">
                   <Settings className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
                   <span className="hidden sm:inline">Edit</span>
                 </TabsTrigger>
-                <TabsTrigger value="preview" className="text-xs font-medium px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-sm">
+                <TabsTrigger value="preview" className="text-[0.74rem] uppercase tracking-[0.1em] font-medium px-2 sm:px-3 data-[state=active]:bg-[#f8f4ee] data-[state=active]:text-[#2d2a26] rounded-sm">
                   <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 sm:mr-1.5" />
                   <span className="hidden sm:inline">Preview</span>
                 </TabsTrigger>
@@ -123,10 +130,10 @@ function EditorLayout() {
               variant="outline"
               size="sm"
               onClick={() => setIsResumeModalOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 h-8 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-800 bg-indigo-50/50 transition-colors shadow-sm"
+              className="hidden sm:flex items-center gap-1.5 h-8 border-[#d8d0c6] text-[#5c554d] hover:bg-[#ece4da] hover:text-[#2d2a26] bg-[#f8f4ee] transition-colors"
             >
               <FileBadge className="w-4 h-4" />
-              <span className="text-xs font-semibold">Import Resume</span>
+              <span className="text-[0.74rem] font-semibold uppercase tracking-[0.1em]">Import Resume</span>
             </Button>
 
             {/* Portfolio Management */}
@@ -140,7 +147,7 @@ function EditorLayout() {
 
         {/* Left Sidebar - Section Palette (Hidden on mobile/tablet, visible on desktop) */}
         {showSectionPalette && (
-          <aside className="w-56 lg:w-64 xl:w-72 2xl:w-80 border-r border-slate-200/50 bg-white overflow-y-auto hidden lg:block">
+          <aside className="w-56 lg:w-64 xl:w-72 2xl:w-80 border-r border-slate-200/50 bg-[#f5f1ea] overflow-y-auto hidden lg:block">
             <div className="p-3 lg:p-4 xl:p-5">
               <SectionPalette />
             </div>
@@ -148,12 +155,12 @@ function EditorLayout() {
         )}
 
         {/* Main Content Area - Full width on mobile, flexible on larger screens */}
-        <main className="flex-1 overflow-hidden bg-slate-50/50 min-w-0">
+        <main className="flex-1 overflow-hidden bg-[#f5f1ea] min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             <TabsContent value="canvas" className="h-full m-0 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto">
               <EditorCanvas />
             </TabsContent>
-            <TabsContent value="preview" className="h-full m-0 overflow-hidden bg-white">
+            <TabsContent value="preview" className="h-full m-0 overflow-hidden bg-[#f5f1ea]">
               <PortfolioPreview />
             </TabsContent>
           </Tabs>

@@ -205,7 +205,7 @@ export default function DashboardPage() {
 
   if (!isLoaded || !user) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen landing-editorial flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-slate-900 mx-auto" />
           <p className="mt-4 text-sm text-slate-500">Loading…</p>
@@ -215,7 +215,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen landing-editorial">
       <DashboardNav />
 
       <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-20">

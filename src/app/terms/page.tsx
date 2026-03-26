@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
+    <div className="landing-editorial">
       <Header />
       <main className="pt-28 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">

@@ -234,10 +234,10 @@ export const PortfolioPreview: React.FC = () => {
 
   if (!showPreview) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-50">
+      <div className="w-full h-full flex items-center justify-center bg-[#f5f1ea] editor-typography">
         <div className="text-center">
-          <EyeOff className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <h3 className="text-lg font-medium text-gray-600 mb-2">Preview Hidden</h3>
+          <EyeOff className="w-16 h-16 mx-auto mb-4 text-[#8b8276]" />
+          <h3 className="text-lg font-medium text-[#5c554d] mb-2">Preview Hidden</h3>
           <Button onClick={() => setShowPreview(true)} variant="outline">
             <Eye className="w-4 h-4 mr-2" />
             Show Preview
@@ -248,27 +248,27 @@ export const PortfolioPreview: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-[#f5f1ea] editor-typography">
       {/* Preview Controls */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b border-[#d8d0c6] bg-[#f5f1ea]">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-[0.7rem] uppercase tracking-[0.1em] border-[#d8d0c6] text-[#5c554d]">
             <Eye className="w-3 h-3 mr-1" />
             Live Preview
           </Badge>
-          <span className="text-sm text-gray-600">
+          <span className="text-[0.78rem] uppercase tracking-[0.1em] text-[#5c554d]">
             {state.sections.length} sections
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Device Toggle */}
-          <div className="flex items-center border rounded-lg bg-white">
+          <div className="flex items-center border border-[#d8d0c6] rounded-lg bg-[#f8f4ee]">
             <Button
               variant={previewDevice === 'desktop' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setPreviewDevice('desktop')}
-              className="rounded-r-none"
+              className="rounded-r-none data-[state=active]:bg-[#2d2a26]"
             >
               <Monitor size={16} />
             </Button>
@@ -276,7 +276,7 @@ export const PortfolioPreview: React.FC = () => {
               variant={previewDevice === 'tablet' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setPreviewDevice('tablet')}
-              className="rounded-none border-x"
+              className="rounded-none border-x border-[#d8d0c6]"
             >
               <Tablet size={16} />
             </Button>
@@ -296,6 +296,7 @@ export const PortfolioPreview: React.FC = () => {
             size="sm"
             onClick={toggleFullscreen}
             title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            className="border-[#d8d0c6] bg-[#f8f4ee] text-[#5c554d] hover:bg-[#ece4da] hover:text-[#2d2a26]"
           >
             <Maximize2 size={16} />
           </Button>
@@ -304,6 +305,7 @@ export const PortfolioPreview: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setShowPreview(false)}
+            className="border-[#d8d0c6] bg-[#f8f4ee] text-[#5c554d] hover:bg-[#ece4da] hover:text-[#2d2a26]"
           >
             <EyeOff size={16} />
           </Button>
@@ -311,11 +313,12 @@ export const PortfolioPreview: React.FC = () => {
       </div>
 
       {/* Preview Content */}
-      <div ref={previewContainerRef} className="flex-1 overflow-auto bg-gradient-to-b from-gray-50 to-white">
-        <div className="p-6 flex justify-center">
+      <div ref={previewContainerRef} className="relative flex-1 overflow-auto bg-[#f5f1ea]">
+        <div className="absolute inset-0 pointer-events-none opacity-35 bg-[linear-gradient(to_right,#d8d0c6_1px,transparent_1px)] bg-[length:280px_100%]" />
+        <div className="relative p-6 flex justify-center">
           <div
             style={getDeviceStyles()}
-            className={`bg-white shadow-2xl transition-all duration-300 ${previewDevice !== 'desktop' ? 'border rounded-lg' : ''
+            className={`bg-white shadow-xl transition-all duration-300 ${previewDevice !== 'desktop' ? 'border border-[#d8d0c6] rounded-lg' : ''
               }`}
           >
             {/* Portfolio Sections - Static preview with no interactions */}
@@ -339,7 +342,7 @@ export const PortfolioPreview: React.FC = () => {
               </div>
             ) : (
               <div className="min-h-[600px] flex items-center justify-center">
-                <div className="text-center text-gray-500">
+                <div className="text-center text-[#5c554d]">
                   <Eye className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <h3 className="text-xl font-medium mb-2">No Sections Added</h3>
                   <p className="text-sm mb-4">
@@ -356,7 +359,7 @@ export const PortfolioPreview: React.FC = () => {
       </div>
 
       {/* Preview Info */}
-      <div className="px-4 py-2 border-t bg-gray-50 text-xs text-gray-500">
+      <div className="px-4 py-2 border-t border-[#d8d0c6] bg-[#f5f1ea] text-[0.72rem] uppercase tracking-[0.1em] text-[#5c554d]">
         <div className="flex items-center justify-between">
           <span>
             Device: {previewDevice} • Sections: {state.sections.length}

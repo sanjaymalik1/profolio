@@ -78,16 +78,16 @@ export const PropertyPanel: React.FC = () => {
   };
 
   return (
-    <aside className="hidden md:flex w-64 lg:w-72 xl:w-80 2xl:w-96 bg-white border-l border-slate-200/50 flex-col h-full">
+    <aside className="hidden md:flex w-64 lg:w-72 xl:w-80 2xl:w-96 bg-[#f5f1ea] border-l border-slate-200/50 flex-col h-full editor-typography">
       {/* Header - minimal and responsive */}
       <div className="p-3 sm:p-4 border-b border-slate-200/50">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium flex items-center gap-2 text-slate-700">
+          <h2 className="text-base font-semibold flex items-center gap-2 text-[#2d2a26]">
             <Settings className="w-3.5 h-3.5 text-slate-500" />
             <span>Properties</span>
           </h2>
           {selectedSection && (
-            <Badge variant="secondary" className="capitalize text-xs bg-slate-100 text-slate-600 border-0 font-medium">
+            <Badge variant="secondary" className="text-[0.68rem] uppercase tracking-[0.11em] bg-slate-100 text-[#5c554d] border-0 font-semibold">
               {selectedSection.type}
             </Badge>
           )}

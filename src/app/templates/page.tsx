@@ -38,12 +38,12 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="landing-editorial">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-[#f5f1ea] border-b border-[#d8d0c6]">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <Link href="/">
-            <Button variant="ghost" className="gap-2">
+            <Button variant="ghost" className="gap-2 text-[#5c554d] hover:text-[#2d2a26] hover:bg-[#ece4da]">
               <ArrowLeft className="w-4 h-4" />
               Back to Home
             </Button>
@@ -52,12 +52,12 @@ export default function TemplatesPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+            className="text-4xl md:text-5xl font-semibold mb-4"
           >
             Portfolio Templates
           </motion.h1>
@@ -65,7 +65,7 @@ export default function TemplatesPage() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
+            className="text-lg text-[#5c554d] max-w-2xl mx-auto"
           >
             Choose from our professionally designed templates and customize them to match your style.
           </motion.p>
@@ -175,11 +175,11 @@ export default function TemplatesPage() {
           transition={{ delay: 0.4 }}
           className="text-center"
         >
-          <p className="text-gray-500 text-lg">
+          <p className="text-[#5c554d] text-lg">
             More templates coming soon
           </p>
         </motion.div>
-      </div>
+      </main>
 
       {/* Template Preview Modal */}
       <TemplatePreview

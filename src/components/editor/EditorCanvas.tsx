@@ -349,7 +349,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
         onDrop={handleDrop}
         className={`
           min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] border border-dashed rounded-lg transition-all
-          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-slate-50/30' : 'p-3 sm:p-4 md:p-6 bg-white'}
+          ${(state?.sections?.length || 0) === 0 ? 'flex items-center justify-center bg-[#f5f1ea]' : 'p-3 sm:p-4 md:p-6 bg-[#f5f1ea]'}
           ${state?.isDragging ? 'border-blue-400 bg-blue-50/30' : 'border-slate-300'}
         `}
       >
