@@ -23,7 +23,7 @@ import FooterSection from '@/components/portfolio/sections/FooterSection';
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
-import { ExecutiveProTemplate } from '@/components/templates/ExecutiveProTemplate';
+import EliteProTemplate from '@/components/templates/EliteProTemplate';
 import { portfolioTemplates } from '@/lib/portfolio/templates';
 import { getTemplate } from '@/components/templates';
 
@@ -119,8 +119,8 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
           if (section.data.templateId === 'warm-minimalist') {
             return <WarmMinimalistTemplate data={section.data.templateData} isPreview={false} />;
           }
-          if (section.data.templateId === 'executive-pro') {
-            return <ExecutiveProTemplate data={section.data.templateData} isPreview={false} />;
+          if (section.data.templateId === 'elite-pro') {
+            return <EliteProTemplate data={section.data.templateData} isPreview={false} />;
           }
           return (
             <div className="p-8 text-center text-muted-foreground">

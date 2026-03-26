@@ -601,24 +601,25 @@ export const enhancedPortfolioTemplates: PortfolioTemplate[] = [
     isPopular: true,
     isPremium: false
   },
+
   {
-    id: 'executive-pro',
-    name: 'Executive Pro',
-    description: 'A premium, modern SaaS aesthetic template that feels like a deployable portfolio website.',
+    id: 'elite-pro',
+    name: 'Elite Pro',
+    description: 'Premium, high-impact developer portfolio with bold visuals and modern sections.',
     category: 'developer',
-    thumbnail: '/templates/dark-professional-thumb.jpg', // Placeholder or use correct thumbnail if available
+    thumbnail: '/templates/dark-professional-thumb.jpg',
     previewImages: [],
-    tags: ['premium', 'saas', 'modern', 'clean', 'professional'],
-    sections: createEnhancedSections('executive-pro', 'business'),
-    colorScheme: enhancedColorSchemes.elegantMono,
-    typography: enhancedTypographyConfigs.elegantMono,
-    layout: enhancedLayoutConfigs.elegantMono,
+    tags: ['premium', 'developer', 'modern', 'high-impact', 'professional'],
+    sections: createEnhancedSections('elite-pro', 'tech'),
+    colorScheme: enhancedColorSchemes.darkProfessional,
+    typography: enhancedTypographyConfigs.darkProfessional,
+    layout: enhancedLayoutConfigs.darkProfessional,
     features: [
-      'Premium SaaS aesthetic',
-      'Sticky Navbar with smooth scroll',
-      'Vertical timeline experience layout',
-      'Tag-based skills display',
-      'Clean contact CTA'
+      'Premium visual style',
+      'Section-focused storytelling',
+      'Modern developer showcase',
+      'Strong project presentation',
+      'Contact-first call-to-action'
     ],
     difficulty: 'intermediate',
     estimatedTime: '30 minutes',

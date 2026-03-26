@@ -859,32 +859,6 @@ export const portfolioTemplates: PortfolioTemplate[] = [
     updatedAt: new Date().toISOString(),
     isPopular: true,
     isPremium: false
-  },
-  {
-    id: 'executive-pro',
-    name: 'Executive Pro',
-    description: 'A premium, modern SaaS aesthetic template that feels like a deployable portfolio website.',
-    category: 'developer',
-    thumbnail: '/templates/dark-professional-thumb.jpg', 
-    previewImages: [],
-    tags: ['premium', 'saas', 'modern', 'clean', 'professional'],
-    sections: createDefaultSections('executive-pro'),
-    colorScheme: colorSchemes.classic,
-    typography: typographyConfigs.classic,
-    layout: layoutConfigs.modern,
-    features: [
-      'Premium SaaS aesthetic',
-      'Sticky Navbar with smooth scroll',
-      'Vertical timeline experience layout',
-      'Tag-based skills display',
-      'Clean contact CTA'
-    ],
-    difficulty: 'intermediate',
-    estimatedTime: '30 minutes',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    isPopular: true,
-    isPremium: true
   }
 ];
 

@@ -6,7 +6,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { DarkProfessionalTemplate } from "@/components/templates/DarkProfessionalTemplate";
 import { ElegantMonochromeTemplate } from "@/components/templates/ElegantMonochromeTemplate";
 import { WarmMinimalistTemplate } from "@/components/templates/WarmMinimalistTemplate";
-import { ExecutiveProTemplate } from "@/components/templates/ExecutiveProTemplate";
+import EliteProTemplate from "@/components/templates/EliteProTemplate";
 
 // Scale factor: inner div is (1/SCALE * 100)% wide so that after scale(SCALE)
 // it fills exactly 100% of the card — fully responsive, no JS measurement needed.
@@ -39,12 +39,12 @@ const templates = [
     Component: ElegantMonochromeTemplate,
   },
   {
-    id: "executive-pro",
-    name: "Executive Pro",
-    category: "Executive & Tech Lead",
-    badge: "Premium",
+    id: "elite-pro",
+    name: "Elite Pro",
+    category: "Premium Developer",
+    badge: "Premium" as string | null,
     badgeClass: "bg-blue-600 text-white",
-    Component: ExecutiveProTemplate,
+    Component: EliteProTemplate,
   },
 ];
 

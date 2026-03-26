@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Portfolio {
   id: string;
@@ -17,53 +17,61 @@ interface Portfolio {
   updatedAt: string;
 }
 
+let portfoliosInFlightRequest: Promise<Portfolio[]> | null = null;
+
 export const usePortfolios = () => {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadPortfolios();
-  }, []);
+  const loadPortfolios = useCallback(async () => {
+    setLoading(true);
 
-  const loadPortfolios = async () => {
     try {
-      const response = await fetch(`/api/portfolios?t=${Date.now()}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
+      if (!portfoliosInFlightRequest) {
+        portfoliosInFlightRequest = (async () => {
+          const response = await fetch('/api/portfolios', {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          });
 
-      // Handle auth errors gracefully
-      if (response.status === 401) {
-        console.warn('[usePortfolios] Unauthorized - user not signed in');
-        setPortfolios([]);
-        setLoading(false);
-        return;
+          // Handle auth errors gracefully
+          if (response.status === 401) {
+            console.warn('[usePortfolios] Unauthorized - user not signed in');
+            return [];
+          }
+
+          if (response.status === 403) {
+            console.warn('[usePortfolios] Forbidden - insufficient permissions');
+            return [];
+          }
+
+          const result = await response.json();
+
+          if (result.success && result.data) {
+            return result.data as Portfolio[];
+          }
+
+          console.error('[usePortfolios] Error loading portfolios:', result.error || 'Unknown error');
+          return [];
+        })();
       }
 
-      if (response.status === 403) {
-        console.warn('[usePortfolios] Forbidden - insufficient permissions');
-        setPortfolios([]);
-        setLoading(false);
-        return;
-      }
-
-      const result = await response.json();
-
-      if (result.success && result.data) {
-        setPortfolios(result.data);
-      } else {
-        console.error('[usePortfolios] Error loading portfolios:', result.error || 'Unknown error');
-        setPortfolios([]);
-      }
+      const loadedPortfolios = await portfoliosInFlightRequest;
+      setPortfolios(loadedPortfolios);
     } catch (error) {
       console.error('[usePortfolios] Failed to fetch portfolios:', error);
       setPortfolios([]);
     } finally {
+      portfoliosInFlightRequest = null;
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadPortfolios();
+  }, [loadPortfolios]);
 
   const deletePortfolio = async (portfolioId: string) => {
     try {

@@ -18,7 +18,7 @@ interface ProjectsSectionProps {
   onStylingChange?: (newStyling: Partial<SectionStyling>) => void;
 }
 
-// Design tokens (Executive Pro style)
+// Design tokens
 const container = 'max-w-5xl mx-auto px-6';
 const sectionPy = 'py-24';
 

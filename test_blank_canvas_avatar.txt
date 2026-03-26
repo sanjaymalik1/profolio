@@ -1,0 +1,18 @@
+                  {inlineEditMode ? (
+                    <EditableImage
+                      value={data.profileImage || ''}
+                      onChange={(url) => onDataChange?.({ profileImage: url })}
+                      alt={data.fullName}
+                      containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                      className="object-cover !min-h-0"
+                      aspectRatio="square"
+                    />
+                  ) : data.profileImage ? (
+                    <Image src={data.profileImage} alt={data.fullName} fill className="object-cover" priority />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                      <span className="text-6xl font-bold text-slate-300">
+                        {data.fullName?.charAt(0) || '?'}
+                      </span>
+                    </div>
+                  )}

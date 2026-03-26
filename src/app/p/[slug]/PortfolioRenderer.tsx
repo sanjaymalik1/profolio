@@ -7,7 +7,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { DarkProfessionalTemplate } from '@/components/templates/DarkProfessionalTemplate';
 import { ElegantMonochromeTemplate } from '@/components/templates/ElegantMonochromeTemplate';
 import { WarmMinimalistTemplate } from '@/components/templates/WarmMinimalistTemplate';
-import { ExecutiveProTemplate } from '@/components/templates/ExecutiveProTemplate';
+import EliteProTemplate from '@/components/templates/EliteProTemplate';
 import HeroSection from '@/components/portfolio/sections/HeroSection';
 import AboutSection from '@/components/portfolio/sections/AboutSection/index';
 import SkillsSection from '@/components/portfolio/sections/SkillsSection';
@@ -68,8 +68,8 @@ export function PortfolioRenderer({ sections, templateId }: PortfolioRendererPro
         return <ElegantMonochromeTemplate data={templateData} isPreview={false} />;
       case 'warm-minimalist':
         return <WarmMinimalistTemplate data={templateData} isPreview={false} />;
-      case 'executive-pro':
-        return <ExecutiveProTemplate data={templateData} isPreview={false} />;
+      case 'elite-pro':
+        return <EliteProTemplate data={templateData} isPreview={false} />;
       default:
         return (
           <div className="min-h-screen flex items-center justify-center">

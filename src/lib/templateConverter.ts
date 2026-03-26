@@ -80,6 +80,18 @@ const getTemplateStyling = (templateId: string, sectionType: DraggableSectionTyp
     };
   }
 
+  if (templateId === 'elite-pro') {
+    return {
+      backgroundColor: 'transparent',
+      textColor: '#FFFFFF',
+      padding: { top: '8rem', right: '1.5rem', bottom: '8rem', left: '1.5rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: sectionType === 'hero' || sectionType === 'contact' ? 'center' : 'left',
+      layout: 'default',
+      animation: { type: 'fade', duration: 700, delay: 0 }
+    };
+  }
+
   // For other templates, use default styling
   return getDefaultStyling(sectionType);
 };
@@ -147,7 +159,7 @@ export const convertTemplateToSections = (templateId: string, customData?: Parti
       order: sectionOrder++,
       data: {
         ...templateData.skills,
-        skills: [] // Legacy format support
+        skills: templateData.skills.skills || []
       },
       styling: getTemplateStyling(templateId, 'skills'),
       isEditable: true
@@ -643,71 +655,131 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
         }
       };
 
-    case 'executive-pro':
+    case 'elite-pro':
       return {
         hero: {
-          fullName: "Alex Morgan",
-          title: "Full-Stack Engineer & Technical Lead",
-          bio: "Building robust, scalable software and leading teams to ship products users love.",
+          fullName: "Alex Chen",
+          title: "Senior Full-Stack Engineer",
+          bio: "Crafting exceptional digital experiences with cutting-edge technologies and innovative solutions. Passionate about performance, scalability, and user-centric design.",
           profileImage: "",
           location: "San Francisco, CA",
           socialLinks: [
-            { platform: "github", url: "https://github.com/alexmorgan" },
-            { platform: "linkedin", url: "https://linkedin.com/in/alexmorgan" }
+            { platform: "github", url: "https://github.com/alexchen" },
+            { platform: "linkedin", url: "https://linkedin.com/in/alexchen" },
+            { platform: "twitter", url: "https://twitter.com/alexchen" },
+            { platform: "email", url: "mailto:alex@example.com" }
           ]
         },
         about: {
           heading: "About Me",
-          content: "I'm a technical leader and full-stack engineer with over a decade of experience building scalable applications and leading high-performing teams.",
+          content: "I'm a passionate full-stack engineer with over 10 years of experience building high-performance web applications. I specialize in modern JavaScript frameworks, cloud architecture, and creating seamless user experiences. My approach combines technical excellence with a deep understanding of business needs.",
           highlights: [
-            "10+ years engineering experience",
-            "Led team of 15+ developers",
-            "System Architecture Expert",
-            "Open Source Contributor"
+            "10+ years of professional experience",
+            "Led teams at Fortune 500 companies",
+            "Open source contributor with 50k+ stars",
+            "Speaker at international tech conferences"
           ]
         },
         experience: {
-          heading: "Experience",
-          experiences: []
+          heading: "Professional Experience",
+          experiences: [
+            {
+              id: "exp-1",
+              company: "Nimbus Labs",
+              position: "Lead Full-Stack Engineer",
+              startDate: "2022",
+              endDate: "Present",
+              description: "Leading architecture and delivery for customer-facing products used by thousands of teams.",
+              responsibilities: [
+                "Designed scalable frontend architecture",
+                "Led migration to modern TypeScript stack",
+                "Mentored engineers and improved release quality"
+              ],
+              technologies: ["Next.js", "TypeScript", "Node.js", "PostgreSQL"]
+            }
+          ]
         },
         education: {
           heading: "Education",
-          education: []
+          education: [
+            {
+              id: "edu-1",
+              institution: "Stanford University",
+              degree: "B.S.",
+              field: "Computer Science",
+              startDate: "2014",
+              endDate: "2018",
+              coursework: ["Distributed Systems", "Human-Computer Interaction"]
+            }
+          ]
         },
         skills: {
-          heading: "Skills & Technologies",
+          heading: "Skills & Expertise",
+          skills: [
+            { name: "React", level: 98, category: 'technical' },
+            { name: "Next.js", level: 95, category: 'technical' },
+            { name: "TypeScript", level: 95, category: 'technical' },
+            { name: "System Design", level: 93, category: 'technical' },
+            { name: "AWS", level: 90, category: 'technical' }
+          ],
           skillCategories: {
             technical: [
-              { name: "React / Next.js", level: 95, category: "technical" },
-              { name: "Node.js", level: 90, category: "technical" },
-              { name: "TypeScript", level: 95, category: "technical" },
-              { name: "System Architecture", level: 85, category: "technical" }
+              { name: "React & Next.js", level: 98, category: 'technical' },
+              { name: "TypeScript", level: 95, category: 'technical' },
+              { name: "Node.js", level: 92, category: 'technical' },
+              { name: "Cloud Architecture (AWS/GCP)", level: 90, category: 'technical' },
+              { name: "System Design", level: 93, category: 'technical' }
             ],
             soft: [
-              { name: "Technical Leadership", level: 95, category: "soft" },
-              { name: "Mentoring", level: 90, category: "soft" }
+              { name: "Technical Leadership", level: 95, category: 'soft' },
+              { name: "Strategic Thinking", level: 90, category: 'soft' },
+              { name: "Mentoring", level: 92, category: 'soft' }
             ],
-            languages: [],
+            languages: [
+              { name: "English", level: 100, category: 'language' },
+              { name: "Mandarin", level: 95, category: 'language' }
+            ],
             tools: [
-              { name: "AWS", level: 85, category: "tool" },
-              { name: "Docker/Kubernetes", level: 80, category: "tool" }
+              { name: "Git & GitHub", level: 95, category: 'tool' },
+              { name: "Docker & Kubernetes", level: 88, category: 'tool' },
+              { name: "CI/CD Pipelines", level: 85, category: 'tool' }
             ]
-          },
-          skills: []
+          }
         },
         projects: {
           heading: "Featured Projects",
-          categories: ["Frontend", "Backend", "Fullstack"],
-          projects: []
+          projects: [
+            {
+              id: "project-1",
+              title: "Realtime Analytics Platform",
+              description: "Built a realtime analytics dashboard with high-throughput ingestion and actionable visualizations.",
+              technologies: ["Next.js", "TypeScript", "Redis", "PostgreSQL"],
+              images: [],
+              links: {
+                github: "https://github.com/alexchen/realtime-analytics",
+                live: "https://example.com"
+              },
+              category: "Web Development",
+              featured: true,
+              status: "completed"
+            }
+          ],
+          categories: ["Web Development", "Cloud Infrastructure", "Open Source"]
         },
         contact: {
-          heading: "Get In Touch",
+          heading: "Let's Work Together",
           email: "alex@example.com",
           phone: "",
           location: "San Francisco, CA",
-          availability: "Open to new opportunities.",
-          socialLinks: [],
-          contactForm: { enabled: true, fields: [] }
+          availability: "Available for freelance projects, collaborations, and full-time opportunities.",
+          socialLinks: [
+            { platform: "github", url: "https://github.com/alexchen" },
+            { platform: "linkedin", url: "https://linkedin.com/in/alexchen" }
+          ],
+          contactForm: {
+            enabled: true,
+            fields: []
+          }
         }
       };
 

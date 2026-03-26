@@ -2,6 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableImage } from '@/components/editor/inline/EditableImage';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Github, Linkedin, Mail, MapPin, ExternalLink,
@@ -308,27 +310,15 @@ function StickyNavbar(props: NavbarProps) {
 
 function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPreview: boolean; sectionId?: string }) {
   const editorContext = React.useContext(EditorContext);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleAvatarClick = () => {
-    if (editorContext && sectionId && isPreview) {
-      fileInputRef.current?.click();
-    }
-  };
+  // Determine if we're in inline edit mode (editor context + preview mode)
+  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && editorContext && sectionId) {
-      const previewUrl = URL.createObjectURL(file);
-      editorContext.dispatch({
-        type: 'UPDATE_SECTION_DATA',
-        payload: {
-          sectionId,
-          data: { ...heroData, profileImage: previewUrl }
-        }
-      });
-    }
-  };
+  // DEBUG: Track when heroData.profileImage changes
+  useEffect(() => {
+    console.log('[DarkProfessional Hero] profileImage:', heroData.profileImage);
+    console.log('[DarkProfessional Hero] inlineEditMode:', inlineEditMode);
+  }, [heroData.profileImage, inlineEditMode]);
 
   const handleScroll = (e: React.MouseEvent, targetId: string) => {
     if (isPreview) { e.preventDefault(); return; }
@@ -382,7 +372,20 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.1}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-[64px] font-extrabold text-slate-100 leading-[1.05] tracking-tight mb-4 sm:mb-6"
             >
-              {heroData.fullName}
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.fullName || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { fullName: value } }
+                  })}
+                  placeholder="Your Name"
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                  as="span"
+                />
+              ) : (
+                heroData.fullName
+              )}
             </motion.h1>
 
             <motion.p
@@ -392,7 +395,20 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.2}
               className="text-lg sm:text-xl md:text-2xl font-medium text-indigo-400 mb-4 sm:mb-6"
             >
-              {heroData.title}
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.title || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { title: value } }
+                  })}
+                  placeholder="Your Title"
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                  as="span"
+                />
+              ) : (
+                heroData.title
+              )}
             </motion.p>
 
             <motion.p
@@ -402,7 +418,21 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.3}
               className="text-base md:text-lg text-slate-400 leading-relaxed max-w-xl mb-8 sm:mb-10"
             >
-              {heroData.bio}
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.bio || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { bio: value } }
+                  })}
+                  placeholder="Brief introduction about yourself and what you do."
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                  as="span"
+                  multiline
+                />
+              ) : (
+                heroData.bio
+              )}
             </motion.p>
 
             {/* CTA buttons */}
@@ -467,37 +497,45 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               <div className="absolute -inset-1 rounded-full border-2 border-indigo-500/20" />
               <div className="absolute -inset-2 rounded-full border border-indigo-500/10" />
               {/* Avatar container */}
-              <div 
-                className={`relative w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700/50 shadow-2xl shadow-indigo-950/60 ${editorContext && sectionId && isPreview ? 'cursor-pointer group' : ''}`}
-                onClick={handleAvatarClick}
+              <div
+                className="relative w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700/50 shadow-2xl shadow-indigo-950/60"
               >
-                {/* Hidden file input */}
-                {editorContext && sectionId && isPreview && (
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleFileChange}
+                {/* AVATAR LOGIC: Match Blank Canvas implementation exactly */}
+                {inlineEditMode ? (
+                  /* EDITOR MODE: Use EditableImage component */
+                  <EditableImage
+                    value={heroData.profileImage || ''}
+                    onChange={(url) => {
+                      console.log('[DarkProfessional Hero] EditableImage onChange, url:', url);
+                      if (editorContext && sectionId) {
+                        editorContext.dispatch({
+                          type: 'UPDATE_SECTION_DATA',
+                          payload: {
+                            sectionId,
+                            data: { profileImage: url }
+                          }
+                        });
+                      }
+                    }}
+                    alt={heroData.fullName || 'Profile'}
+                    containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                    className="object-cover !min-h-0"
+                    aspectRatio="square"
                   />
-                )}
-                {/* Overlay on hover in editor mode */}
-                {editorContext && sectionId && isPreview && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <span className="text-white text-sm font-semibold">Change Image</span>
-                  </div>
-                )}
-                {heroData.profileImage ? (
+                ) : heroData.profileImage ? (
+                  /* PREVIEW/PUBLIC MODE: Show uploaded image */
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={heroData.profileImage}
-                    alt={heroData.fullName}
+                    alt={heroData.fullName || 'Profile'}
                     className="w-full h-full object-cover"
+                    style={{ borderRadius: '50%', objectFit: 'cover' as const }}
                   />
                 ) : (
+                  /* FALLBACK: Show initial when no image exists */
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
                     <span className="text-6xl sm:text-7xl md:text-8xl lg:text-7xl xl:text-8xl font-bold text-slate-600 select-none uppercase">
-                      {(heroData.fullName || 'J')[0]}
+                      {(heroData.fullName || '?')[0]}
                     </span>
                   </div>
                 )}
@@ -1213,9 +1251,12 @@ export function DarkProfessionalTemplate({
             case 'hero': {
               const d = section.data as any;
               content = (
-                <React.Fragment key={section.id}>
-                  <HeroSection heroData={d} isPreview={isPreview} sectionId={section.id} />
-                </React.Fragment>
+                <HeroSection
+                  key={`hero-${section.id}-${d.profileImage || 'no-img'}`}
+                  heroData={d}
+                  isPreview={isPreview}
+                  sectionId={section.id}
+                />
               );
               break;
             }

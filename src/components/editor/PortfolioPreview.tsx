@@ -3,7 +3,7 @@
 import { DarkProfessionalTemplate } from "@/components/templates/DarkProfessionalTemplate";
 import { ElegantMonochromeTemplate } from "@/components/templates/ElegantMonochromeTemplate";
 import { WarmMinimalistTemplate } from "@/components/templates/WarmMinimalistTemplate";
-import { ExecutiveProTemplate } from "@/components/templates/ExecutiveProTemplate";
+import EliteProTemplate from "@/components/templates/EliteProTemplate";
 
 import React from 'react';
 import { useEditor } from '@/contexts/EditorContext';
@@ -139,8 +139,8 @@ export const PortfolioPreview: React.FC = () => {
           if (templateId === 'warm-minimalist') {
             return <WarmMinimalistTemplate key={section.id} data={templateData} isPreview={true} />;
           }
-          if (templateId === 'executive-pro') {
-            return <ExecutiveProTemplate key={section.id} data={templateData} isPreview={true} />;
+          if (templateId === 'elite-pro') {
+            return <EliteProTemplate key={section.id} data={templateData} isPreview={true} />;
           }
         }
         return (

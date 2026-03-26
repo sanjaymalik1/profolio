@@ -3,7 +3,7 @@ import React from "react";
 import { DarkProfessionalTemplate } from "./DarkProfessionalTemplate";
 import { ElegantMonochromeTemplate } from "./ElegantMonochromeTemplate";
 import { WarmMinimalistTemplate } from "./WarmMinimalistTemplate";
-import { ExecutiveProTemplate } from "./ExecutiveProTemplate";
+import EliteProTemplate from "./EliteProTemplate";
 import { PortfolioRenderer } from "@/app/p/[slug]/PortfolioRenderer";
 import type { EditorSection } from "@/types/editor";
 
@@ -18,7 +18,7 @@ const TEMPLATE_MAP: Record<string, PreviewComponent> = {
   "dark-professional": DarkProfessionalTemplate,
   "elegant-monochrome": ElegantMonochromeTemplate,
   "warm-minimalist": WarmMinimalistTemplate,
-  "executive-pro": ExecutiveProTemplate,
+  "elite-pro": EliteProTemplate,
 };
 
 interface ScaledTemplatePreviewProps {

@@ -57,14 +57,14 @@ export const TEMPLATE_REGISTRY: TemplateDefinition[] = [
         ctaStyle: 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg',
     },
     {
-        id: 'executive-pro',
-        defaultTitle: 'Executive Pro Portfolio',
-        label: 'Executive Pro',
-        description: 'Premium choice for leaders',
-        previewBg: 'bg-white',
-        hoverOverlay: 'bg-slate-900/5',
-        ctaStyle: 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg',
-        badge: 'New',
+        id: 'elite-pro',
+        defaultTitle: 'Elite Pro Portfolio',
+        label: 'Elite Pro',
+        description: 'Premium developer showcase',
+        previewBg: 'bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900',
+        hoverOverlay: 'bg-blue-500/10',
+        ctaStyle: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-2xl hover:shadow-blue-500/30 shadow-lg',
+        badge: 'Premium',
     },
 ];
 
