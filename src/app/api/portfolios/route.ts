@@ -4,11 +4,18 @@ import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/user-helpers';
 
 // GET /api/portfolios - Get user's portfolios
-export async function GET() {
+export async function GET(request: NextRequest) {
   const apiStart = Date.now();
   const shouldLogPerf = process.env.NODE_ENV !== 'production';
 
   try {
+    const pageParam = request.nextUrl.searchParams.get('page');
+    const limitParam = request.nextUrl.searchParams.get('limit');
+
+    const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
+    const limit = Math.max(1, Number.parseInt(limitParam ?? '50', 10) || 50);
+    const skip = (page - 1) * limit;
+
     const authStart = Date.now();
     const { userId } = await auth();
 
@@ -40,23 +47,28 @@ export async function GET() {
 
     // Fetch portfolios for dashboard cards. Keep query simple and index-friendly.
     const queryStart = Date.now();
-    const portfolios = await prisma.portfolio.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        customSlug: true,
-        template: true,
-        isPublic: true,
-        content: true,
-        viewCount: true,
-        lastPublishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    const [portfolios, total] = await prisma.$transaction([
+      prisma.portfolio.findMany({
+        where: { userId: user.id },
+        orderBy: { updatedAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          customSlug: true,
+          template: true,
+          isPublic: true,
+          content: true,
+          viewCount: true,
+          lastPublishedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      prisma.portfolio.count({ where: { userId: user.id } }),
+    ]);
 
     const queryDuration = Date.now() - queryStart;
 
@@ -86,13 +98,15 @@ export async function GET() {
       const responseBytes = Buffer.byteLength(JSON.stringify(responseBody), 'utf8');
 
       console.info(
-        `[Portfolios API GET] count=${portfolioList.length} query=${queryDuration}ms transform=${transformDuration}ms contentBytes=${contentBytes} responseBytes=${responseBytes} total=${Date.now() - apiStart}ms`
+        `[Portfolios API GET] page=${page} limit=${limit} count=${portfolioList.length} totalCount=${total} query=${queryDuration}ms transform=${transformDuration}ms contentBytes=${contentBytes} responseBytes=${responseBytes} total=${Date.now() - apiStart}ms`
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: portfolioList
+      data: portfolioList,
+      portfolios: portfolioList,
+      total
     });
 
   } catch (error) {

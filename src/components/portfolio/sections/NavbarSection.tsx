@@ -21,6 +21,7 @@ export default function NavbarSection({
 }: NavbarSectionProps) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
+  const [availableSectionIds, setAvailableSectionIds] = useState<Set<string>>(new Set());
   const isPreview = !isPublicView;
 
   useEffect(() => {
@@ -82,25 +83,30 @@ export default function NavbarSection({
         observer.observe(element);
       }
     });
+
+    const syncAvailableSections = () => {
+      const existing = sections.filter((sectionId) => !!document.getElementById(sectionId));
+      setAvailableSectionIds(new Set(existing));
+    };
+
+    syncAvailableSections();
+    const mutationObserver = new MutationObserver(syncAvailableSections);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
     
     return () => {
       window.removeEventListener('scroll', scrollHandler, { capture: true });
       observer.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
-  // Ensure 'contact' is removed and fallback strictly includes 'Skills'
+  // Ensure 'contact' is removed
   let navLinks = data.links ? data.links.filter(link => link.href !== '#contact' && link.label.toLowerCase() !== 'contact') : [
     { label: 'About', href: '#about' },
     { label: 'Experience', href: '#experience' },
     { label: 'Projects', href: '#projects' },
     { label: 'Skills', href: '#skills' },
   ];
-
-  // Make sure 'skills' exists if we filtered out contact but skills isn't there yet (for backward compatibility)
-  if (data.links && !navLinks.some(link => link.href === '#skills')) {
-    navLinks.push({ label: 'Skills', href: '#skills' });
-  }
 
   // Force strict ordering as requested: About, Projects, Experience, Skills
   const orderArray = ['#about', '#projects', '#experience', '#skills'];
@@ -112,7 +118,9 @@ export default function NavbarSection({
     return aIndex - bIndex;
   });
 
-  console.log('Navbar links rendered:', navLinks);
+  const visibleNavLinks = availableSectionIds.size > 0
+    ? navLinks.filter((link) => availableSectionIds.has(link.href.replace('#', '')))
+    : navLinks;
 
   const cta = data.cta || { label: 'Hire me', href: '#contact' };
 
@@ -149,7 +157,7 @@ export default function NavbarSection({
 
         {/* Navigation */}
         <nav className="hidden sm:flex items-center gap-7">
-          {navLinks.map(({ label, href }) => {
+          {visibleNavLinks.map(({ label, href }) => {
             const sectionId = href.replace('#', '');
             const isActive = activeSection === sectionId;
             

@@ -52,7 +52,6 @@ export async function POST(req: Request) {
     }
 
     const { type, data } = event;
-    console.log(`[Clerk Webhook] Received event: ${type} for user: ${data.id}`);
 
     try {
         switch (type) {
@@ -83,7 +82,6 @@ export async function POST(req: Request) {
                     },
                 });
 
-                console.log(`[Clerk Webhook] User created/synced: ${data.id}`);
                 break;
             }
 
@@ -107,7 +105,6 @@ export async function POST(req: Request) {
                     },
                 });
 
-                console.log(`[Clerk Webhook] User updated: ${data.id}`);
                 break;
             }
 
@@ -124,7 +121,6 @@ export async function POST(req: Request) {
                     await prisma.portfolio.deleteMany({ where: { userId: userToDelete.id } });
                     await prisma.profile.deleteMany({ where: { userId: userToDelete.id } });
                     await prisma.user.delete({ where: { id: userToDelete.id } });
-                    console.log(`[Clerk Webhook] User + portfolios + profile deleted: ${data.id}`);
                 } else {
                     console.warn(`[Clerk Webhook] user.deleted: no DB record found for ${data.id}, skipping.`);
                 }

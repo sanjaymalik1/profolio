@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
 import {
   Github, Linkedin, Mail, MapPin, ExternalLink,
   Building2, GraduationCap, Calendar,
-  Twitter, Globe, Menu, X, Award
+  Twitter, Globe, Award
 } from 'lucide-react';
 import type { EditorSection } from '@/types/editor';
 import { EditorContext } from '@/contexts/EditorContext';
 import type {
   TemplateData, ProjectsData, Project,
   ExperienceData, Experience, EducationData, Education,
-  NavbarData, FooterData
+  NavbarData
 } from '@/types/portfolio';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -27,7 +30,7 @@ interface ElegantMonochromeTemplateProps {
   renderSection?: (section: EditorSection, index: number, content: React.ReactNode) => React.ReactNode;
 }
 
-const NAVBAR_SECTION_ORDER: Array<{ type: string; label: string; href: string }> = [
+const NAVBAR_SECTION_ORDER: Array<{ type: EditorSection['type']; label: string; href: string }> = [
   { type: 'about', label: 'About', href: '#about' },
   { type: 'projects', label: 'Projects', href: '#projects' },
   { type: 'experience', label: 'Experience', href: '#experience' },
@@ -180,199 +183,6 @@ function SocialLinks({ socialLinks }: { socialLinks?: Array<{ platform: string; 
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-function NavbarContent({
-  navData,
-  isPreview,
-  isInsideCanvas,
-  heroName,
-}: {
-  navData: NavbarData;
-  isPreview: boolean;
-  isInsideCanvas: boolean;
-  heroName?: string;
-}) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>('');
-
-  const configuredHrefs = new Set((navData?.links || []).map((link) => link.href));
-  const links = NAVBAR_SECTION_ORDER
-    .filter(({ href }) => configuredHrefs.size === 0 || configuredHrefs.has(href))
-    .map(({ label, href }) => ({ label, href }));
-
-  const ctaLabel = navData?.cta?.label || 'Contact';
-  const ctaHref = navData?.cta?.href || '#contact';
-  const logoName = heroName || 'Portfolio';
-
-  useEffect(() => {
-    if (isPreview || isInsideCanvas) return;
-
-    const sections = ['about', 'projects', 'experience', 'skills'];
-    const visibilityMap = new Map<string, number>();
-
-    const updateActiveSection = () => {
-      let maxVisibility = 0;
-      let mostVisibleSection = '';
-
-      visibilityMap.forEach((visibility, sectionId) => {
-        if (visibility > maxVisibility) {
-          maxVisibility = visibility;
-          mostVisibleSection = sectionId;
-        }
-      });
-
-      if (maxVisibility > 0.3) {
-        setActiveSection(mostVisibleSection);
-      } else {
-        setActiveSection('');
-      }
-    };
-
-    const observers: IntersectionObserver[] = [];
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (!element) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            visibilityMap.set(id, entry.intersectionRatio);
-            updateActiveSection();
-          });
-        },
-        {
-          threshold: Array.from({ length: 11 }, (_, i) => i * 0.1),
-          rootMargin: '-64px 0px -50% 0px',
-        }
-      );
-
-      observer.observe(element);
-      observers.push(observer);
-    });
-
-    return () => {
-      observers.forEach((observer) => observer.disconnect());
-    };
-  }, [isPreview, isInsideCanvas]);
-
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (isPreview || isInsideCanvas) {
-      e.preventDefault();
-      return;
-    }
-
-    e.preventDefault();
-    setMobileMenuOpen(false);
-
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  return (
-    <>
-      <div className="w-full border-b border-black/10 bg-white">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-xl font-light tracking-wider">{logoName}</div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            {links.map((link, idx) => {
-              const isActive = !isInsideCanvas && activeSection === link.href.replace('#', '');
-              return (
-                <a
-                  key={idx}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className={`text-sm tracking-wide transition-colors duration-200 relative ${
-                    isActive ? 'text-black font-medium' : 'text-gray-600 hover:text-black'
-                  }`}
-                >
-                  {link.label}
-                  {isActive && (
-                    <motion.span
-                      layoutId="navbar-indicator"
-                      className="absolute -bottom-[17px] left-0 right-0 h-px bg-black"
-                      initial={false}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    />
-                  )}
-                </a>
-              );
-            })}
-            {navData?.cta && (
-              <a
-                href={ctaHref}
-                onClick={(e) => handleNavClick(e, ctaHref)}
-                className="px-5 py-2 border border-black text-sm tracking-wide hover:bg-black hover:text-white transition-colors duration-200"
-              >
-                {ctaLabel}
-              </a>
-            )}
-          </nav>
-
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-10 h-10 flex items-center justify-center border border-black/20"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-b border-black/10 bg-white overflow-hidden"
-          >
-            <nav className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3">
-              {links.map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-sm tracking-wide text-gray-600 hover:text-black transition-colors py-2"
-                >
-                  {link.label}
-                </a>
-              ))}
-              {navData?.cta && (
-                <a
-                  href={ctaHref}
-                  onClick={(e) => handleNavClick(e, ctaHref)}
-                  className="px-5 py-2 border border-black text-sm tracking-wide hover:bg-black hover:text-white transition-colors text-center"
-                >
-                  {ctaLabel}
-                </a>
-              )}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
-function StickyNavbar({
-  navData,
-  isPreview,
-  heroName,
-}: {
-  navData: NavbarData;
-  isPreview: boolean;
-  heroName?: string;
-}) {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      <NavbarContent navData={navData} isPreview={isPreview} isInsideCanvas={false} heroName={heroName} />
-    </div>
-  );
-}
-
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
 function HeroSection({
@@ -422,9 +232,12 @@ function HeroSection({
                   aspectRatio="square"
                 />
               ) : profileImage ? (
-                <img
+                <Image
                   src={profileImage}
                   alt={fullName}
+                  width={128}
+                  height={128}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -516,9 +329,9 @@ function HeroSection({
 
 // ─── About ────────────────────────────────────────────────────────────────────
 
-function AboutSection({ aboutData, isPreview }: { aboutData: any; isPreview: boolean }) {
+function AboutSection({ aboutData }: { aboutData: any }) {
   const heading = aboutData?.heading || 'About Me';
-  const content = aboutData?.content || 'Professional background and expertise.';
+  const content = aboutData?.description || aboutData?.content || 'Professional background and expertise.';
   const highlights = aboutData?.highlights || [];
 
   return (
@@ -554,7 +367,7 @@ function AboutSection({ aboutData, isPreview }: { aboutData: any; isPreview: boo
 
 // ─── Experience ───────────────────────────────────────────────────────────────
 
-function ExperienceSection({ experienceData, isPreview }: { experienceData: ExperienceData; isPreview: boolean }) {
+function ExperienceSection({ experienceData }: { experienceData: ExperienceData }) {
   const heading = experienceData?.heading || 'Experience';
   const experiences = experienceData?.experiences || [];
 
@@ -772,7 +585,7 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
 
 // ─── Skills ───────────────────────────────────────────────────────────────────
 
-function SkillsSection({ skillsData, isPreview }: { skillsData: any; isPreview: boolean }) {
+function SkillsSection({ skillsData }: { skillsData: any }) {
   const heading = skillsData?.heading || 'Skills';
   const skills = normalizeSkills(skillsData);
 
@@ -826,7 +639,7 @@ function SkillsSection({ skillsData, isPreview }: { skillsData: any; isPreview: 
 
 // ─── Education ────────────────────────────────────────────────────────────────
 
-function EducationSection({ educationData, isPreview }: { educationData: EducationData; isPreview: boolean }) {
+function EducationSection({ educationData }: { educationData: EducationData }) {
   const heading = educationData?.heading || 'Education';
   const education = educationData?.education || [];
 
@@ -904,7 +717,7 @@ function EducationSection({ educationData, isPreview }: { educationData: Educati
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
 
-function ContactSection({ contactData, isPreview }: { contactData: any; isPreview: boolean }) {
+function ContactSection({ contactData }: { contactData: any }) {
   const heading = contactData?.heading || 'Get In Touch';
   const content = contactData?.content || "Let's connect and discuss how we can work together.";
   const email = contactData?.email || '';
@@ -947,38 +760,9 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-function FooterContent({ footerData, heroName }: { footerData: FooterData; heroName?: string }) {
-  const displayName = heroName || 'Portfolio';
-  const copyrightText = (footerData?.copyrightText || '').trim() || `© ${new Date().getFullYear()} All rights reserved.`;
-
-  return (
-    <footer className="border-t border-black/10 bg-white py-8">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm tracking-wide text-gray-700">{displayName}</p>
-          <p className="text-sm text-gray-600">{copyrightText}</p>
-          {footerData?.links && footerData.links.length > 0 && (
-            <div className="flex items-center gap-6">
-              {footerData.links.map((link, idx) => (
-                <a
-                  key={idx}
-                  href={link.href}
-                  className="text-sm text-gray-600 hover:text-black transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 // ─── Main Template ────────────────────────────────────────────────────────────
 
-export function ElegantMonochromeTemplate({
+function ElegantMonochromeTemplateComponent({
   data,
   isPreview = false,
   sections,
@@ -995,6 +779,7 @@ export function ElegantMonochromeTemplate({
 
   const aboutData = data?.about || {
     heading: 'About Me',
+    description: 'Professional background and expertise.',
     content: 'Professional background and expertise.',
     highlights: [],
   };
@@ -1032,17 +817,14 @@ export function ElegantMonochromeTemplate({
     cta: { label: 'Contact', href: '#contact' },
   }) as NavbarData;
 
-  const footerData = (data?.footer || {
-    name: 'Portfolio',
-    links: [],
-  }) as FooterData;
-
   // Extract live hero name from sections
   let liveHeroName = heroData.fullName;
   if (sections) {
     const heroSection = sections.find((s) => s.type === 'hero');
-    if (heroSection?.data) {
-      liveHeroName = (heroSection.data as any).fullName || heroData.fullName;
+    const data = (heroSection as any)?.content || {};
+    const heroSectionData = Object.keys(data).length > 0 ? data : heroSection?.data;
+    if (heroSectionData) {
+      liveHeroName = (heroSectionData as any).fullName || heroData.fullName;
     }
   }
 
@@ -1059,14 +841,14 @@ export function ElegantMonochromeTemplate({
     return (
       <div className="bg-white text-black min-h-screen">
         {hasNavbar && !isPreview && (
-          <div className="fixed top-0 left-0 right-0 z-50">
-            <NavbarContent
-              navData={{ ...(navbarSection.data as NavbarData), links: syncedNavbarLinks }}
-              isPreview={false}
-              isInsideCanvas={false}
-              heroName={liveHeroName}
-            />
-          </div>
+          <Navbar
+            sections={sections}
+            navData={{ ...(navbarSection.data as NavbarData), links: syncedNavbarLinks }}
+            isPreview={false}
+            isInsideCanvas={false}
+            heroName={liveHeroName}
+            variant="mono"
+          />
         )}
 
         {sections.map((section, index) => {
@@ -1079,26 +861,29 @@ export function ElegantMonochromeTemplate({
                 break;
               }
 
-              const d = section.data as NavbarData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as NavbarData;
               const syncedNavData: NavbarData = {
                 ...d,
                 links: syncedNavbarLinks,
               };
               content = (
-                <div key={section.id} className="sticky top-0 z-50">
-                  <NavbarContent
-                    navData={syncedNavData}
-                    isPreview={isPreview}
-                    isInsideCanvas={true}
-                    heroName={liveHeroName}
-                  />
-                </div>
+                <Navbar
+                  key={section.id}
+                  sections={sections}
+                  navData={syncedNavData}
+                  isPreview={isPreview}
+                  isInsideCanvas={true}
+                  heroName={liveHeroName}
+                  variant="mono"
+                />
               );
               break;
             }
 
             case 'hero': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <HeroSection
                   key={`hero-${section.id}-${d?.profileImage || 'no-img'}`}
@@ -1111,23 +896,26 @@ export function ElegantMonochromeTemplate({
             }
 
             case 'about': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
-                <AboutSection key={section.id} aboutData={d} isPreview={isPreview} />
+                <AboutSection key={section.id} aboutData={d} />
               );
               break;
             }
 
             case 'experience': {
-              const d = section.data as ExperienceData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ExperienceData;
               content = (
-                <ExperienceSection key={section.id} experienceData={d} isPreview={isPreview} />
+                <ExperienceSection key={section.id} experienceData={d} />
               );
               break;
             }
 
             case 'projects': {
-              const d = section.data as ProjectsData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ProjectsData;
               content = (
                 <ProjectsSection key={section.id} projectsData={d} isPreview={isPreview} sectionId={section.id} />
               );
@@ -1135,33 +923,35 @@ export function ElegantMonochromeTemplate({
             }
 
             case 'skills': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
-                <SkillsSection key={section.id} skillsData={d} isPreview={isPreview} />
+                <SkillsSection key={section.id} skillsData={d} />
               );
               break;
             }
 
             case 'education': {
-              const d = section.data as EducationData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as EducationData;
               content = (
-                <EducationSection key={section.id} educationData={d} isPreview={isPreview} />
+                <EducationSection key={section.id} educationData={d} />
               );
               break;
             }
 
             case 'contact': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
-                <ContactSection key={section.id} contactData={d} isPreview={isPreview} />
+                <ContactSection key={section.id} contactData={d} />
               );
               break;
             }
 
             case 'footer': {
-              const d = section.data as FooterData;
               content = (
-                <FooterContent key={section.id} footerData={d} heroName={liveHeroName} />
+                <Footer key={section.id} sections={sections} heroName={liveHeroName} variant="mono" />
               );
               break;
             }
@@ -1182,15 +972,24 @@ export function ElegantMonochromeTemplate({
 
   return (
     <div className="bg-white text-black min-h-screen">
-      <StickyNavbar navData={navData} isPreview={isPreview} heroName={heroData.fullName} />
+      <Navbar
+        sections={sections}
+        navData={navData}
+        isPreview={isPreview}
+        heroName={heroData.fullName}
+        variant="mono"
+      />
       <HeroSection heroData={heroData} isPreview={isPreview} />
-      <AboutSection aboutData={aboutData} isPreview={isPreview} />
-      <ExperienceSection experienceData={experienceData} isPreview={isPreview} />
+      <AboutSection aboutData={aboutData} />
+      <ExperienceSection experienceData={experienceData} />
       <ProjectsSection projectsData={projectsData} isPreview={isPreview} />
-      <SkillsSection skillsData={skillsData} isPreview={isPreview} />
-      <EducationSection educationData={educationData} isPreview={isPreview} />
-      <ContactSection contactData={contactData} isPreview={isPreview} />
-      <FooterContent footerData={footerData} heroName={heroData.fullName} />
+      <SkillsSection skillsData={skillsData} />
+      <EducationSection educationData={educationData} />
+      <ContactSection contactData={contactData} />
+      <Footer sections={sections} heroName={heroData.fullName} variant="mono" />
     </div>
   );
 }
+
+export const ElegantMonochromeTemplate = React.memo(ElegantMonochromeTemplateComponent);
+ElegantMonochromeTemplate.displayName = 'ElegantMonochromeTemplate';

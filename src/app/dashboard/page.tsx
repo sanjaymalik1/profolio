@@ -21,7 +21,7 @@ import { usePortfolios } from '@/hooks/usePortfolios';
 import { TemplatePreview } from '@/components/templates/TemplatePreview';
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
 import { DashboardNav } from '@/components/dashboard/DashboardNav';
-import { TEMPLATE_REGISTRY, BLANK_TEMPLATE, getTemplateName } from '@/lib/portfolio/registry';
+import { TEMPLATE_REGISTRY, getTemplateName } from '@/lib/portfolio/registry';
 import { ScaledTemplatePreview } from '@/components/templates/ScaledPreview';
 import type { EditorSection } from '@/types/editor';
 
@@ -162,7 +162,16 @@ const MemoizedEmptyState = React.memo(EmptyState);
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const { portfolios, loading: portfoliosLoading, deletePortfolio, refetch } = usePortfolios();
+  const {
+    portfolios,
+    total,
+    loading: portfoliosLoading,
+    loadingMore,
+    hasMore,
+    loadMore,
+    deletePortfolio,
+    refetch,
+  } = usePortfolios();
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<{
     id: string; title: string; slug: string; customSlug?: string; isPublic: boolean; viewCount?: number;
@@ -227,11 +236,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...TEMPLATE_REGISTRY, BLANK_TEMPLATE].map((template) => (
+            {TEMPLATE_REGISTRY.map((template) => (
               <div
-                key={template.id ?? 'blank'}
+                key={template.id}
                 className="group relative bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 hover:shadow-md transition-all duration-200 cursor-pointer"
-                onClick={() => createPortfolio(template.defaultTitle, template.id ?? undefined)}
+                onClick={() => createPortfolio(template.defaultTitle, template.id)}
               >
                 {template.badge && (
                   <div className="absolute top-2 right-2 z-10 bg-slate-900 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
@@ -243,7 +252,7 @@ export default function DashboardPage() {
                   <div className="absolute inset-0 bg-transparent group-hover:bg-slate-900/10 transition-colors" />
                   <span className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity`}>
                     <span className={`${template.ctaStyle} inline-flex items-center justify-center text-xs font-semibold rounded-lg h-8 px-3 shadow-md`}>
-                      {template.id ? 'Use Template' : 'Start Blank'}
+                      Use Template
                     </span>
                   </span>
                 </div>
@@ -261,6 +270,9 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-xl font-semibold text-slate-900">My Portfolios</h1>
             <p className="text-sm text-slate-500 mt-0.5">Manage and publish your portfolio sites</p>
+            <p className="text-xs text-slate-400 mt-1">
+              Showing {portfolios.length} of {total} portfolios
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -293,17 +305,32 @@ export default function DashboardPage() {
             <MemoizedEmptyState onCreate={() => createPortfolio('Untitled Portfolio')} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {portfolios.map((portfolio) => (
-              <MemoizedPortfolioCard
-                key={portfolio.id}
-                portfolio={portfolio}
-                onEdit={() => handleEdit(portfolio.id)}
-                onPublish={() => handlePublish(portfolio)}
-                onDelete={() => handleDelete(portfolio)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+              {portfolios.map((portfolio) => (
+                <MemoizedPortfolioCard
+                  key={portfolio.id}
+                  portfolio={portfolio}
+                  onEdit={() => handleEdit(portfolio.id)}
+                  onPublish={() => handlePublish(portfolio)}
+                  onDelete={() => handleDelete(portfolio)}
+                />
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="outline"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="text-sm border-slate-200"
+                >
+                  {loadingMore ? 'Loading…' : 'Load More'}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </main>
 

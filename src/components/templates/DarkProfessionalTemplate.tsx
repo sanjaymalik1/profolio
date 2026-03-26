@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
 import {
   Github, Linkedin, Mail, MapPin, ExternalLink,
   Building2, GraduationCap, Calendar, ArrowRight,
-  Twitter, Globe, ChevronDown, Menu, X
+  Twitter, Globe, ChevronDown
 } from 'lucide-react';
 import type { EditorSection } from '@/types/editor';
 import { EditorContext } from '@/contexts/EditorContext';
 import type {
   TemplateData, ProjectsData, Project,
   ExperienceData, Experience, EducationData, Education,
-  NavbarData, FooterData
+  NavbarData
 } from '@/types/portfolio';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -70,241 +72,6 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
-// Two modes:
-//   standalone (no `sections` prop) – uses sticky + scroll listeners
-//   sections mode (inside editor/canvas) – renders as a static bar (no fixed/sticky)
-
-interface NavbarProps {
-  navData: any;
-  isPreview: boolean;
-  /** When true the navbar is inside the editor canvas – don't use fixed/sticky */
-  isInsideCanvas?: boolean;
-  /** Hero full name - single source of truth for navbar display name */
-  heroName?: string;
-}
-
-function NavbarContent({ navData, isPreview, isInsideCanvas = false, heroName }: NavbarProps) {
-  const [activeSection, setActiveSection] = useState('');
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Correct navbar links order: About, Projects, Experience, Skills (NOT Contact)
-  const navLinks: Array<{ label: string; href: string }> =
-    navData?.links?.length > 0
-      ? navData.links
-      : [
-          { label: 'About', href: '#about' },
-          { label: 'Projects', href: '#projects' },
-          { label: 'Experience', href: '#experience' },
-          { label: 'Skills', href: '#skills' },
-        ];
-
-  const ctaLabel = navData?.cta?.label || 'Hire me';
-  // Single source of truth: Hero fullName -> Navbar name (live sync)
-  const logoName = heroName || navData?.name || 'Your Name';
-
-  // IntersectionObserver for accurate active section detection
-  // Only highlights when section is visible, no highlight in Hero section
-  useEffect(() => {
-    if (isPreview || isInsideCanvas) return;
-
-    const sections = ['about', 'projects', 'experience', 'skills'];
-    const observers: IntersectionObserver[] = [];
-    const visibilityMap = new Map<string, number>();
-
-    const updateActiveSection = () => {
-      // Find section with highest visibility
-      let maxVisibility = 0;
-      let mostVisibleSection = '';
-
-      visibilityMap.forEach((ratio, id) => {
-        if (ratio > maxVisibility) {
-          maxVisibility = ratio;
-          mostVisibleSection = id;
-        }
-      });
-
-      // Only highlight if visibility is significant (> 30%)
-      // This prevents flickering and ensures accurate highlighting
-      if (maxVisibility > 0.3) {
-        setActiveSection(mostVisibleSection);
-      } else {
-        // Reset when in Hero section or no section is visible enough
-        setActiveSection('');
-      }
-    };
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (!element) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            visibilityMap.set(id, entry.intersectionRatio);
-            updateActiveSection();
-          });
-        },
-        {
-          threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-          rootMargin: '-64px 0px -50% 0px', // Account for fixed navbar (64px) and highlight when section enters top half
-        }
-      );
-
-      observer.observe(element);
-      observers.push(observer);
-    });
-
-    return () => {
-      observers.forEach((observer) => observer.disconnect());
-    };
-  }, [isPreview, isInsideCanvas]);
-
-  const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (isPreview || isInsideCanvas) { e.preventDefault(); return; }
-    e.preventDefault();
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    if (element) {
-      const navbarHeight = 64; // Fixed navbar height (h-16 = 4rem = 64px)
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    setMobileOpen(false);
-  };
-
-  const handleCTA = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isPreview || isInsideCanvas) { e.preventDefault(); return; }
-    e.preventDefault();
-    const element = document.getElementById('contact');
-    if (element) {
-      const navbarHeight = 64; // Fixed navbar height (h-16 = 4rem = 64px)
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    setMobileOpen(false);
-  };
-
-  return (
-    <div
-      className={`
-        w-full z-50 transition-all duration-300
-        ${isInsideCanvas
-          ? 'sticky top-0 mx-auto max-w-6xl bg-slate-950 border-b border-slate-800/60'
-          : 'bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/60 shadow-lg shadow-black/20'
-        }
-      `}
-    >
-      {/* Navbar is always visible with solid background for immediate visibility on page load */}
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <a
-          href="#"
-          onClick={(e) => { if (isPreview || isInsideCanvas) e.preventDefault(); }}
-          className="font-bold text-slate-100 text-lg tracking-tight hover:text-indigo-400 transition-colors"
-        >
-          {logoName}
-        </a>
-
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const id = link.href.replace('#', '');
-            const isActive = !isInsideCanvas && activeSection === id;
-            return (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-100'
-                }`}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="dp-nav-pill"
-                    className="absolute inset-0 bg-indigo-500/10 border border-indigo-500/20 rounded-lg"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                  />
-                )}
-                <span className="relative">{link.label}</span>
-              </a>
-            );
-          })}
-        </div>
-
-        {/* CTA */}
-        <div className="hidden md:flex">
-          <a
-            href="#contact"
-            onClick={handleCTA}
-            className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors duration-200"
-          >
-            {ctaLabel}
-          </a>
-        </div>
-
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 text-slate-400 hover:text-slate-100 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            className="md:hidden bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/60 px-6 py-4 space-y-1"
-          >
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                className="block px-4 py-3 text-sm font-medium text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 rounded-lg transition-all"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="pt-2 border-t border-slate-800">
-              <a
-                href="#contact"
-                onClick={handleCTA}
-                className="block mt-2 px-4 py-3 text-center text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
-              >
-                {ctaLabel}
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// Standalone sticky wrapper (public page only)
-function StickyNavbar(props: NavbarProps) {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      <NavbarContent {...props} />
-    </div>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
@@ -314,12 +81,6 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
 
   // Determine if we're in inline edit mode (editor context + preview mode)
   const inlineEditMode = isPreview && !!editorContext && !!sectionId;
-
-  // DEBUG: Track when heroData.profileImage changes
-  useEffect(() => {
-    console.log('[DarkProfessional Hero] profileImage:', heroData.profileImage);
-    console.log('[DarkProfessional Hero] inlineEditMode:', inlineEditMode);
-  }, [heroData.profileImage, inlineEditMode]);
 
   const handleScroll = (e: React.MouseEvent, targetId: string) => {
     if (isPreview) { e.preventDefault(); return; }
@@ -507,16 +268,13 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                   <EditableImage
                     value={heroData.profileImage || ''}
                     onChange={(url) => {
-                      console.log('[DarkProfessional Hero] EditableImage onChange, url:', url);
-                      if (editorContext && sectionId) {
-                        editorContext.dispatch({
-                          type: 'UPDATE_SECTION_DATA',
-                          payload: {
-                            sectionId,
-                            data: { profileImage: url }
-                          }
-                        });
-                      }
+                      editorContext.dispatch({
+                        type: 'UPDATE_SECTION_DATA',
+                        payload: {
+                          sectionId,
+                          data: { profileImage: url }
+                        }
+                      });
                     }}
                     alt={heroData.fullName || 'Profile'}
                     containerClassName="absolute inset-0 w-full h-full !min-h-0"
@@ -592,7 +350,7 @@ function AboutSection({ aboutData }: { aboutData: any }) {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={0.1}>
-            <p className="text-slate-300 text-lg leading-relaxed mb-8">{aboutData.content}</p>
+            <p className="text-slate-300 text-lg leading-relaxed mb-8">{aboutData.description || aboutData.content}</p>
             {(aboutData.highlights || []).length > 0 && (
               <div className="space-y-3">
                 {(aboutData.highlights || []).map((item: string, i: number) => (
@@ -1095,35 +853,9 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-function FooterContent({ footerData, heroName }: { footerData: any; heroName?: string }) {
-  const year = new Date().getFullYear();
-  // Single source of truth: Hero fullName -> Footer name (live sync)
-  const name = heroName || footerData?.name || 'Your Name';
-
-  return (
-    <footer className="py-8 px-6 bg-slate-950 border-t border-slate-800/50">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <span className="font-bold text-slate-400 text-sm">{name}</span>
-        <p className="text-slate-600 text-xs text-center">
-          {footerData?.copyrightText || `© ${year}. All rights reserved.`}
-        </p>
-        {footerData?.links?.length > 0 && (
-          <div className="flex items-center gap-4">
-            {(footerData.links as Array<{ label: string; href: string }>).map((link, i) => (
-              <a key={i} href={link.href} className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
-                {link.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </footer>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function DarkProfessionalTemplate({
+function DarkProfessionalTemplateComponent({
   data,
   isPreview = false,
   sections,
@@ -1146,6 +878,7 @@ export function DarkProfessionalTemplate({
 
   const aboutData = data?.about || {
     heading: 'About',
+    description: "I'm a senior software engineer passionate about building robust, scalable systems. My expertise spans full-stack development, cloud architecture, and team leadership.",
     content: "I'm a senior software engineer passionate about building robust, scalable systems. My expertise spans full-stack development, cloud architecture, and team leadership.",
     highlights: [
       '8+ years in software development',
@@ -1250,10 +983,6 @@ export function DarkProfessionalTemplate({
     cta: { label: 'Hire me', href: '#contact' },
   };
 
-  const footerData: FooterData = data?.footer || {
-    name: heroData.fullName,
-  };
-
   const rootClass = "min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden";
   const rootStyle = { fontFamily: "'Inter', system-ui, sans-serif" };
 
@@ -1261,7 +990,8 @@ export function DarkProfessionalTemplate({
   if (sections) {
     // Extract live hero data from sections for name synchronization
     const heroSection = sections.find(s => s.type === 'hero');
-    const liveHeroData = heroSection?.data || heroData;
+    const liveHeroContent = (heroSection as any)?.content || {};
+    const liveHeroData = Object.keys(liveHeroContent).length > 0 ? liveHeroContent : (heroSection?.data || heroData);
     const liveHeroName = (liveHeroData as any)?.fullName || heroData.fullName;
 
     // Find navbar section for special handling on public pages
@@ -1272,14 +1002,14 @@ export function DarkProfessionalTemplate({
       <div className={rootClass} style={rootStyle}>
         {/* Render fixed navbar for public pages (when isPreview=false) */}
         {hasNavbar && !isPreview && (
-          <div className="fixed top-0 left-0 right-0 z-50">
-            <NavbarContent
-              navData={navbarSection.data as any}
-              isPreview={false}
-              isInsideCanvas={false}
-              heroName={liveHeroName}
-            />
-          </div>
+          <Navbar
+            sections={sections}
+            navData={navbarSection.data as any}
+            isPreview={false}
+            isInsideCanvas={false}
+            heroName={liveHeroName}
+            variant="dark"
+          />
         )}
 
         {sections.map((section, index) => {
@@ -1295,20 +1025,24 @@ export function DarkProfessionalTemplate({
                 break;
               }
               // In editor/preview: use a static non-sticky bar so it doesn't float over editor UI
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
-                <NavbarContent
+                <Navbar
                   key={section.id}
+                  sections={sections}
                   navData={d}
                   isPreview={isPreview}
                   isInsideCanvas={true}
                   heroName={liveHeroName}
+                  variant="dark"
                 />
               );
               break;
             }
             case 'hero': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <HeroSection
                   key={`hero-${section.id}-${d.profileImage || 'no-img'}`}
@@ -1320,7 +1054,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'about': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <AboutSection aboutData={d} />
@@ -1329,7 +1064,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'experience': {
-              const d = section.data as ExperienceData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ExperienceData;
               content = (
                 <React.Fragment key={section.id}>
                   <ExperienceSection experienceData={d} />
@@ -1338,7 +1074,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'projects': {
-              const d = section.data as ProjectsData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ProjectsData;
               content = (
                 <React.Fragment key={section.id}>
                   <ProjectsSection projectsData={d} isPreview={isPreview} sectionId={section.id} />
@@ -1347,7 +1084,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'skills': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <SkillsSection skillsData={d} />
@@ -1356,7 +1094,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'education': {
-              const d = section.data as EducationData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as EducationData;
               content = (
                 <React.Fragment key={section.id}>
                   <EducationSection educationData={d} />
@@ -1365,7 +1104,8 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'contact': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <ContactSection contactData={d} isPreview={isPreview} />
@@ -1374,12 +1114,12 @@ export function DarkProfessionalTemplate({
               break;
             }
             case 'footer': {
-              const d = section.data as FooterData;
               content = (
-                <FooterContent
+                <Footer
                   key={section.id}
-                  footerData={d}
+                  sections={sections}
                   heroName={liveHeroName}
+                  variant="dark"
                 />
               );
               break;
@@ -1397,7 +1137,13 @@ export function DarkProfessionalTemplate({
   // ── STANDALONE MODE (public portfolio page) ────────────────────────────────
   return (
     <div className={rootClass} style={rootStyle}>
-      <StickyNavbar navData={navbarData} isPreview={isPreview} heroName={heroData.fullName} />
+      <Navbar
+        sections={sections}
+        navData={navbarData}
+        isPreview={isPreview}
+        heroName={heroData.fullName}
+        variant="dark"
+      />
       <HeroSection heroData={heroData} isPreview={isPreview} />
       <AboutSection aboutData={aboutData} />
       <ExperienceSection experienceData={experienceData} />
@@ -1405,7 +1151,10 @@ export function DarkProfessionalTemplate({
       <SkillsSection skillsData={skillsData} />
       <EducationSection educationData={educationData} />
       <ContactSection contactData={contactData} isPreview={isPreview} />
-      <FooterContent footerData={footerData} heroName={heroData.fullName} />
+      <Footer sections={sections} heroName={heroData.fullName} variant="dark" />
     </div>
   );
 }
+
+export const DarkProfessionalTemplate = React.memo(DarkProfessionalTemplateComponent);
+DarkProfessionalTemplate.displayName = 'DarkProfessionalTemplate';

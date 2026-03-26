@@ -17,16 +17,67 @@ interface Portfolio {
   updatedAt: string;
 }
 
-let portfoliosInFlightRequest: Promise<Portfolio[]> | null = null;
-let portfoliosMemoryCache: Portfolio[] | null = null;
+interface PaginatedPortfoliosResponse {
+  portfolios: Portfolio[];
+  total: number;
+}
+
+interface PortfoliosCache {
+  portfolios: Portfolio[];
+  total: number;
+  page: number;
+}
+
+const PAGE_SIZE = 4;
+
+let portfoliosInFlightRequest: Promise<PaginatedPortfoliosResponse> | null = null;
+let portfoliosMemoryCache: PortfoliosCache | null = null;
 
 export const usePortfolios = () => {
-  const [portfolios, setPortfolios] = useState<Portfolio[]>(() => portfoliosMemoryCache ?? []);
+  const [portfolios, setPortfolios] = useState<Portfolio[]>(() => portfoliosMemoryCache?.portfolios ?? []);
+  const [page, setPage] = useState(() => portfoliosMemoryCache?.page ?? 1);
+  const [total, setTotal] = useState(() => portfoliosMemoryCache?.total ?? 0);
   const [loading, setLoading] = useState(() => portfoliosMemoryCache === null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const fetchPortfoliosPage = useCallback(async (pageToLoad: number): Promise<PaginatedPortfoliosResponse> => {
+    const response = await fetch(`/api/portfolios?page=${pageToLoad}&limit=${PAGE_SIZE}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    if (response.status === 401) {
+      console.warn('[usePortfolios] Unauthorized - user not signed in');
+      return { portfolios: [], total: 0 };
+    }
+
+    if (response.status === 403) {
+      console.warn('[usePortfolios] Forbidden - insufficient permissions');
+      return { portfolios: [], total: 0 };
+    }
+
+    const result = await response.json();
+
+    if (result.success) {
+      const parsedPortfolios = (result.portfolios ?? result.data ?? []) as Portfolio[];
+      const parsedTotal = typeof result.total === 'number' ? result.total : parsedPortfolios.length;
+      return {
+        portfolios: parsedPortfolios,
+        total: parsedTotal,
+      };
+    }
+
+    console.error('[usePortfolios] Error loading portfolios:', result.error || 'Unknown error');
+    return { portfolios: [], total: 0 };
+  }, []);
 
   const loadPortfolios = useCallback(async (force = false) => {
     if (!force && portfoliosMemoryCache) {
-      setPortfolios(portfoliosMemoryCache);
+      setPortfolios(portfoliosMemoryCache.portfolios);
+      setPage(portfoliosMemoryCache.page);
+      setTotal(portfoliosMemoryCache.total);
       setLoading(false);
       return;
     }
@@ -34,58 +85,86 @@ export const usePortfolios = () => {
     setLoading(true);
 
     try {
-      if (!portfoliosInFlightRequest) {
-        portfoliosInFlightRequest = (async () => {
-          const response = await fetch('/api/portfolios', {
-            cache: 'no-store',
-            headers: {
-              'Cache-Control': 'no-cache'
-            }
-          });
-
-          // Handle auth errors gracefully
-          if (response.status === 401) {
-            console.warn('[usePortfolios] Unauthorized - user not signed in');
-            return [];
-          }
-
-          if (response.status === 403) {
-            console.warn('[usePortfolios] Forbidden - insufficient permissions');
-            return [];
-          }
-
-          const result = await response.json();
-
-          if (result.success && result.data) {
-            return result.data as Portfolio[];
-          }
-
-          console.error('[usePortfolios] Error loading portfolios:', result.error || 'Unknown error');
-          return [];
-        })();
+      if (force || !portfoliosInFlightRequest) {
+        portfoliosInFlightRequest = fetchPortfoliosPage(1);
       }
 
-      const loadedPortfolios = await portfoliosInFlightRequest;
-      portfoliosMemoryCache = loadedPortfolios;
-      setPortfolios(loadedPortfolios);
+      const loaded = await portfoliosInFlightRequest;
+      portfoliosMemoryCache = {
+        portfolios: loaded.portfolios,
+        total: loaded.total,
+        page: 1,
+      };
+      setPortfolios(loaded.portfolios);
+      setTotal(loaded.total);
+      setPage(1);
     } catch (error) {
       console.error('[usePortfolios] Failed to fetch portfolios:', error);
-      portfoliosMemoryCache = [];
+      portfoliosMemoryCache = {
+        portfolios: [],
+        total: 0,
+        page: 1,
+      };
       setPortfolios([]);
+      setTotal(0);
+      setPage(1);
     } finally {
       portfoliosInFlightRequest = null;
       setLoading(false);
     }
-  }, []);
+  }, [fetchPortfoliosPage]);
+
+  const loadMore = useCallback(async () => {
+    if (loading || loadingMore || portfolios.length >= total) {
+      return;
+    }
+
+    const nextPage = page + 1;
+    setLoadingMore(true);
+
+    try {
+      const loaded = await fetchPortfoliosPage(nextPage);
+      setPortfolios((prev) => {
+        const existingIds = new Set(prev.map((portfolio) => portfolio.id));
+        const nextItems = loaded.portfolios.filter((portfolio) => !existingIds.has(portfolio.id));
+        const merged = [...prev, ...nextItems];
+
+        portfoliosMemoryCache = {
+          portfolios: merged,
+          total: loaded.total,
+          page: nextPage,
+        };
+
+        return merged;
+      });
+      setPage(nextPage);
+      setTotal(loaded.total);
+    } catch (error) {
+      console.error('[usePortfolios] Failed to load more portfolios:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [fetchPortfoliosPage, loading, loadingMore, page, portfolios, total]);
 
   useEffect(() => {
     if (portfoliosMemoryCache) {
-      setPortfolios(portfoliosMemoryCache);
+      setPortfolios(portfoliosMemoryCache.portfolios);
+      setPage(portfoliosMemoryCache.page);
+      setTotal(portfoliosMemoryCache.total);
       setLoading(false);
       return;
     }
     loadPortfolios(false);
   }, [loadPortfolios]);
+
+  useEffect(() => {
+    if (loading) return;
+    portfoliosMemoryCache = {
+      portfolios,
+      total,
+      page,
+    };
+  }, [loading, page, portfolios, total]);
 
   const deletePortfolio = async (portfolioId: string) => {
     try {
@@ -97,10 +176,9 @@ export const usePortfolios = () => {
 
       if (result.success) {
         setPortfolios(prev => {
-          const next = prev.filter(p => p.id !== portfolioId);
-          portfoliosMemoryCache = next;
-          return next;
+          return prev.filter(p => p.id !== portfolioId);
         });
+        setTotal((current) => Math.max(0, current - 1));
         return true;
       } else {
         console.error('Error deleting portfolio:', result.error);
@@ -134,10 +212,9 @@ export const usePortfolios = () => {
 
       if (result.success) {
         setPortfolios(prev => {
-          const next = [result.data, ...prev];
-          portfoliosMemoryCache = next;
-          return next;
+          return [result.data, ...prev];
         });
+        setTotal((current) => current + 1);
         return true;
       } else {
         console.error('Error duplicating portfolio:', result.error);
@@ -168,10 +245,9 @@ export const usePortfolios = () => {
 
       if (result.success) {
         setPortfolios(prev => {
-          const next = [result.data, ...prev];
-          portfoliosMemoryCache = next;
-          return next;
+          return [result.data, ...prev];
         });
+        setTotal((current) => current + 1);
         return result.data;
       } else {
         console.error('Error creating portfolio:', result.error);
@@ -197,9 +273,7 @@ export const usePortfolios = () => {
 
       if (result.success) {
         setPortfolios(prev => {
-          const next = prev.map(p => p.id === portfolioId ? result.data : p);
-          portfoliosMemoryCache = next;
-          return next;
+          return prev.map(p => p.id === portfolioId ? result.data : p);
         });
         return result.data;
       } else {
@@ -226,8 +300,13 @@ export const usePortfolios = () => {
 
   return {
     portfolios,
+    total,
+    page,
+    hasMore: portfolios.length < total,
     loading,
+    loadingMore,
     loadPortfolios,
+    loadMore,
     createPortfolio,
     updatePortfolio,
     deletePortfolio,

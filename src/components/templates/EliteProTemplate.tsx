@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
+import { EditableText } from '@/components/editor/inline/EditableText';
 import { motion, useInView } from 'framer-motion';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
 import Image from 'next/image';
 import {
   Github, Linkedin, Mail, MapPin, ExternalLink, ArrowRight,
@@ -75,168 +78,23 @@ function AnimatedBackground() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface NavProps {
+  sections?: EditorSection[];
   heroName?: string;
   navData?: any;
   isInsideCanvas?: boolean;
   isPreview?: boolean;
 }
 
-function GlassNavbar({ heroName, navData, isInsideCanvas = false, isPreview = false }: NavProps) {
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
-
-  const navLinks = [
-    { label: 'About', href: '#about' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Experience', href: '#experience' },
-    { label: 'Skills', href: '#skills' },
-  ];
-
-  const logoName = heroName || navData?.name || 'Your Name';
-
-  useEffect(() => {
-    if (isPreview || isInsideCanvas) return;
-
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isPreview, isInsideCanvas]);
-
-  useEffect(() => {
-    if (isPreview || isInsideCanvas) return;
-
-    const sections = ['about', 'projects', 'experience', 'skills'];
-    const observers: IntersectionObserver[] = [];
-    const visibilityMap = new Map<string, number>();
-
-    const updateActiveSection = () => {
-      let maxVisibility = 0;
-      let mostVisibleSection = '';
-
-      visibilityMap.forEach((ratio, id) => {
-        if (ratio > maxVisibility) {
-          maxVisibility = ratio;
-          mostVisibleSection = id;
-        }
-      });
-
-      const nextActive = maxVisibility > 0.3 ? mostVisibleSection : '';
-      setActiveSection((prev) => (prev === nextActive ? prev : nextActive));
-    };
-
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            visibilityMap.set(id, entry.intersectionRatio);
-          });
-          updateActiveSection();
-        },
-        {
-          threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-          rootMargin: '-80px 0px -45% 0px',
-        }
-      );
-
-      observer.observe(el);
-      observers.push(observer);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
-  }, [isPreview, isInsideCanvas]);
-
-  const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (isPreview || isInsideCanvas) {
-      e.preventDefault();
-      return;
-    }
-    e.preventDefault();
-    const id = href.replace('#', '');
-    const el = document.getElementById(id);
-    if (el) {
-      const navbarHeight = 80;
-      const offset = el.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
-      window.scrollTo({ top: offset, behavior: 'smooth' });
-    }
-  };
-
+function GlassNavbar({ sections, heroName, navData, isInsideCanvas = false, isPreview = false }: NavProps) {
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`
-        transition-all duration-500
-        ${isInsideCanvas
-          ? 'sticky top-0 z-10 w-full max-w-full'
-          : 'fixed top-0 left-0 right-0 z-50'
-        }
-      `}
-    >
-      <div
-        className={`
-          transition-all duration-500
-          ${scrolled && !isInsideCanvas
-            ? 'mt-4 mx-4 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl shadow-black/20'
-            : 'backdrop-blur-md bg-white/5 border-b border-white/10'
-          }
-          ${isInsideCanvas ? 'w-full max-w-full mx-0 rounded-none border-x-0' : 'max-w-7xl mx-auto'}
-        `}
-      >
-        <div className="flex items-center justify-between h-20 px-6 lg:px-8">
-          {/* Logo */}
-          <div className="text-xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-            {logoName}
-          </div>
-
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link: any) => {
-              const isActive = activeSection === link.href.replace('#', '');
-              return (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleNav(e, link.href)}
-                  className={`
-                    relative px-4 py-2 text-sm font-medium transition-all duration-300
-                    ${isActive
-                      ? 'text-white'
-                      : 'text-slate-300 hover:text-white'
-                    }
-                  `}
-                >
-                  {link.label}
-                  {isActive && (
-                    <motion.div
-                      layoutId="navIndicator"
-                      className="absolute inset-0 rounded-lg bg-white/10 -z-10"
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                  )}
-                </a>
-              );
-            })}
-          </div>
-
-          {/* CTA */}
-          <a
-            href="#contact"
-            onClick={(e) => handleNav(e, '#contact')}
-            className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
-          >
-            Hire Me
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
-      </div>
-    </motion.nav>
+    <Navbar
+      sections={sections}
+      heroName={heroName}
+      navData={navData}
+      isInsideCanvas={isInsideCanvas}
+      isPreview={isPreview}
+      variant="elite"
+    />
   );
 }
 
@@ -274,29 +132,12 @@ function HeroSection({ section, isEditing }: HeroProps) {
   const inlineEditMode = isEditing && !!editorContext && !!section?.id;
 
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const socialLinks = Array.isArray(data?.socialLinks) ? data?.socialLinks : [];
-  const profileImage = (section as any)?.content?.profileImage || (section as any)?.data?.profileImage || '';
-  const fullName = data?.fullName || (section as any)?.data?.fullName || 'Your Name';
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const socialLinks = Array.isArray(normalizedData?.socialLinks) ? normalizedData?.socialLinks : [];
+  const profileImage = normalizedData?.profileImage || '';
+  const fullName = normalizedData?.fullName || 'Your Name';
   const heroInitial = (fullName || '').trim().charAt(0).toUpperCase() || '?';
-
-  const handleAvatarUpdate = (url: string) => {
-    if (!editorContext || !section?.id) return;
-
-    editorContext.dispatch({
-      type: 'UPDATE_SECTION_DATA',
-      payload: {
-        sectionId: section.id,
-        data: {
-          profileImage: url,
-          content: {
-            ...((section as any)?.content || {}),
-            profileImage: url,
-          },
-        },
-      },
-    });
-  };
 
   const socialIcons: Record<string, any> = {
     github: <Github className="w-5 h-5" />,
@@ -330,7 +171,12 @@ function HeroSection({ section, isEditing }: HeroProps) {
               {inlineEditMode ? (
                 <EditableImage
                   value={profileImage}
-                  onChange={handleAvatarUpdate}
+                  onChange={(url) => {
+                    editorContext.dispatch({
+                      type: 'UPDATE_SECTION_DATA',
+                      payload: { sectionId: section.id, data: { profileImage: url } }
+                    });
+                  }}
                   alt={fullName}
                   containerClassName="absolute inset-0 w-full h-full !min-h-0"
                   className="object-cover !min-h-0 rounded-full"
@@ -375,7 +221,20 @@ function HeroSection({ section, isEditing }: HeroProps) {
         >
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
             <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-              {data?.fullName || 'Your Name'}
+              {inlineEditMode ? (
+                <EditableText
+                  value={normalizedData?.fullName || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId: section.id, data: { fullName: value } }
+                  })}
+                  placeholder="Your Name"
+                  className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
+                  as="span"
+                />
+              ) : (
+                normalizedData?.fullName || 'Your Name'
+              )}
             </span>
           </h1>
         </motion.div>
@@ -387,7 +246,20 @@ function HeroSection({ section, isEditing }: HeroProps) {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="text-2xl md:text-3xl font-medium text-slate-300 mb-6">
-            {data?.title || 'Your Title'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.title || ''}
+                onChange={(value) => editorContext.dispatch({
+                  type: 'UPDATE_SECTION_DATA',
+                  payload: { sectionId: section.id, data: { title: value } }
+                })}
+                placeholder="Your Title"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
+                as="span"
+              />
+            ) : (
+              normalizedData?.title || 'Your Title'
+            )}
           </div>
         </motion.div>
 
@@ -399,7 +271,21 @@ function HeroSection({ section, isEditing }: HeroProps) {
           className="max-w-2xl mx-auto mb-10"
         >
           <p className="text-lg text-slate-400 leading-relaxed">
-            {data?.bio || 'Your bio...'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.bio || ''}
+                onChange={(value) => editorContext.dispatch({
+                  type: 'UPDATE_SECTION_DATA',
+                  payload: { sectionId: section.id, data: { bio: value } }
+                })}
+                placeholder="Your bio..."
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
+                as="span"
+                multiline
+              />
+            ) : (
+              normalizedData?.bio || 'Your bio...'
+            )}
           </p>
         </motion.div>
 
@@ -461,9 +347,10 @@ function HeroSection({ section, isEditing }: HeroProps) {
 
 function AboutSection({ section }: any) {
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const highlights = Array.isArray(data?.highlights) ? data?.highlights : [];
-  const personalInfo = data?.personalInfo || {};
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const highlights = Array.isArray(normalizedData?.highlights) ? normalizedData?.highlights : [];
+  const personalInfo = normalizedData?.personalInfo || {};
   const languages = Array.isArray(personalInfo?.languages) ? personalInfo.languages : [];
 
   return (
@@ -478,7 +365,7 @@ function AboutSection({ section }: any) {
 
           {/* Heading */}
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {data?.heading || 'About Me'}
+            {normalizedData?.heading || 'About Me'}
           </h2>
         </FadeInView>
 
@@ -487,7 +374,7 @@ function AboutSection({ section }: any) {
           <FadeInView delay={0.1}>
             <div className="space-y-6">
               <p className="text-lg text-slate-300 leading-relaxed">
-                {data?.content || 'Tell your story...'}
+                {normalizedData?.description || normalizedData?.content || 'Tell your story...'}
               </p>
 
               {/* Highlights */}
@@ -537,7 +424,7 @@ function AboutSection({ section }: any) {
                 </div>
               )}
 
-              {data?.contactEmail && (
+              {normalizedData?.contactEmail && (
                 <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/[0.07] transition-all duration-300 group">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
@@ -545,7 +432,7 @@ function AboutSection({ section }: any) {
                     </div>
                     <div className="overflow-hidden">
                       <div className="text-sm text-slate-400 mb-1">Email</div>
-                      <div className="text-white font-semibold truncate">{data?.contactEmail}</div>
+                      <div className="text-white font-semibold truncate">{normalizedData?.contactEmail}</div>
                     </div>
                   </div>
                 </div>
@@ -566,8 +453,9 @@ function ProjectsSection({ section, isEditing }: any) {
   const editorContext = React.useContext(EditorContext);
   const inlineEditMode = !!isEditing && !!editorContext && !!section?.id;
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const projects = Array.isArray(data?.projects) ? data?.projects : [];
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const projects = Array.isArray(normalizedData?.projects) ? normalizedData?.projects : [];
 
   const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
     if (!editorContext || !section?.id) return;
@@ -587,7 +475,7 @@ function ProjectsSection({ section, isEditing }: any) {
         data: {
           projects: updatedProjects,
           content: {
-            ...(data || {}),
+            ...(normalizedData || {}),
             projects: updatedProjects,
           },
         },
@@ -605,7 +493,7 @@ function ProjectsSection({ section, isEditing }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {data?.heading || 'Featured Projects'}
+            {normalizedData?.heading || 'Featured Projects'}
           </h2>
         </FadeInView>
 
@@ -723,9 +611,12 @@ function ProjectsSection({ section, isEditing }: any) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function ExperienceSection({ section }: any) {
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const experiences = Array.isArray(data.experiences)
-    ? data.experiences
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const experiences = Array.isArray(normalizedData?.experience)
+    ? normalizedData.experience
+    : Array.isArray(normalizedData?.experiences)
+      ? normalizedData.experiences
     : [];
 
   return (
@@ -738,7 +629,7 @@ function ExperienceSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {data?.heading || 'Professional Experience'}
+            {normalizedData?.heading || 'Professional Experience'}
           </h2>
         </FadeInView>
 
@@ -825,7 +716,8 @@ function ExperienceSection({ section }: any) {
 
 function SkillsSection({ section }: any) {
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
 
   const normalizeSkillLabels = (skillsData: any): string[] => {
     const skillCategories = skillsData?.skillCategories;
@@ -858,7 +750,7 @@ function SkillsSection({ section }: any) {
       .filter((item): item is string => item.trim().length > 0);
   };
 
-  const skills = normalizeSkillLabels(data);
+  const skills = normalizeSkillLabels(normalizedData);
 
   return (
     <section id="skills" className="relative py-32 px-6">
@@ -870,7 +762,7 @@ function SkillsSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {data?.heading || 'Skills & Expertise'}
+            {normalizedData?.heading || 'Skills & Expertise'}
           </h2>
         </FadeInView>
 
@@ -911,9 +803,10 @@ function SkillsSection({ section }: any) {
 
 function EducationSection({ section }: any) {
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const education = Array.isArray(data.education)
-    ? data.education
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const education = Array.isArray(normalizedData?.education)
+    ? normalizedData.education
     : [];
 
   return (
@@ -926,7 +819,7 @@ function EducationSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {data?.heading || 'Education'}
+            {normalizedData?.heading || 'Education'}
           </h2>
         </FadeInView>
 
@@ -990,8 +883,9 @@ function EducationSection({ section }: any) {
 
 function ContactSection({ section }: any) {
   // Safe data access - prevent crashes
-  const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const socialLinks = Array.isArray(data?.socialLinks) ? data?.socialLinks : [];
+  const data = (section as any)?.content || {};
+  const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
+  const socialLinks = Array.isArray(normalizedData?.socialLinks) ? normalizedData?.socialLinks : [];
 
   return (
     <section id="contact" className="relative py-32 px-6">
@@ -1004,17 +898,17 @@ function ContactSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            {data?.heading || "Let's Work Together"}
+            {normalizedData?.heading || "Let's Work Together"}
           </h2>
 
           <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            {data?.availability || 'Available for freelance projects, collaborations, and full-time opportunities.'}
+            {normalizedData?.availability || 'Available for freelance projects, collaborations, and full-time opportunities.'}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
-            {data?.email && (
+            {normalizedData?.email && (
               <a
-                href={`mailto:${data?.email}`}
+                href={`mailto:${normalizedData?.email}`}
                 className="px-10 py-5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
               >
                 <Mail className="w-5 h-5" />
@@ -1057,26 +951,15 @@ function ContactSection({ section }: any) {
 // FOOTER
 // ═══════════════════════════════════════════════════════════════════════════
 
-function Footer({ heroName }: { heroName?: string }) {
-  return (
-    <footer className="relative py-12 px-6 border-t border-white/10">
-      <div className="max-w-6xl mx-auto text-center">
-        <p className="text-slate-400">
-          © {new Date().getFullYear()} {heroName || 'Your Name'}. All rights reserved.
-        </p>
-        <p className="text-slate-500 text-sm mt-2">
-          Built with passion and precision
-        </p>
-      </div>
-    </footer>
-  );
+function TemplateFooter({ sections, heroName }: { sections?: EditorSection[]; heroName?: string }) {
+  return <Footer sections={sections} heroName={heroName} variant="elite" />;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MAIN TEMPLATE COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-export default function EliteProTemplate({
+function EliteProTemplate({
   data,
   isPreview = false,
   sections: editorSections,
@@ -1092,7 +975,7 @@ export default function EliteProTemplate({
   }, []);
 
   // Create mock sections from data for preview mode
-  const createMockSections = (): EditorSection[] => {
+  const createMockSections = useCallback((): EditorSection[] => {
     if (!data) return [];
     const mockSections: EditorSection[] = [];
     let order = 0;
@@ -1125,23 +1008,29 @@ export default function EliteProTemplate({
     mockSections.push(createSection('contact', data?.contact || {}));
 
     return mockSections;
-  };
+  }, [data]);
 
   // Use editor sections, or create mock sections from data for preview
-  const sections = editorSections?.length ? editorSections : createMockSections();
+  const sections = useMemo(
+    () => (editorSections?.length ? editorSections : createMockSections()),
+    [editorSections, createMockSections]
+  );
 
   // Ensure all required sections exist and preserve strict order
-  const sectionDefaults: Record<string, any> = {
-    hero: data?.hero || {},
-    about: data?.about || {},
-    experience: data?.experience || {},
-    projects: data?.projects || {},
-    skills: data?.skills || {},
-    education: data?.education || {},
-    contact: data?.contact || {},
-  };
+  const sectionDefaults = useMemo<Record<string, any>>(
+    () => ({
+      hero: data?.hero || {},
+      about: data?.about || {},
+      experience: data?.experience || {},
+      projects: data?.projects || {},
+      skills: data?.skills || {},
+      education: data?.education || {},
+      contact: data?.contact || {},
+    }),
+    [data]
+  );
 
-  const makeFallbackSection = (type: string, order: number): EditorSection => ({
+  const makeFallbackSection = useCallback((type: string, order: number): EditorSection => ({
     id: `${type}-fallback`,
     type: type as any,
     order,
@@ -1156,11 +1045,11 @@ export default function EliteProTemplate({
       animation: { type: 'fade', duration: 600, delay: 200 }
     },
     isEditable: false,
-  });
+  }), [sectionDefaults]);
 
-  const getRequiredSection = (type: string, order: number): EditorSection => {
+  const getRequiredSection = useCallback((type: string, order: number): EditorSection => {
     return sections.find(s => s.type === type) || makeFallbackSection(type, order);
-  };
+  }, [sections, makeFallbackSection]);
 
   const heroSection = getRequiredSection('hero', 0);
   const aboutSection = getRequiredSection('about', 1);
@@ -1171,10 +1060,12 @@ export default function EliteProTemplate({
   const contactSection = getRequiredSection('contact', 6);
   const navSection = sections.find(s => s.type === 'navbar');
 
-  const heroName = (heroSection?.data as any)?.fullName;
+  const heroContent = (heroSection as any)?.content || {};
+  const heroSectionData = Object.keys(heroContent).length > 0 ? heroContent : (heroSection?.data as any);
+  const heroName = heroSectionData?.fullName;
   const isInsideCanvas = isEditing || isEditorRoute;
 
-  const renderSectionContent = (section: EditorSection | undefined, Component: any) => {
+  const renderSectionContent = useCallback((section: EditorSection | undefined, Component: any) => {
     if (!section) return null;
 
     const content = (
@@ -1190,7 +1081,7 @@ export default function EliteProTemplate({
     }
 
     return content;
-  };
+  }, [isEditing, renderSection, sections]);
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-white overflow-x-hidden">
@@ -1199,6 +1090,7 @@ export default function EliteProTemplate({
 
       {/* Glass Navbar */}
       <GlassNavbar
+        sections={sections}
         heroName={heroName}
         navData={navSection?.data}
         isInsideCanvas={isInsideCanvas}
@@ -1215,7 +1107,12 @@ export default function EliteProTemplate({
       {renderSectionContent(contactSection, ContactSection)}
 
       {/* Footer */}
-      <Footer heroName={heroName} />
+      <TemplateFooter sections={sections} heroName={heroName} />
     </div>
   );
 }
+
+const MemoizedEliteProTemplate = React.memo(EliteProTemplate);
+MemoizedEliteProTemplate.displayName = 'EliteProTemplate';
+
+export default MemoizedEliteProTemplate;

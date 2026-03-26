@@ -277,7 +277,7 @@ export default function HeroSection({
 
         {/* Decorative grid */}
         <div
-          className="absolute right-0 inset-y-0 -z-0 w-1/2 pointer-events-none"
+          className="absolute right-0 inset-y-0 -z-10 w-1/2 pointer-events-none"
           style={{
             backgroundImage:
               'radial-gradient(circle at 1px 1px, rgb(226 232 240) 1px, transparent 0)',

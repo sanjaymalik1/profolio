@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
 import {
   Github, Linkedin, Mail, MapPin, ExternalLink,
   Building2, GraduationCap, Calendar, ArrowRight,
-  Twitter, Globe, Menu, X, Heart
+  Twitter, Globe, Heart
 } from 'lucide-react';
 import type { EditorSection } from '@/types/editor';
 import { EditorContext } from '@/contexts/EditorContext';
 import type {
   TemplateData, ProjectsData, Project,
   ExperienceData, Experience, EducationData, Education,
-  NavbarData, FooterData
+  NavbarData
 } from '@/types/portfolio';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -49,221 +51,6 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
-
-interface NavbarProps {
-  navData: any;
-  isPreview: boolean;
-  isInsideCanvas?: boolean;
-  heroName?: string;
-}
-
-function NavbarContent({ navData, isPreview, isInsideCanvas = false, heroName }: NavbarProps) {
-  const [activeSection, setActiveSection] = useState('');
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const navLinks: Array<{ label: string; href: string }> =
-    navData?.links?.length > 0
-      ? navData.links
-      : [
-          { label: 'About', href: '#about' },
-          { label: 'Projects', href: '#projects' },
-          { label: 'Experience', href: '#experience' },
-          { label: 'Skills', href: '#skills' },
-        ];
-
-  const ctaLabel = navData?.cta?.label || 'Contact';
-  const logoName = heroName || navData?.name || 'Your Name';
-
-  useEffect(() => {
-    if (isPreview || isInsideCanvas) return;
-
-    const sections = ['about', 'projects', 'experience', 'skills'];
-    const observers: IntersectionObserver[] = [];
-    const visibilityMap = new Map<string, number>();
-
-    const updateActiveSection = () => {
-      let maxVisibility = 0;
-      let mostVisibleSection = '';
-
-      visibilityMap.forEach((ratio, id) => {
-        if (ratio > maxVisibility) {
-          maxVisibility = ratio;
-          mostVisibleSection = id;
-        }
-      });
-
-      if (maxVisibility > 0.3) {
-        setActiveSection(mostVisibleSection);
-      } else {
-        setActiveSection('');
-      }
-    };
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (!element) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            visibilityMap.set(id, entry.intersectionRatio);
-            updateActiveSection();
-          });
-        },
-        {
-          threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-          rootMargin: '-64px 0px -50% 0px',
-        }
-      );
-
-      observer.observe(element);
-      observers.push(observer);
-    });
-
-    return () => {
-      observers.forEach((observer) => observer.disconnect());
-    };
-  }, [isPreview, isInsideCanvas]);
-
-  const handleNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (isPreview || isInsideCanvas) { e.preventDefault(); return; }
-    e.preventDefault();
-    const targetId = href.replace('#', '');
-    const element = document.getElementById(targetId);
-    if (element) {
-      const navbarHeight = 64;
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    setMobileOpen(false);
-  };
-
-  const handleCTA = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (isPreview || isInsideCanvas) { e.preventDefault(); return; }
-    e.preventDefault();
-    const element = document.getElementById('contact');
-    if (element) {
-      const navbarHeight = 64;
-      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-      const offsetPosition = elementPosition - navbarHeight;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    setMobileOpen(false);
-  };
-
-  return (
-    <div
-      className={`
-        w-full z-50 transition-all duration-300
-        ${isInsideCanvas
-          ? 'sticky top-0 mx-auto max-w-6xl bg-[#FAF9F6] border-b border-[#E8DCC8]'
-          : 'bg-[#FAF9F6]/95 backdrop-blur-sm border-b border-[#E8DCC8]'
-        }
-      `}
-    >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a
-          href="#"
-          onClick={(e) => { if (isPreview || isInsideCanvas) e.preventDefault(); }}
-          className="font-semibold text-[#8B6F47] text-base tracking-tight hover:text-[#6B5437] transition-colors"
-        >
-          {logoName}
-        </a>
-
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const id = link.href.replace('#', '');
-            const isActive = !isInsideCanvas && activeSection === id;
-            return (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  isActive ? 'text-[#8B6F47]' : 'text-[#A89B88] hover:text-[#8B6F47]'
-                }`}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="wm-nav-pill"
-                    className="absolute inset-0 bg-[#F5EFE7] border border-[#E8DCC8] rounded-lg"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                  />
-                )}
-                <span className="relative">{link.label}</span>
-              </a>
-            );
-          })}
-        </div>
-
-        <div className="hidden md:flex">
-          <a
-            href="#contact"
-            onClick={handleCTA}
-            className="px-5 py-2 text-sm font-medium bg-[#8B6F47] hover:bg-[#6B5437] text-white rounded-lg transition-colors duration-200"
-          >
-            {ctaLabel}
-          </a>
-        </div>
-
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 text-[#A89B88] hover:text-[#8B6F47] transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            className="md:hidden bg-[#FAF9F6]/98 backdrop-blur-sm border-b border-[#E8DCC8] px-6 py-4 space-y-1"
-          >
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleNav(e, link.href)}
-                className="block px-4 py-3 text-sm font-medium text-[#A89B88] hover:text-[#8B6F47] hover:bg-[#F5EFE7] rounded-lg transition-all"
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="pt-2 border-t border-[#E8DCC8]">
-              <a
-                href="#contact"
-                onClick={handleCTA}
-                className="block mt-2 px-4 py-3 text-center text-sm font-medium bg-[#8B6F47] hover:bg-[#6B5437] text-white rounded-lg transition-colors"
-              >
-                {ctaLabel}
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function StickyNavbar(props: NavbarProps) {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      <NavbarContent {...props} />
-    </div>
-  );
-}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
@@ -308,15 +95,13 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                   <EditableImage
                     value={heroData.profileImage || ''}
                     onChange={(url) => {
-                      if (editorContext && sectionId) {
-                        editorContext.dispatch({
-                          type: 'UPDATE_SECTION_DATA',
-                          payload: {
-                            sectionId,
-                            data: { profileImage: url }
-                          }
-                        });
-                      }
+                      editorContext.dispatch({
+                        type: 'UPDATE_SECTION_DATA',
+                        payload: {
+                          sectionId,
+                          data: { profileImage: url }
+                        }
+                      });
                     }}
                     alt={heroData.fullName || 'Profile'}
                     containerClassName="absolute inset-0 w-full h-full !min-h-0"
@@ -488,7 +273,7 @@ function AboutSection({ aboutData }: { aboutData: any }) {
         <div className="grid lg:grid-cols-2 gap-12">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={0.1}>
             <p className="text-[#6B5437] text-lg leading-relaxed mb-6">
-              {aboutData.content}
+              {aboutData.description || aboutData.content}
             </p>
             {(aboutData.highlights || []).length > 0 && (
               <div className="space-y-3 mt-8">
@@ -603,7 +388,7 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
                 </div>
                 <div className="flex items-center gap-2 text-sm text-[#A89B88]">
                   <Calendar className="w-4 h-4" />
-                  <span>{exp.period}</span>
+                  <span>{(exp as any).period || `${exp.startDate} - ${exp.endDate || 'Present'}`}</span>
                 </div>
               </div>
               <p className="text-[#6B5437] leading-relaxed mb-4">{exp.description}</p>
@@ -937,10 +722,10 @@ function EducationSection({ educationData }: { educationData: EducationData }) {
               </div>
               <div className="flex items-center gap-2 text-sm text-[#A89B88]">
                 <Calendar className="w-4 h-4" />
-                <span>{edu.year}</span>
+                <span>{(edu as any).year || `${edu.startDate} - ${edu.endDate || 'Present'}`}</span>
               </div>
-              {edu.description && (
-                <p className="text-[#8B7C6A] text-sm leading-relaxed mt-3">{edu.description}</p>
+              {(edu as any).description && (
+                <p className="text-[#8B7C6A] text-sm leading-relaxed mt-3">{(edu as any).description}</p>
               )}
             </motion.div>
           ))}
@@ -1031,46 +816,12 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-function FooterContent({ footerData, heroName }: { footerData: FooterData; heroName?: string }) {
-  const displayName = heroName || footerData.name || 'Your Name';
-  const year = new Date().getFullYear();
-
-  return (
-    <footer className="py-12 px-6 bg-white border-t border-[#E8DCC8]">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-center md:text-left">
-            <p className="text-[#6B5437] font-semibold mb-1">{displayName}</p>
-            <p className="text-sm text-[#A89B88]">
-              {footerData.copyright || `© ${year}. All rights reserved.`}
-            </p>
-          </div>
-
-          {footerData.links && footerData.links.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-6">
-              {footerData.links.map((link: { label: string; url: string }, i: number) => (
-                <a
-                  key={i}
-                  href={link.url}
-                  className="text-sm text-[#8B6F47] hover:text-[#6B5437] transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const rootClass = "min-h-screen bg-[#FAF9F6] text-[#6B5437]";
 const rootStyle = { fontFamily: 'system-ui, -apple-system, sans-serif' };
 
-export function WarmMinimalistTemplate({
+function WarmMinimalistTemplateComponent({
   data,
   isPreview = false,
   sections,
@@ -1093,6 +844,7 @@ export function WarmMinimalistTemplate({
 
   const aboutData = data?.about || {
     heading: 'About Me',
+    description: "I'm a creative professional who believes in the power of simple, elegant design. With a background in both design and development, I create digital experiences that are both beautiful and functional.",
     content: "I'm a creative professional who believes in the power of simple, elegant design. With a background in both design and development, I create digital experiences that are both beautiful and functional.",
     highlights: [
       '5+ years in design & development',
@@ -1181,17 +933,12 @@ export function WarmMinimalistTemplate({
     cta: { label: 'Contact', href: '#contact' },
   };
 
-  const footerData: FooterData = data?.footer || {
-    name: heroData.fullName,
-    copyright: `© ${new Date().getFullYear()}. All rights reserved.`,
-    links: [],
-  };
-
   // ── Section rendering (editor mode) ──────────────────────────────────────
 
   if (sections) {
     const heroSection = sections.find(s => s.type === 'hero');
-    const liveHeroData = heroSection?.data || heroData;
+    const liveHeroContent = (heroSection as any)?.content || {};
+    const liveHeroData = Object.keys(liveHeroContent).length > 0 ? liveHeroContent : (heroSection?.data || heroData);
     const liveHeroName = (liveHeroData as any)?.fullName || heroData.fullName;
 
     const navbarSection = sections.find(s => s.type === 'navbar');
@@ -1200,14 +947,14 @@ export function WarmMinimalistTemplate({
     return (
       <div className={rootClass} style={rootStyle}>
         {hasNavbar && !isPreview && (
-          <div className="fixed top-0 left-0 right-0 z-50">
-            <NavbarContent
-              navData={navbarSection.data as any}
-              isPreview={false}
-              isInsideCanvas={false}
-              heroName={liveHeroName}
-            />
-          </div>
+          <Navbar
+            sections={sections}
+            navData={navbarSection.data as any}
+            isPreview={false}
+            isInsideCanvas={false}
+            heroName={liveHeroName}
+            variant="warm"
+          />
         )}
 
         {sections.map((section, index) => {
@@ -1219,20 +966,24 @@ export function WarmMinimalistTemplate({
                 content = <React.Fragment key={section.id} />;
                 break;
               }
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
-                <NavbarContent
+                <Navbar
                   key={section.id}
+                  sections={sections}
                   navData={d}
                   isPreview={isPreview}
                   isInsideCanvas={true}
                   heroName={liveHeroName}
+                  variant="warm"
                 />
               );
               break;
             }
             case 'hero': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <HeroSection
                   key={`hero-${section.id}-${d.profileImage || 'no-img'}`}
@@ -1244,7 +995,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'about': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <AboutSection aboutData={d} />
@@ -1253,7 +1005,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'experience': {
-              const d = section.data as ExperienceData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ExperienceData;
               content = (
                 <React.Fragment key={section.id}>
                   <ExperienceSection experienceData={d} />
@@ -1262,7 +1015,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'projects': {
-              const d = section.data as ProjectsData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ProjectsData;
               content = (
                 <React.Fragment key={section.id}>
                   <ProjectsSection projectsData={d} isPreview={isPreview} sectionId={section.id} />
@@ -1271,7 +1025,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'skills': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <SkillsSection skillsData={d} />
@@ -1280,7 +1035,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'education': {
-              const d = section.data as EducationData;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as EducationData;
               content = (
                 <React.Fragment key={section.id}>
                   <EducationSection educationData={d} />
@@ -1289,7 +1045,8 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'contact': {
-              const d = section.data as any;
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
                   <ContactSection contactData={d} isPreview={isPreview} />
@@ -1298,12 +1055,12 @@ export function WarmMinimalistTemplate({
               break;
             }
             case 'footer': {
-              const d = section.data as FooterData;
               content = (
-                <FooterContent
+                <Footer
                   key={section.id}
-                  footerData={d}
+                  sections={sections}
                   heroName={liveHeroName}
+                  variant="warm"
                 />
               );
               break;
@@ -1321,7 +1078,13 @@ export function WarmMinimalistTemplate({
   // ── STANDALONE MODE (public portfolio page) ────────────────────────────────
   return (
     <div className={rootClass} style={rootStyle}>
-      <StickyNavbar navData={navbarData} isPreview={isPreview} heroName={heroData.fullName} />
+      <Navbar
+        sections={sections}
+        navData={navbarData}
+        isPreview={isPreview}
+        heroName={heroData.fullName}
+        variant="warm"
+      />
       <HeroSection heroData={heroData} isPreview={isPreview} />
       <AboutSection aboutData={aboutData} />
       <ExperienceSection experienceData={experienceData} />
@@ -1329,7 +1092,10 @@ export function WarmMinimalistTemplate({
       <SkillsSection skillsData={skillsData} />
       <EducationSection educationData={educationData} />
       <ContactSection contactData={contactData} isPreview={isPreview} />
-      <FooterContent footerData={footerData} heroName={heroData.fullName} />
+      <Footer sections={sections} heroName={heroData.fullName} variant="warm" />
     </div>
   );
 }
+
+export const WarmMinimalistTemplate = React.memo(WarmMinimalistTemplateComponent);
+WarmMinimalistTemplate.displayName = 'WarmMinimalistTemplate';
