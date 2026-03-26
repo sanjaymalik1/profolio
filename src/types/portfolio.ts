@@ -140,6 +140,30 @@ export interface ContactData {
   website?: string;
 }
 
+export interface NavbarData {
+  name: string;
+  logo?: string;
+  autoGenerateLinks?: boolean;
+  links: {
+    label: string;
+    href: string;
+  }[];
+  cta?: {
+    label: string;
+    href: string;
+  };
+}
+
+export interface FooterData {
+  name: string;
+  tagline?: string;
+  copyrightText?: string;
+  links?: {
+    label: string;
+    href: string;
+  }[];
+}
+
 export interface ContactFormField {
   name: string;
   type: 'text' | 'email' | 'textarea' | 'select';
@@ -158,6 +182,8 @@ export interface TemplateData {
   contact?: ContactData;
   experience?: ExperienceData;
   education?: EducationData;
+  navbar?: NavbarData;
+  footer?: FooterData;
 }
 
 export interface TemplateSectionData {
@@ -253,6 +279,8 @@ export type SectionType =
   | 'projects'
   | 'education'
   | 'contact'
+  | 'navbar'
+  | 'footer'
   | 'testimonials'
   | 'certifications'
   | 'template'
@@ -266,6 +294,8 @@ export type SectionData =
   | ProjectsData
   | EducationData
   | ContactData
+  | NavbarData
+  | FooterData
   | TemplateSectionData
   | Record<string, unknown>; // for custom sections
 

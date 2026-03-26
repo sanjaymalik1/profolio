@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 
+import { useEditor } from '@/contexts/EditorContext';
 import { Draggable } from './Draggable';
 import { PaletteDragItem, PaletteSection } from '@/types/editor';
 import {
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 // Section definitions for the palette
+// Note: navbar and footer are auto-added and not shown in palette
 const sectionDefinitions: PaletteSection[] = [
   {
     type: 'hero',
@@ -90,11 +92,17 @@ interface SectionPaletteProps {
 }
 
 export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }) => {
+  const { state } = useEditor();
   const basicSections = sectionDefinitions.filter(s => s.category === 'basic');
   const advancedSections = sectionDefinitions.filter(s => s.category === 'advanced');
 
+  const getIsSectionAdded = (sectionType: string) => {
+    return state.sections.some(s => s.type === sectionType);
+  };
+
   const renderSection = (section: PaletteSection) => {
     const IconComponent = iconComponents[section.icon as keyof typeof iconComponents];
+    const isAdded = getIsSectionAdded(section.type);
 
     const dragItem: PaletteDragItem = {
       type: 'palette-section',
@@ -105,35 +113,64 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       description: section.description
     };
 
+    const cardContent = (
+      <Card className={`transition-all duration-200 border bg-white
+        ${isAdded 
+          ? 'opacity-50 border-slate-200 cursor-not-allowed bg-slate-50' 
+          : 'cursor-grab active:cursor-grabbing hover:shadow-sm border-slate-200/60 hover:border-slate-300'
+        }`}
+      >
+        <CardContent className="p-3.5 relative overflow-hidden">
+          <div className="flex items-start gap-2.5">
+            <div className={`p-2 rounded-md flex-shrink-0 border 
+              ${isAdded ? 'bg-slate-100 border-slate-200' : 'bg-slate-50 border-slate-200/50'}`
+            }>
+              <IconComponent className="w-4 h-4 text-slate-600" />
+            </div>
+            <div className="flex-1 min-w-0 pr-12">
+              <h4 className="font-semibold text-[0.98rem] mb-0.5 text-[#2d2a26] flex items-center gap-2">
+                {section.displayName}
+              </h4>
+              <p className="text-[0.76rem] text-[#5c554d] leading-snug truncate pr-2">
+                {section.description}
+              </p>
+            </div>
+          </div>
+          
+          {isAdded && (
+            <div className="absolute right-0 top-0 bottom-0 flex items-center px-3 bg-gradient-to-l from-slate-50 via-slate-50 to-transparent">
+              <span className="text-[10px] uppercase font-bold text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded">
+                Added
+              </span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+
+    if (isAdded) {
+      return (
+        <div key={section.type} title="This section type is already in your portfolio">
+          {cardContent}
+        </div>
+      );
+    }
+
     return (
       <Draggable
         key={section.type}
         dragItem={dragItem}
       >
-        <Card className="cursor-grab active:cursor-grabbing hover:shadow-sm transition-all duration-200 border border-slate-200/60 hover:border-slate-300 bg-white">
-          <CardContent className="p-3.5">
-            <div className="flex items-start gap-2.5">
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-200/50 flex-shrink-0">
-                <IconComponent className="w-4 h-4 text-slate-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm mb-0.5 text-slate-700">{section.displayName}</h4>
-                <p className="text-xs text-slate-500 leading-snug">
-                  {section.description}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {cardContent}
       </Draggable>
     );
   };
 
   return (
-    <div className={`space-y-5 ${className}`}>
+    <div className={`space-y-5 editor-typography ${className}`}>
       <div>
-        <h3 className="text-sm font-medium mb-1 text-slate-700">Sections</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-lg font-semibold mb-1">Sections</h3>
+        <p className="text-[0.72rem] uppercase tracking-[0.11em] text-[#5c554d]">
           Drag to canvas to build your portfolio
         </p>
       </div>
@@ -141,7 +178,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Basic Sections */}
       <div>
         <div className="flex items-center gap-2 mb-2.5">
-          <h4 className="font-medium text-xs text-slate-600">Essential</h4>
+          <h4 className="font-semibold text-[0.72rem] uppercase tracking-[0.12em] text-[#5c554d]">Essential</h4>
         </div>
         <div className="space-y-2">
           {basicSections.map(renderSection)}
@@ -151,7 +188,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
       {/* Advanced Sections */}
       <div>
         <div className="flex items-center gap-2 mb-2.5">
-          <h4 className="font-medium text-xs text-slate-600">Advanced</h4>
+          <h4 className="font-semibold text-[0.72rem] uppercase tracking-[0.12em] text-[#5c554d]">Advanced</h4>
         </div>
         <div className="space-y-2">
           {advancedSections.map(renderSection)}
@@ -160,7 +197,7 @@ export const SectionPalette: React.FC<SectionPaletteProps> = ({ className = '' }
 
       {/* Tips - subtle */}
       <div className="p-3 bg-slate-50/50 border border-slate-200/50 rounded-md">
-        <p className="text-xs text-slate-500 leading-relaxed">
+        <p className="text-[0.78rem] text-[#5c554d] leading-relaxed">
           Drag sections to canvas, click to edit, reorder anytime
         </p>
       </div>

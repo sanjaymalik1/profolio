@@ -10,6 +10,7 @@ interface Portfolio {
   content: {
     sections: EditorSection[];
   };
+  template: string;
 }
 
 async function getPortfolio(slug: string): Promise<Portfolio | null> {
@@ -27,6 +28,7 @@ async function getPortfolio(slug: string): Promise<Portfolio | null> {
         id: true,
         title: true,
         content: true,
+        template: true,
       },
     });
 
@@ -73,6 +75,7 @@ export default async function PublicPortfolioPage({
   }
 
   const sections = portfolio.content?.sections || [];
+  const templateId = portfolio.template;
 
-  return <PortfolioRenderer sections={sections} />;
+  return <PortfolioRenderer sections={sections} templateId={templateId} />;
 }

@@ -58,7 +58,7 @@ function Cursor({
         animate={clicking ? { scale: 0.72 } : { scale: 1 }}
         transition={{ duration: 0.1 }}
       >
-        <MousePointer2 className="w-5 h-5 text-slate-800 drop-shadow-md" fill="white" />
+        <MousePointer2 className="w-5 h-5 text-[#2d2a26] drop-shadow-md" fill="white" />
       </motion.div>
     </motion.div>
   );
@@ -81,12 +81,12 @@ function ResumeDocument({ highlightedLine }: { highlightedLine: number }) {
     { label: "Open-source CLI tool · 4.2k ★", bold: false, indent: true },
   ];
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 text-left min-w-0 overflow-hidden">
-      <div className="flex items-center gap-2 mb-3 border-b border-slate-100 pb-2.5">
-        <div className="w-6 h-6 bg-rose-100 rounded-lg flex items-center justify-center shrink-0">
-          <FileText className="w-3 h-3 text-rose-600" />
+    <div className="bg-[#f8f4ee] rounded-xl border border-[#d8d0c6] p-4 text-left min-w-0 overflow-hidden">
+      <div className="flex items-center gap-2 mb-3 border-b border-[#d8d0c6] pb-2.5">
+        <div className="w-6 h-6 bg-[#ece4da] rounded-lg flex items-center justify-center shrink-0">
+          <FileText className="w-3 h-3 text-[#6b7a52]" />
         </div>
-        <span className="text-[10px] font-bold text-slate-700 truncate">Resume.pdf</span>
+        <span className="text-[10px] font-bold text-[#2d2a26] truncate">Resume.pdf</span>
       </div>
       <div className="space-y-1">
         {lines.map((line, i) => (
@@ -94,7 +94,7 @@ function ResumeDocument({ highlightedLine }: { highlightedLine: number }) {
             key={i}
             animate={
               highlightedLine === i
-                ? { backgroundColor: "rgb(239 246 255)" }
+                ? { backgroundColor: "rgb(235 240 226)" }
                 : { backgroundColor: "transparent" }
             }
             transition={{ duration: 0.2 }}
@@ -104,13 +104,13 @@ function ResumeDocument({ highlightedLine }: { highlightedLine: number }) {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: 2.5 }}
-                className="h-3 rounded-full bg-blue-500 shrink-0"
+                className="h-3 rounded-full bg-[#6b7a52] shrink-0"
               />
             )}
             <span
               className={`text-[9px] leading-snug truncate ${
-                line.bold ? "font-bold text-slate-800" : "text-slate-500"
-              } ${highlightedLine === i ? "text-blue-700" : ""}`}
+                line.bold ? "font-bold text-[#2d2a26]" : "text-[#5c554d]"
+              } ${highlightedLine === i ? "text-[#6b7a52]" : ""}`}
             >
               {line.label}
             </span>
@@ -142,13 +142,13 @@ function SectionRow({
           initial={{ opacity: 0, x: 14 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
-          className="flex items-center gap-2.5 bg-white border border-slate-200 rounded-lg px-3 py-2 shadow-sm"
+          className="flex items-center gap-2.5 bg-[#f8f4ee] border border-[#d8d0c6] rounded-lg px-3 py-2"
         >
           <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${color}`}>
-            <Icon className="w-3 h-3 text-white" />
+            <Icon className="w-3 h-3 text-[#f5f1ea]" />
           </div>
-          <span className="text-[11px] font-semibold text-slate-700">{label}</span>
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 ml-auto shrink-0" />
+          <span className="text-[11px] font-semibold text-[#2d2a26]">{label}</span>
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#6b7a52] ml-auto shrink-0" />
         </motion.div>
       )}
     </AnimatePresence>
@@ -160,38 +160,38 @@ function SectionRow({
 function PortfolioPreview() {
   return (
     <div className="space-y-2.5">
-      <div className="bg-slate-900 rounded-xl px-5 py-5 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-slate-600 flex items-center justify-center shrink-0 border-2 border-white/10">
-          <span className="text-white text-[10px] font-bold select-none">AM</span>
+      <div className="bg-[#2d2a26] rounded-xl px-5 py-5 flex items-center gap-4">
+        <div className="w-10 h-10 rounded-full bg-[#6b7a52] flex items-center justify-center shrink-0 border border-white/20">
+          <span className="text-[#f5f1ea] text-[10px] font-bold select-none">AM</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white text-[12px] font-bold leading-tight">Alex Morgan</p>
-          <p className="text-slate-400 text-[10px] mt-0.5">Full Stack Developer</p>
+          <p className="text-[#f5f1ea] text-[12px] font-bold leading-tight">Alex Morgan</p>
+          <p className="text-[#cdc4b8] text-[10px] mt-0.5">Full Stack Developer</p>
         </div>
-        <div className="px-2.5 h-6 rounded-full bg-white flex items-center text-[9px] font-bold text-slate-900 shrink-0">
+        <div className="px-2.5 h-6 rounded-full bg-[#f5f1ea] flex items-center text-[9px] font-bold text-[#2d2a26] shrink-0">
           View Work
         </div>
       </div>
-      <div className="bg-white border border-slate-100 rounded-xl px-5 py-3.5">
-        <p className="text-[10px] font-bold text-slate-700 mb-2">Experience</p>
+      <div className="bg-[#f8f4ee] border border-[#d8d0c6] rounded-xl px-5 py-3.5">
+        <p className="text-[10px] font-bold text-[#2d2a26] mb-2">Experience</p>
         <div className="space-y-1.5">
           {[
-            { company: "Stripe", role: "Senior Engineer", period: "2021–present", dot: "bg-blue-500" },
-            { company: "Airbnb", role: "Software Engineer", period: "2018–2021",    dot: "bg-slate-400" },
+            { company: "Stripe", role: "Senior Engineer", period: "2021–present", dot: "bg-[#6b7a52]" },
+            { company: "Airbnb", role: "Software Engineer", period: "2018–2021",    dot: "bg-[#8b8276]" },
           ].map((e) => (
             <div key={e.company} className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${e.dot} shrink-0`} />
-              <span className="text-[9px] text-slate-600">{e.role} · {e.company}</span>
-              <span className="text-[9px] text-slate-400 ml-auto">{e.period}</span>
+              <span className="text-[9px] text-[#5c554d]">{e.role} · {e.company}</span>
+              <span className="text-[9px] text-[#8b8276] ml-auto">{e.period}</span>
             </div>
           ))}
         </div>
       </div>
-      <div className="bg-white border border-slate-100 rounded-xl px-5 py-3.5">
-        <p className="text-[10px] font-bold text-slate-700 mb-2">Skills</p>
+      <div className="bg-[#f8f4ee] border border-[#d8d0c6] rounded-xl px-5 py-3.5">
+        <p className="text-[10px] font-bold text-[#2d2a26] mb-2">Skills</p>
         <div className="flex flex-wrap gap-1">
           {["React", "TypeScript", "Node.js", "AWS", "Python"].map((s) => (
-            <span key={s} className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+            <span key={s} className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#ede5dc] text-[#5c554d] border border-[#d8d0c6]">
               {s}
             </span>
           ))}
@@ -382,10 +382,10 @@ export default function ImportResume() {
   }, []);
 
   const sections = [
-    { icon: User,      label: "Hero Section", color: "bg-slate-700"   },
-    { icon: Award,     label: "Experience",   color: "bg-blue-600"    },
-    { icon: Code,      label: "Skills",       color: "bg-emerald-600" },
-    { icon: Briefcase, label: "Projects",     color: "bg-amber-500"   },
+    { icon: User,      label: "Hero Section", color: "bg-[#2d2a26]" },
+    { icon: Award,     label: "Experience",   color: "bg-[#6b7a52]" },
+    { icon: Code,      label: "Skills",       color: "bg-[#5c554d]" },
+    { icon: Briefcase, label: "Projects",     color: "bg-[#8f7158]" },
   ] as const;
 
   const isScanning      = phase === "scanning" || phase === "file-select";
@@ -402,8 +402,7 @@ export default function ImportResume() {
   const stepLabels = ["Import", "Select", "AI scan", "Generate", "Preview"];
 
   return (
-    <section className="py-24 sm:py-32 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle,_#e2e8f025_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+    <section className="py-24 sm:py-32 border-t landing-divider relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -416,18 +415,18 @@ export default function ImportResume() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-full border border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider mb-6">
-              <Sparkles className="w-3 h-3 text-blue-600" />
+            <div className="landing-kicker gap-2 mb-6">
+              <Sparkles className="w-3 h-3 text-[#6b7a52]" />
               AI-Powered Import
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 mb-5 leading-tight">
+            <h2 className="landing-serif text-[2.45rem] sm:text-[3.3rem] lg:text-[4.35rem] font-semibold mb-5 leading-[0.98]">
               Resume in.
               <br />
-              <span className="text-slate-400">Portfolio out.</span>
+              <span className="text-[#6B7A52]">Portfolio out.</span>
             </h2>
 
-            <p className="text-lg text-slate-500 leading-relaxed">
+            <p className="landing-body text-[1.02rem]">
               Upload your PDF and our AI builds your entire portfolio
               automatically — sections, content, and layout included.
             </p>
@@ -442,27 +441,27 @@ export default function ImportResume() {
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
           >
             {/* Window frame */}
-            <div className="rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
+            <div className="border landing-divider bg-[#f8f4ee] overflow-hidden">
 
               {/* Title bar */}
-              <div className="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-3 shrink-0">
+              <div className="h-10 bg-[#f5f1ea] border-b landing-divider flex items-center px-4 gap-3 shrink-0">
                 <div className="flex gap-1.5 shrink-0">
                   <div className="w-3 h-3 rounded-full bg-rose-400" />
                   <div className="w-3 h-3 rounded-full bg-amber-400" />
                   <div className="w-3 h-3 rounded-full bg-emerald-400" />
                 </div>
                 <div className="flex-1 flex justify-center min-w-0 px-2">
-                  <div className="max-w-xs w-full px-3 py-1 bg-white border border-slate-200 rounded text-[11px] text-slate-500 font-medium text-center truncate">
+                  <div className="max-w-xs w-full px-3 py-1 bg-[#f8f4ee] border landing-divider rounded text-[11px] text-[#5c554d] font-medium text-center truncate">
                     editor.profolio.me
                   </div>
                 </div>
                 <motion.div
                   animate={importBtnActive
-                    ? { scale: 0.94, backgroundColor: "rgb(55 65 81)" }
-                    : { scale: 1,    backgroundColor: "rgb(15 23 42)" }
+                    ? { scale: 0.94, backgroundColor: "rgb(92 85 77)" }
+                    : { scale: 1,    backgroundColor: "rgb(45 42 38)" }
                   }
                   transition={{ duration: 0.12 }}
-                  className="h-6 px-3 rounded text-[11px] font-semibold flex items-center gap-1.5 shrink-0 text-white cursor-pointer"
+                  className="h-6 px-3 rounded text-[11px] font-semibold flex items-center gap-1.5 shrink-0 text-[#f5f1ea] cursor-pointer"
                 >
                   <FileText className="w-3 h-3" />
                   <span className="hidden sm:inline">Import Resume</span>
@@ -483,7 +482,7 @@ export default function ImportResume() {
               */}
               <div
                 ref={viewportRef}
-                className="relative h-[380px] sm:h-[460px] overflow-hidden bg-slate-50"
+                className="relative h-[380px] sm:h-[460px] overflow-hidden bg-[#efe8df]"
                 style={{ isolation: "isolate", transform: "translateZ(0)" }}
               >
                 {/*
@@ -515,15 +514,15 @@ export default function ImportResume() {
                         transition={{ duration: 0.3 }}
                         className="h-full flex items-center justify-center"
                       >
-                        <div className="w-full max-w-[340px] bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-8 flex flex-col items-center gap-4 text-center">
-                          <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-slate-500" />
+                        <div className="w-full max-w-[340px] bg-[#f8f4ee] rounded-2xl border border-[#d8d0c6] px-6 py-8 flex flex-col items-center gap-4 text-center">
+                          <div className="w-11 h-11 rounded-2xl bg-[#ece4da] flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-[#6b7a52]" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-slate-800 mb-1">
+                            <p className="text-sm font-semibold text-[#2d2a26] mb-1">
                               Import your resume
                             </p>
-                            <p className="text-[11px] text-slate-400 leading-relaxed">
+                            <p className="text-[11px] text-[#5c554d] leading-relaxed">
                               We&apos;ll extract your experience, skills, and
                               projects automatically.
                             </p>
@@ -531,11 +530,11 @@ export default function ImportResume() {
                           {/* Button the cursor physically targets */}
                           <motion.div
                             animate={importBtnActive
-                              ? { scale: 0.94, backgroundColor: "rgb(55 65 81)" }
-                              : { scale: 1,    backgroundColor: "rgb(15 23 42)" }
+                              ? { scale: 0.94, backgroundColor: "rgb(92 85 77)" }
+                              : { scale: 1,    backgroundColor: "rgb(45 42 38)" }
                             }
                             transition={{ duration: 0.12 }}
-                            className="h-8 px-5 rounded-lg text-[11px] text-white font-semibold flex items-center gap-1.5 cursor-pointer"
+                            className="h-8 px-5 rounded-lg text-[11px] text-[#f5f1ea] font-semibold flex items-center gap-1.5 cursor-pointer"
                           >
                             <FileText className="w-3.5 h-3.5" />
                             Import Resume
@@ -552,12 +551,12 @@ export default function ImportResume() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.22 }}
-                        className="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] flex items-center justify-center z-10"
+                        className="absolute inset-0 bg-[#2d2a26]/10 backdrop-blur-[1px] flex items-center justify-center z-10"
                       >
-                        <div className="w-[260px] bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden">
-                          <div className="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
-                            <span className="text-[11px] font-bold text-slate-700">Open File</span>
-                            <span className="text-[10px] text-slate-400">Documents</span>
+                        <div className="w-[260px] bg-[#f8f4ee] border border-[#d8d0c6] rounded-xl overflow-hidden">
+                          <div className="bg-[#f5f1ea] border-b border-[#d8d0c6] px-4 py-2.5 flex items-center justify-between">
+                            <span className="text-[11px] font-bold text-[#2d2a26]">Open File</span>
+                            <span className="text-[10px] text-[#8b8276]">Documents</span>
                           </div>
                           <div className="px-3 py-2 space-y-0.5">
                             {["Q4_Report.pdf", "Resume.pdf", "Portfolio_old.zip"].map((f, i) => (
@@ -565,25 +564,25 @@ export default function ImportResume() {
                                 key={f}
                                 animate={
                                   i === 1 && pickerHighlight
-                                    ? { backgroundColor: "rgb(239 246 255)" }
+                                    ? { backgroundColor: "rgb(235 240 226)" }
                                     : { backgroundColor: "transparent" }
                                 }
                                 transition={{ duration: 0.2 }}
                                 className="flex items-center gap-2.5 px-2 py-2 rounded-lg"
                               >
-                                <FileText className={`w-3.5 h-3.5 shrink-0 ${f.endsWith(".pdf") ? "text-rose-500" : "text-slate-400"}`} />
-                                <span className={`text-[10px] truncate ${i === 1 && pickerHighlight ? "font-semibold text-blue-700" : "text-slate-600"}`}>
+                                <FileText className={`w-3.5 h-3.5 shrink-0 ${f.endsWith(".pdf") ? "text-[#6b7a52]" : "text-[#8b8276]"}`} />
+                                <span className={`text-[10px] truncate ${i === 1 && pickerHighlight ? "font-semibold text-[#6b7a52]" : "text-[#5c554d]"}`}>
                                   {f}
                                 </span>
                                 {i === 1 && pickerHighlight && (
-                                  <span className="ml-auto text-[9px] font-semibold text-blue-500 shrink-0">Select</span>
+                                  <span className="ml-auto text-[9px] font-semibold text-[#6b7a52] shrink-0">Select</span>
                                 )}
                               </motion.div>
                             ))}
                           </div>
-                          <div className="border-t border-slate-100 bg-slate-50 px-4 py-2 flex justify-end gap-2">
-                            <div className="h-6 px-3 rounded border border-slate-200 text-[11px] text-slate-500 flex items-center">Cancel</div>
-                            <div className="h-6 px-3 rounded bg-slate-900 text-[11px] text-white flex items-center font-semibold">Open</div>
+                          <div className="border-t border-[#d8d0c6] bg-[#f5f1ea] px-4 py-2 flex justify-end gap-2">
+                            <div className="h-6 px-3 rounded border border-[#d8d0c6] text-[11px] text-[#5c554d] flex items-center">Cancel</div>
+                            <div className="h-6 px-3 rounded bg-[#2d2a26] text-[11px] text-[#f5f1ea] flex items-center font-semibold">Open</div>
                           </div>
                         </div>
                       </motion.div>
@@ -602,15 +601,15 @@ export default function ImportResume() {
                         <div className="flex-1 min-w-0">
                           <ResumeDocument highlightedLine={scanIndex} />
                         </div>
-                        <div className="w-[108px] shrink-0 bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 py-3 flex flex-col gap-2">
+                        <div className="w-[108px] shrink-0 bg-[#f8f4ee] rounded-xl border border-[#d8d0c6] px-2.5 py-3 flex flex-col gap-2">
                           <div className="flex items-center gap-1.5 mb-1">
                             <motion.div
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
                             >
-                              <Sparkles className="w-3 h-3 text-blue-600" />
+                              <Sparkles className="w-3 h-3 text-[#6b7a52]" />
                             </motion.div>
-                            <span className="text-[9px] font-bold text-slate-700">AI Scanning</span>
+                            <span className="text-[9px] font-bold text-[#2d2a26]">AI Scanning</span>
                           </div>
                           {["Experience", "Education", "Skills", "Projects"].map((cat, i) => {
                             const filled = scanIndex >= [2, 5, 7, 9][i];
@@ -618,11 +617,11 @@ export default function ImportResume() {
                               <div key={cat} className="flex items-center gap-1.5">
                                 <motion.div
                                   animate={filled ? { opacity: 1 } : { opacity: 0.25 }}
-                                  className="w-3 h-3 rounded-full bg-emerald-500 flex items-center justify-center shrink-0"
+                                  className="w-3 h-3 rounded-full bg-[#6b7a52] flex items-center justify-center shrink-0"
                                 >
                                   <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                                 </motion.div>
-                                <span className={`text-[9px] ${filled ? "text-slate-700 font-semibold" : "text-slate-400"}`}>
+                                <span className={`text-[9px] ${filled ? "text-[#2d2a26] font-semibold" : "text-[#8b8276]"}`}>
                                   {cat}
                                 </span>
                               </div>
@@ -644,8 +643,8 @@ export default function ImportResume() {
                       >
                         <div className="w-full max-w-xs">
                           <div className="flex items-center gap-2 mb-4">
-                            <Sparkles className="w-4 h-4 text-blue-600" />
-                            <p className="text-[12px] font-bold text-slate-800">Building your portfolio…</p>
+                            <Sparkles className="w-4 h-4 text-[#6b7a52]" />
+                            <p className="text-[12px] font-bold text-[#2d2a26]">Building your portfolio…</p>
                           </div>
                           <div className="space-y-2">
                             {sections.map((s, i) => (
@@ -673,8 +672,8 @@ export default function ImportResume() {
                         className="h-full overflow-hidden"
                       >
                         <div className="flex items-center gap-2 mb-3">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                          <p className="text-[12px] font-bold text-emerald-700">Portfolio generated!</p>
+                          <CheckCircle2 className="w-4 h-4 text-[#6b7a52]" />
+                          <p className="text-[12px] font-bold text-[#6b7a52]">Portfolio generated!</p>
                         </div>
                         <PortfolioPreview />
                       </motion.div>
@@ -708,11 +707,11 @@ export default function ImportResume() {
                       animate={active ? { scale: 1.35 } : { scale: 1 }}
                       transition={{ duration: 0.2 }}
                       className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${
-                        active ? "bg-blue-500" : "bg-slate-300"
+                        active ? "bg-[#6b7a52]" : "bg-[#c5bcaf]"
                       }`}
                     />
                     <span className={`text-[9px] font-semibold transition-colors duration-200 ${
-                      active ? "text-blue-600" : "text-slate-400"
+                      active ? "text-[#6b7a52]" : "text-[#8b8276]"
                     }`}>
                       {stepLabels[i]}
                     </span>

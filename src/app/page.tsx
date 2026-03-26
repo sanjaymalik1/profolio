@@ -8,7 +8,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="landing-editorial selection:bg-[#d8d0c6] selection:text-[#2D2A26]">
       <Header />
       <main className="overflow-hidden pt-20 sm:pt-24">
         <Hero />

@@ -13,6 +13,8 @@ interface EditableImageProps {
   className?: string;
   containerClassName?: string;
   aspectRatio?: 'square' | 'video' | 'portrait' | 'auto';
+  emptyStateContent?: React.ReactNode;
+  emptyStateClassName?: string;
   disabled?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -34,6 +36,8 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   className = '',
   containerClassName = '',
   aspectRatio = 'auto',
+  emptyStateContent,
+  emptyStateClassName = '',
   disabled = false,
   onFocus,
   onBlur,
@@ -52,8 +56,20 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   const handleClick = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (!disabled) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       fileInputRef.current?.click();
       onFocus?.();
+    }
+  };
+
+  const handleUploadTriggerKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      handleClick();
     }
   };
 
@@ -73,18 +89,38 @@ export const EditableImage: React.FC<EditableImageProps> = ({
     setIsUploading(true);
     
     try {
-      // Convert to base64 for demo (in production, upload to cloud storage)
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        onChange(base64String);
-        setIsUploading(false);
-        onBlur?.();
-      };
-      reader.readAsDataURL(file);
+      const base64String = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === 'string') {
+            resolve(result);
+            return;
+          }
+          reject(new Error('Failed to read image file'));
+        };
+
+        reader.onerror = () => {
+          reject(reader.error || new Error('Image upload failed while reading file'));
+        };
+
+        reader.onabort = () => {
+          reject(new Error('Image upload was aborted'));
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      onChange(base64String);
+      onBlur?.();
     } catch (error) {
       console.error('Upload failed:', error);
+    } finally {
       setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -142,6 +178,7 @@ export const EditableImage: React.FC<EditableImageProps> = ({
       ) : (
         <div
           onClick={handleClick}
+          onKeyDown={handleUploadTriggerKeyDown}
           className={cn(
             'w-full h-full min-h-[200px] border-2 border-dashed border-slate-300',
             'flex flex-col items-center justify-center gap-2',
@@ -149,11 +186,25 @@ export const EditableImage: React.FC<EditableImageProps> = ({
             disabled && 'cursor-not-allowed opacity-50',
             className
           )}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled}
         >
-          <ImageIcon className="w-8 h-8 text-slate-400" />
-          <p className="text-sm text-slate-500">
-            {isUploading ? 'Uploading...' : 'Click to upload image'}
-          </p>
+          {emptyStateContent ? (
+            <div className={cn('flex flex-col items-center justify-center gap-2 text-center px-3', emptyStateClassName)}>
+              {emptyStateContent}
+              <p className="text-sm text-slate-500">
+                {isUploading ? 'Uploading...' : 'Click to upload image'}
+              </p>
+            </div>
+          ) : (
+            <>
+              <ImageIcon className="w-8 h-8 text-slate-400" />
+              <p className="text-sm text-slate-500">
+                {isUploading ? 'Uploading...' : 'Click to upload image'}
+              </p>
+            </>
+          )}
         </div>
       )}
 

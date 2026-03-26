@@ -4,9 +4,24 @@ import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/user-helpers';
 
 // GET /api/portfolios - Get user's portfolios
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const apiStart = Date.now();
+  const shouldLogPerf = process.env.NODE_ENV !== 'production';
+
   try {
+    const pageParam = request.nextUrl.searchParams.get('page');
+    const limitParam = request.nextUrl.searchParams.get('limit');
+
+    const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
+    const limit = Math.max(1, Number.parseInt(limitParam ?? '50', 10) || 50);
+    const skip = (page - 1) * limit;
+
+    const authStart = Date.now();
     const { userId } = await auth();
+
+    if (shouldLogPerf) {
+      console.info(`[Portfolios API GET] auth() completed in ${Date.now() - authStart}ms`);
+    }
 
     if (!userId) {
       return NextResponse.json({
@@ -16,7 +31,12 @@ export async function GET() {
     }
 
     // Ensure user exists in database
+    const userLookupStart = Date.now();
     const user = await getUser(userId);
+
+    if (shouldLogPerf) {
+      console.info(`[Portfolios API GET] getUser() completed in ${Date.now() - userLookupStart}ms`);
+    }
 
     if (!user) {
       return NextResponse.json({
@@ -25,36 +45,68 @@ export async function GET() {
       }, { status: 404 });
     }
 
-    // Fetch portfolios, computing sectionCount server-side so we never
-    // send the full content payload to the dashboard (it's not needed there).
-    const portfolios = await prisma.portfolio.findMany({
-      where: { userId: user.id },
-      orderBy: { updatedAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        customSlug: true,
-        template: true,
-        isPublic: true,
-        content: true,       // fetch internally only to compute sectionCount
-        viewCount: true,
-        lastPublishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+    // Fetch portfolios for dashboard cards. Keep query simple and index-friendly.
+    const queryStart = Date.now();
+    const [portfolios, total] = await prisma.$transaction([
+      prisma.portfolio.findMany({
+        where: { userId: user.id },
+        orderBy: { updatedAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          customSlug: true,
+          template: true,
+          isPublic: true,
+          content: true,
+          viewCount: true,
+          lastPublishedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      prisma.portfolio.count({ where: { userId: user.id } }),
+    ]);
+
+    const queryDuration = Date.now() - queryStart;
+
+    // Keep processing minimal: preserve DB payload and only add sectionCount.
+    const transformStart = Date.now();
+    const portfolioList = portfolios.map((portfolio) => {
+      const sectionCount = (portfolio.content as { sections?: unknown[] } | null)?.sections?.length ?? 0;
+      return {
+        ...portfolio,
+        sectionCount,
+      };
     });
 
-    // Include content for dashboard previews, plus a lightweight sectionCount.
-    const portfolioList = portfolios.map(({ content, ...rest }) => ({
-      ...rest,
-      content: content ?? null,
-      sectionCount: (content as { sections?: unknown[] } | null)?.sections?.length ?? 0,
-    }));
+    const transformDuration = Date.now() - transformStart;
+
+    if (shouldLogPerf) {
+      const contentBytes = portfolioList.reduce((total, portfolio) => {
+        if (!portfolio.content) return total;
+        try {
+          return total + Buffer.byteLength(JSON.stringify(portfolio.content), 'utf8');
+        } catch {
+          return total;
+        }
+      }, 0);
+
+      const responseBody = { success: true, data: portfolioList };
+      const responseBytes = Buffer.byteLength(JSON.stringify(responseBody), 'utf8');
+
+      console.info(
+        `[Portfolios API GET] page=${page} limit=${limit} count=${portfolioList.length} totalCount=${total} query=${queryDuration}ms transform=${transformDuration}ms contentBytes=${contentBytes} responseBytes=${responseBytes} total=${Date.now() - apiStart}ms`
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      data: portfolioList
+      data: portfolioList,
+      portfolios: portfolioList,
+      total
     });
 
   } catch (error) {

@@ -76,6 +76,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --landing-bg: #f5f1ea;
+  --landing-text: #2d2a26;
+  --landing-muted: #5c554d;
+  --landing-accent: #6b7a52;
+  --landing-line: #d8d0c6;
 }
 
 .dark {
@@ -117,7 +122,36 @@
     @apply border-border outline-ring/50;
   }
   body {
+    background-color: var(--landing-bg);
+    color: var(--landing-text);
+    font-family: var(--font-manrope), sans-serif;
+  }
+
+  body h1,
+  body h2,
+  body h3,
+  body h4,
+  body h5,
+  body h6 {
+    font-family: var(--font-playfair), serif;
+    letter-spacing: -0.02em;
+    color: var(--landing-text);
+  }
+
+  body.editor-mode {
     @apply bg-background text-foreground;
+    font-family: var(--font-geist-sans), sans-serif;
+  }
+
+  body.editor-mode h1,
+  body.editor-mode h2,
+  body.editor-mode h3,
+  body.editor-mode h4,
+  body.editor-mode h5,
+  body.editor-mode h6 {
+    font-family: var(--font-geist-sans), sans-serif;
+    letter-spacing: normal;
+    color: inherit;
   }
 
   /* Standard cursor styles for interactive elements */
@@ -176,5 +210,116 @@
   /* Prevent text selection on UI controls */
   button, [role="button"], label, select {
     user-select: none;
+  }
+}
+
+@layer components {
+  .landing-editorial {
+    min-height: 100vh;
+    background-color: var(--landing-bg);
+    color: var(--landing-text);
+    font-family: var(--font-manrope), sans-serif;
+  }
+
+  .landing-editorial main {
+    position: relative;
+  }
+
+  .landing-editorial main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.42;
+    background-image: linear-gradient(to right, color-mix(in srgb, var(--landing-line) 80%, transparent) 1px, transparent 1px);
+    background-size: 280px 100%;
+  }
+
+  .landing-editorial .landing-serif {
+    font-family: var(--font-playfair), serif;
+    letter-spacing: -0.022em;
+    color: var(--landing-text);
+  }
+
+  .landing-editorial .landing-kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--landing-line);
+    border-radius: 9999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--landing-muted);
+  }
+
+  .landing-editorial .landing-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--landing-muted);
+  }
+
+  .landing-editorial .landing-body {
+    color: var(--landing-muted);
+    line-height: 1.75;
+  }
+
+  .landing-editorial .landing-divider {
+    border-color: var(--landing-line);
+  }
+
+  .landing-editorial .landing-btn-primary {
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--landing-text) 22%, transparent);
+    background: var(--landing-text);
+    color: #f8f5ef;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+  }
+
+  .landing-editorial .landing-btn-primary:hover {
+    background: color-mix(in srgb, var(--landing-text) 90%, #ffffff);
+    border-color: color-mix(in srgb, var(--landing-text) 30%, transparent);
+  }
+
+  .landing-editorial .landing-btn-secondary {
+    border-radius: 9999px;
+    border: 1px solid var(--landing-line);
+    background: transparent;
+    color: var(--landing-text);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+  }
+
+  .landing-editorial .landing-btn-secondary:hover {
+    background: color-mix(in srgb, var(--landing-line) 25%, transparent);
+    border-color: color-mix(in srgb, var(--landing-muted) 40%, transparent);
+    color: var(--landing-text);
+  }
+
+  .landing-editorial .landing-frame {
+    border: 1px solid var(--landing-line);
+    background: color-mix(in srgb, #ffffff 82%, var(--landing-bg));
+  }
+
+  .editor-typography {
+    font-family: var(--font-manrope), sans-serif;
+  }
+
+  .editor-typography h1,
+  .editor-typography h2,
+  .editor-typography h3,
+  .editor-typography h4,
+  .editor-typography h5,
+  .editor-typography h6 {
+    font-family: var(--font-playfair), serif;
+    letter-spacing: -0.015em;
+    color: #2d2a26;
   }
 }

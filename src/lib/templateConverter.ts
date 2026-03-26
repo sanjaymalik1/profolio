@@ -44,6 +44,54 @@ const getTemplateStyling = (templateId: string, sectionType: DraggableSectionTyp
     };
   }
 
+  if (templateId === 'modern-developer') {
+    return {
+      backgroundColor: sectionType === 'hero' ? '#FFFFFF' : '#F8FAFC',
+      textColor: '#0F172A',
+      padding: { top: '5rem', right: '1.5rem', bottom: '5rem', left: '1.5rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: sectionType === 'hero' ? 'left' : 'left',
+      layout: 'grid',
+      animation: { type: 'slide', duration: 400, delay: 100 }
+    };
+  }
+
+  if (templateId === 'sidebar-resume') {
+    return {
+      backgroundColor: '#FFFFFF',
+      textColor: '#111827',
+      padding: { top: '4rem', right: '3rem', bottom: '4rem', left: '3rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: 'left',
+      layout: 'default',
+      animation: { type: 'fade', duration: 300, delay: 50 }
+    };
+  }
+
+  if (templateId === 'creative-minimal') {
+    return {
+      backgroundColor: '#FAFAFA',
+      textColor: '#171717',
+      padding: { top: '8rem', right: '4rem', bottom: '8rem', left: '4rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: sectionType === 'projects' || sectionType === 'skills' ? 'center' : 'left',
+      layout: 'grid',
+      animation: { type: 'fade', duration: 1000, delay: 300 }
+    };
+  }
+
+  if (templateId === 'elite-pro') {
+    return {
+      backgroundColor: 'transparent',
+      textColor: '#FFFFFF',
+      padding: { top: '8rem', right: '1.5rem', bottom: '8rem', left: '1.5rem' },
+      margin: { top: '0', bottom: '0' },
+      alignment: sectionType === 'hero' || sectionType === 'contact' ? 'center' : 'left',
+      layout: 'default',
+      animation: { type: 'fade', duration: 700, delay: 0 }
+    };
+  }
+
   // For other templates, use default styling
   return getDefaultStyling(sectionType);
 };
@@ -54,7 +102,7 @@ const generateSectionId = (type: DraggableSectionType, index = 0): string => {
 };
 
 // Convert template data to editor sections
-export const convertTemplateToSections = (templateId: string): EditorSection[] => {
+export const convertTemplateToSections = (templateId: string, customData?: Partial<TemplateData>): EditorSection[] => {
   const template = getTemplate(templateId);
   if (!template) {
     throw new Error(`Template ${templateId} not found`);
@@ -64,80 +112,10 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
   let sectionOrder = 0;
 
   // Get template sample data from the component
-  const templateData = getTemplateDefaultData(templateId);
+  const defaultData = getTemplateDefaultData(templateId) as TemplateData;
+  const templateData = (customData || defaultData) as TemplateData;
 
-  // For template components (dark-professional, elegant-monochrome, warm-minimalist), load entire template as single component
-  if (templateId === 'dark-professional' || templateId === 'elegant-monochrome' || templateId === 'warm-minimalist') {
-    // Transform projects to correct format
-    const transformedTemplateData = {
-      ...templateData,
-      projects: templateData.projects ? {
-        ...templateData.projects,
-        projects: templateData.projects.projects?.map((p: {
-          id?: string;
-          title: string;
-          description: string;
-          longDescription?: string;
-          technologies?: string[];
-          image?: string;
-          images?: string[];
-          links?: { live?: string; github?: string; demo?: string; documentation?: string };
-          featured?: boolean;
-          category?: string;
-          status?: 'completed' | 'in-progress' | 'planned';
-          startDate?: string;
-          endDate?: string;
-          teamSize?: number;
-          role?: string;
-        }, index: number) => ({
-          id: p.id || `project-${Date.now()}-${index}`,
-          title: p.title,
-          description: p.description,
-          longDescription: p.longDescription || p.description,
-          technologies: p.technologies || [],
-          images: p.image ? [p.image] : (p.images || []),
-          links: {
-            live: p.links?.live,
-            github: p.links?.github,
-            demo: p.links?.demo,
-            documentation: p.links?.documentation
-          },
-          featured: p.featured !== undefined ? p.featured : true,
-          category: p.category || 'Other',
-          status: p.status || 'completed' as 'completed' | 'in-progress' | 'planned',
-          startDate: p.startDate,
-          endDate: p.endDate,
-          teamSize: p.teamSize,
-          role: p.role
-        })) || []
-      } : undefined
-    };
-
-
-    sections.push({
-      id: generateSectionId('template', 0),
-      type: 'template',
-      order: 0,
-      data: {
-        templateId: templateId,
-        templateData: transformedTemplateData
-      },
-      styling: {
-        backgroundColor: 'transparent',
-        textColor: 'inherit',
-        padding: { top: '0', right: '0', bottom: '0', left: '0' },
-        margin: { top: '0', bottom: '0' },
-        alignment: 'left',
-        layout: 'default',
-        animation: { type: 'none', duration: 0, delay: 0 }
-      },
-      isEditable: true
-    });
-    return sections;
-  }
-
-  // For other templates, convert to individual sections (existing logic)
-
+  
   // Convert Hero Section
   if (templateData.hero) {
     sections.push({
@@ -146,7 +124,7 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
       order: sectionOrder++,
       data: {
         ...templateData.hero,
-        contactEmail: templateData.hero.socialLinks?.find((link: { platform: string; url: string }) => link.platform === 'email')?.url?.replace('mailto:', '') || '',
+        contactEmail: templateData.hero.socialLinks?.find((link) => link.platform === 'email')?.url?.replace('mailto:', '') || '',
         socialLinks: templateData.hero.socialLinks || []
       },
       styling: getTemplateStyling(templateId, 'hero'),
@@ -181,7 +159,7 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
       order: sectionOrder++,
       data: {
         ...templateData.skills,
-        skills: [] // Legacy format support
+        skills: templateData.skills.skills || []
       },
       styling: getTemplateStyling(templateId, 'skills'),
       isEditable: true
@@ -220,9 +198,33 @@ export const convertTemplateToSections = (templateId: string): EditorSection[] =
       data: {
         heading: templateData.projects.heading,
         projects: transformedProjects,
-        categories: Array.from(new Set(transformedProjects.map((p: { category?: string }) => p.category).filter((cat): cat is string => cat !== undefined)))
+        categories: Array.from(new Set(transformedProjects.map((p: { category?: string }) => p.category).filter((cat: string | undefined): cat is string => cat !== undefined)))
       },
       styling: getTemplateStyling(templateId, 'projects'),
+      isEditable: true
+    });
+  }
+
+  // Convert Experience Section
+  if (templateData.experience) {
+    sections.push({
+      id: generateSectionId('experience', sectionOrder),
+      type: 'experience',
+      order: sectionOrder++,
+      data: templateData.experience,
+      styling: getTemplateStyling(templateId, 'experience'),
+      isEditable: true
+    });
+  }
+
+  // Convert Education Section
+  if (templateData.education) {
+    sections.push({
+      id: generateSectionId('education', sectionOrder),
+      type: 'education',
+      order: sectionOrder++,
+      data: templateData.education,
+      styling: getTemplateStyling(templateId, 'education'),
       isEditable: true
     });
   }
@@ -533,6 +535,254 @@ const getTemplateDefaultData = (templateId: string): TemplateData => {
         }
       };
 
+    case 'modern-developer':
+      return {
+        hero: {
+          fullName: "Alex Rivera",
+          title: "Full Stack Engineer",
+          bio: "Building robust backend systems and beautiful frontend experiences. Passionate about clean code, open source, and continuous learning.",
+          profileImage: "",
+          location: "Remote / New York",
+          socialLinks: [
+            { platform: "github", url: "https://github.com/alexrivera" },
+            { platform: "linkedin", url: "https://linkedin.com/in/alexrivera" }
+          ]
+        },
+        about: {
+          heading: "01. About",
+          content: "I am a software engineer focused on building exceptional, high-quality websites and applications. Currently, my main focus is building accessible, inclusive products and digital experiences.",
+          highlights: ["Over 5 years of engineering experience", "Open source contributor", "AWS Certified Developer", "TypeScript specialist"]
+        },
+        experience: {
+          heading: "02. Experience",
+          experiences: []
+        },
+        education: {
+          heading: "03. Education",
+          education: []
+        },
+        skills: {
+          heading: "04. Technologies",
+          skillCategories: {
+            technical: [{ name: "TypeScript", level: 90, category: "technical" }, { name: "React", level: 95, category: "technical" }],
+            soft: [],
+            languages: [],
+            tools: [{ name: "Git", level: 90, category: "tool" }, { name: "Docker", level: 80, category: "tool" }]
+          },
+          skills: []
+        },
+        projects: {
+          heading: "05. Selected Work",
+          categories: ["Frontend", "Backend", "Fullstack"],
+          projects: []
+        },
+        contact: {
+          heading: "06. Get In Touch",
+          email: "alex@example.com",
+          phone: "",
+          location: "New York, USA",
+          availability: "Currently looking for new opportunities.",
+          socialLinks: [],
+          contactForm: { enabled: true, fields: [] }
+        }
+      };
+
+    case 'sidebar-resume':
+      return {
+        hero: {
+          fullName: "Emily Chen",
+          title: "Product Manager",
+          bio: "Data-driven Product Manager with a track record of successfully launching B2B SaaS products.",
+          profileImage: "",
+          location: "Toronto, ON",
+          socialLinks: [{ platform: "linkedin", url: "https://linkedin.com/in/emilychen" }]
+        },
+        about: {
+          heading: "Professional Summary",
+          content: "Strategic Product Manager with 7+ years of experience leading cross-functional teams in the B2B SaaS space.",
+          highlights: []
+        },
+        experience: { heading: "Work Experience", experiences: [] },
+        education: { heading: "Education", education: [] },
+        skills: {
+          heading: "Skills",
+          skillCategories: { technical: [], soft: [], languages: [], tools: [] },
+          skills: []
+        },
+        projects: { heading: "Product Launches", categories: ["SaaS", "Mobile"], projects: [] },
+        contact: {
+          heading: "Contact Information",
+          email: "emily@example.com",
+          phone: "+1 (555) 987-6543",
+          location: "Toronto, ON",
+          availability: "",
+          socialLinks: [],
+          contactForm: { enabled: false, fields: [] }
+        }
+      };
+
+    case 'creative-minimal':
+      return {
+        hero: {
+          fullName: "Marcus Cole",
+          title: "Art Director",
+          bio: "Minimalist. Creator. Visionary. Crafting digital experiences that speak louder than words.",
+          profileImage: "",
+          location: "Berlin, DE",
+          socialLinks: [{ platform: "instagram", url: "https://instagram.com/marcuscole" }]
+        },
+        about: {
+          heading: "The Vision",
+          content: "Design is not just what it looks like and feels like. Design is how it works.",
+          highlights: ["Award winning Art Director", "Exhibited in Berlin & London"]
+        },
+        experience: { heading: "Chronicle", experiences: [] },
+        education: { heading: "Background", education: [] },
+        skills: {
+          heading: "Discipline",
+          skillCategories: { technical: [{ name: "Art Direction", level: 100, category: "technical" }], soft: [], languages: [], tools: [] },
+          skills: []
+        },
+        projects: { heading: "Exhibition", categories: ["Art", "Design"], projects: [] },
+        contact: {
+          heading: "Collaborate",
+          email: "marcus@example.com",
+          phone: "",
+          location: "Berlin",
+          availability: "Accepting select commissions.",
+          socialLinks: [],
+          contactForm: { enabled: true, fields: [] }
+        }
+      };
+
+    case 'elite-pro':
+      return {
+        hero: {
+          fullName: "Alex Chen",
+          title: "Senior Full-Stack Engineer",
+          bio: "Crafting exceptional digital experiences with cutting-edge technologies and innovative solutions. Passionate about performance, scalability, and user-centric design.",
+          profileImage: "",
+          location: "San Francisco, CA",
+          socialLinks: [
+            { platform: "github", url: "https://github.com/alexchen" },
+            { platform: "linkedin", url: "https://linkedin.com/in/alexchen" },
+            { platform: "twitter", url: "https://twitter.com/alexchen" },
+            { platform: "email", url: "mailto:alex@example.com" }
+          ]
+        },
+        about: {
+          heading: "About Me",
+          content: "I'm a passionate full-stack engineer with over 10 years of experience building high-performance web applications. I specialize in modern JavaScript frameworks, cloud architecture, and creating seamless user experiences. My approach combines technical excellence with a deep understanding of business needs.",
+          highlights: [
+            "10+ years of professional experience",
+            "Led teams at Fortune 500 companies",
+            "Open source contributor with 50k+ stars",
+            "Speaker at international tech conferences"
+          ]
+        },
+        experience: {
+          heading: "Professional Experience",
+          experiences: [
+            {
+              id: "exp-1",
+              company: "Nimbus Labs",
+              position: "Lead Full-Stack Engineer",
+              startDate: "2022",
+              endDate: "Present",
+              description: "Leading architecture and delivery for customer-facing products used by thousands of teams.",
+              responsibilities: [
+                "Designed scalable frontend architecture",
+                "Led migration to modern TypeScript stack",
+                "Mentored engineers and improved release quality"
+              ],
+              technologies: ["Next.js", "TypeScript", "Node.js", "PostgreSQL"]
+            }
+          ]
+        },
+        education: {
+          heading: "Education",
+          education: [
+            {
+              id: "edu-1",
+              institution: "Stanford University",
+              degree: "B.S.",
+              field: "Computer Science",
+              startDate: "2014",
+              endDate: "2018",
+              coursework: ["Distributed Systems", "Human-Computer Interaction"]
+            }
+          ]
+        },
+        skills: {
+          heading: "Skills & Expertise",
+          skills: [
+            { name: "React", level: 98, category: 'technical' },
+            { name: "Next.js", level: 95, category: 'technical' },
+            { name: "TypeScript", level: 95, category: 'technical' },
+            { name: "System Design", level: 93, category: 'technical' },
+            { name: "AWS", level: 90, category: 'technical' }
+          ],
+          skillCategories: {
+            technical: [
+              { name: "React & Next.js", level: 98, category: 'technical' },
+              { name: "TypeScript", level: 95, category: 'technical' },
+              { name: "Node.js", level: 92, category: 'technical' },
+              { name: "Cloud Architecture (AWS/GCP)", level: 90, category: 'technical' },
+              { name: "System Design", level: 93, category: 'technical' }
+            ],
+            soft: [
+              { name: "Technical Leadership", level: 95, category: 'soft' },
+              { name: "Strategic Thinking", level: 90, category: 'soft' },
+              { name: "Mentoring", level: 92, category: 'soft' }
+            ],
+            languages: [
+              { name: "English", level: 100, category: 'language' },
+              { name: "Mandarin", level: 95, category: 'language' }
+            ],
+            tools: [
+              { name: "Git & GitHub", level: 95, category: 'tool' },
+              { name: "Docker & Kubernetes", level: 88, category: 'tool' },
+              { name: "CI/CD Pipelines", level: 85, category: 'tool' }
+            ]
+          }
+        },
+        projects: {
+          heading: "Featured Projects",
+          projects: [
+            {
+              id: "project-1",
+              title: "Realtime Analytics Platform",
+              description: "Built a realtime analytics dashboard with high-throughput ingestion and actionable visualizations.",
+              technologies: ["Next.js", "TypeScript", "Redis", "PostgreSQL"],
+              images: [],
+              links: {
+                github: "https://github.com/alexchen/realtime-analytics",
+                live: "https://example.com"
+              },
+              category: "Web Development",
+              featured: true,
+              status: "completed"
+            }
+          ],
+          categories: ["Web Development", "Cloud Infrastructure", "Open Source"]
+        },
+        contact: {
+          heading: "Let's Work Together",
+          email: "alex@example.com",
+          phone: "",
+          location: "San Francisco, CA",
+          availability: "Available for freelance projects, collaborations, and full-time opportunities.",
+          socialLinks: [
+            { platform: "github", url: "https://github.com/alexchen" },
+            { platform: "linkedin", url: "https://linkedin.com/in/alexchen" }
+          ],
+          contactForm: {
+            enabled: true,
+            fields: []
+          }
+        }
+      };
+
     default:
       throw new Error(`Template data not found for template: ${templateId}`);
   }
@@ -574,10 +824,10 @@ export const applyTemplateToEditor = async (
     // Apply to editor
     if (replaceAll) {
       editorActions.clearEditor();
-      editorActions.loadState({ sections });
+      editorActions.loadState({ sections, templateId });
     } else {
       // Add sections to existing content - not fully supported with current interface
-      editorActions.loadState({ sections });
+      editorActions.loadState({ sections, templateId });
     }
 
     // Success callback

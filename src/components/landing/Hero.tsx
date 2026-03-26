@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import Link from "next/link";
 import { useUser } from '@clerk/nextjs';
 
@@ -10,23 +10,29 @@ export default function Hero() {
   const { user, isLoaded } = useUser();
 
   return (
-    <section className="pt-12 sm:pt-16 pb-8 bg-white relative overflow-hidden">
-      {/* Radial background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] opacity-25 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100 via-slate-50 to-white" />
-
+    <section className="pt-14 sm:pt-20 pb-14 border-b landing-divider relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
+
+          <motion.div
+            initial={{ y: 12, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.55, delay: 0.05, ease: "easeOut" }}
+            className="landing-kicker mb-8"
+          >
+            Crafted Presence
+          </motion.div>
 
           {/* Headline */}
           <motion.h1
             initial={{ y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="text-5xl sm:text-6xl lg:text-[82px] font-semibold tracking-tight text-slate-900 mb-6 leading-[1.04]"
+            className="landing-serif text-[2.9rem] sm:text-[4.3rem] lg:text-[6.05rem] font-semibold mb-7 leading-[0.97]"
           >
             Your portfolio,
             <br />
-            <span className="text-slate-400">beautifully crafted.</span>
+            <span className="text-[#6B7A52]">beautifully crafted.</span>
           </motion.h1>
 
           {/* Sub-copy */}
@@ -34,7 +40,7 @@ export default function Hero() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="text-lg sm:text-xl text-slate-500 mb-10 leading-relaxed max-w-2xl mx-auto"
+            className="landing-body text-[1.03rem] sm:text-[1.15rem] mb-11 max-w-2xl mx-auto"
           >
             Design, customize, and launch a stunning portfolio in minutes.
             Import your resume with AI and let your work do the talking.
@@ -45,12 +51,12 @@ export default function Hero() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10"
+            className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-12"
           >
             <Link href={isLoaded && user ? "/dashboard" : "/sign-up"}>
               <Button
                 size="lg"
-                className="w-full sm:w-auto text-sm font-semibold px-7 py-5 bg-slate-900 text-white hover:bg-slate-800 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                className="landing-btn-primary w-full sm:w-auto text-[0.78rem] uppercase tracking-[0.12em] px-8 py-5"
               >
                 {isLoaded && user ? "Go to Dashboard" : "Start Building Free"}
                 <ArrowRight className="ml-2 w-4 h-4" />
@@ -60,7 +66,7 @@ export default function Hero() {
               <Button
                 variant="ghost"
                 size="lg"
-                className="w-full sm:w-auto text-sm font-medium px-7 py-5 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-full transition-all duration-300"
+                className="landing-btn-secondary w-full sm:w-auto text-[0.78rem] uppercase tracking-[0.12em] px-8 py-5"
               >
                 Browse Templates
               </Button>
@@ -72,12 +78,12 @@ export default function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex items-center justify-center gap-2 text-sm text-slate-400 mb-16"
+            className="flex items-center justify-center gap-2 text-[0.82rem] text-[#5C554D] mb-8 uppercase tracking-[0.12em]"
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-4 h-4 text-[#6B7A52]" />
             <span>
               Trusted by{" "}
-              <strong className="text-slate-600 font-semibold">1,200+</strong>{" "}
+              <strong className="text-[#2D2A26] font-semibold">1,200+</strong>{" "}
               developers &amp; designers
             </span>
           </motion.div>

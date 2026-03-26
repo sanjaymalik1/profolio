@@ -32,22 +32,22 @@ const palette = [
 
 function HeroBlock() {
   return (
-    <div className="bg-slate-900 rounded-lg px-4 py-4 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-slate-600 flex items-center justify-center shrink-0 border-2 border-white/10">
-        <span className="text-white text-[11px] font-bold select-none">AM</span>
+    <div className="bg-[#2d2a26] rounded-lg px-4 py-4 flex items-center gap-3">
+      <div className="w-10 h-10 rounded-full bg-[#6b7a52] flex items-center justify-center shrink-0 border border-white/20">
+        <span className="text-[#f5f1ea] text-[11px] font-bold select-none">AM</span>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white text-[12px] font-bold leading-tight">Alex Morgan</p>
-        <p className="text-slate-400 text-[10px] leading-tight mt-0.5">Full Stack Developer</p>
-        <p className="text-slate-500 text-[9px] leading-tight mt-0.5 hidden sm:block">
+        <p className="text-[#f5f1ea] text-[12px] font-bold leading-tight">Alex Morgan</p>
+        <p className="text-[#cdc4b8] text-[10px] leading-tight mt-0.5">Full Stack Developer</p>
+        <p className="text-[#ab9f90] text-[9px] leading-tight mt-0.5 hidden sm:block">
           Building elegant software since 2018
         </p>
       </div>
       <div className="flex gap-1.5 shrink-0">
-        <div className="px-2.5 h-6 rounded-full bg-white flex items-center text-[9px] font-bold text-slate-900">
+        <div className="px-2.5 h-6 rounded-full bg-[#f5f1ea] flex items-center text-[9px] font-bold text-[#2d2a26]">
           View Work
         </div>
-        <div className="px-2.5 h-6 rounded-full border border-white/30 flex items-center text-[9px] font-medium text-white/70">
+        <div className="px-2.5 h-6 rounded-full border border-[#f5f1ea]/30 flex items-center text-[9px] font-medium text-[#f5f1ea]/80">
           Contact
         </div>
       </div>
@@ -57,9 +57,9 @@ function HeroBlock() {
 
 function AboutBlock() {
   return (
-    <div className="bg-white border border-slate-100 rounded-lg px-4 py-3.5">
-      <p className="text-[10px] font-bold text-slate-700 mb-1.5">About Me</p>
-      <p className="text-[10px] text-slate-500 leading-relaxed">
+    <div className="bg-[#f8f4ee] border border-[#d8d0c6] rounded-lg px-4 py-3.5">
+      <p className="text-[10px] font-bold text-[#2d2a26] mb-1.5">About Me</p>
+      <p className="text-[10px] text-[#5c554d] leading-relaxed">
         Passionate full-stack developer with 6+ years building scalable web
         apps. Specializing in React, Node.js, and cloud infrastructure.
       </p>
@@ -70,13 +70,13 @@ function AboutBlock() {
 function SkillsBlock() {
   const skills = ["React", "TypeScript", "Node.js", "AWS", "Figma", "Python"];
   return (
-    <div className="bg-white border border-slate-100 rounded-lg px-4 py-3.5">
-      <p className="text-[10px] font-bold text-slate-700 mb-2">Technical Skills</p>
+    <div className="bg-[#f8f4ee] border border-[#d8d0c6] rounded-lg px-4 py-3.5">
+      <p className="text-[10px] font-bold text-[#2d2a26] mb-2">Technical Skills</p>
       <div className="flex flex-wrap gap-1">
         {skills.map((s) => (
           <span
             key={s}
-            className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
+            className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#ede5dc] text-[#5c554d] border border-[#d8d0c6]"
           >
             {s}
           </span>
@@ -99,15 +99,15 @@ function PanelField({
 }) {
   return (
     <div>
-      <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+      <p className="text-[9px] font-semibold text-[#5c554d] uppercase tracking-wider mb-1">
         {label}
       </p>
       {multiline ? (
-        <div className="px-2.5 py-2 border border-slate-200 rounded-lg text-[10px] text-slate-600 bg-slate-50/50 leading-relaxed min-h-[40px]">
+        <div className="px-2.5 py-2 border border-[#d8d0c6] rounded-lg text-[10px] text-[#5c554d] bg-[#f8f4ee] leading-relaxed min-h-[40px]">
           {value}
         </div>
       ) : (
-        <div className="px-2.5 py-1.5 border border-slate-200 rounded-lg text-[10px] text-slate-600 bg-slate-50/50">
+        <div className="px-2.5 py-1.5 border border-[#d8d0c6] rounded-lg text-[10px] text-[#5c554d] bg-[#f8f4ee]">
           {value}
         </div>
       )}
@@ -131,27 +131,27 @@ function SkillsPanel() {
     <div className="space-y-3">
       <PanelField label="Section Title" value="Technical Skills" />
       <div>
-        <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+        <p className="text-[9px] font-semibold text-[#5c554d] uppercase tracking-wider mb-1">
           Add Skill
         </p>
         <div className="flex gap-1.5">
-          <div className="flex-1 px-2.5 py-1.5 border border-slate-200 rounded-lg text-[10px] text-slate-400 bg-slate-50/50">
+          <div className="flex-1 px-2.5 py-1.5 border border-[#d8d0c6] rounded-lg text-[10px] text-[#8b8276] bg-[#f8f4ee]">
             e.g. &ldquo;Docker&rdquo;
           </div>
-          <div className="w-7 h-7 flex items-center justify-center border border-slate-200 rounded-lg bg-white text-slate-500 shrink-0">
+          <div className="w-7 h-7 flex items-center justify-center border border-[#d8d0c6] rounded-lg bg-[#f8f4ee] text-[#5c554d] shrink-0">
             <Plus className="w-3 h-3" />
           </div>
         </div>
       </div>
       <div>
-        <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+        <p className="text-[9px] font-semibold text-[#5c554d] uppercase tracking-wider mb-1.5">
           Skill Tags
         </p>
         <div className="flex flex-wrap gap-1">
           {["React", "TypeScript", "Node.js", "AWS", "Figma"].map((s) => (
             <span
               key={s}
-              className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-blue-50 text-blue-600 border border-blue-100"
+              className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#ebf0e2] text-[#6b7a52] border border-[#d0d9bf]"
             >
               {s}
             </span>
@@ -176,11 +176,11 @@ function CanvasSection({
   return (
     <div
       className={`relative group/block rounded-lg transition-all duration-200 ${
-        selected ? "ring-2 ring-blue-500 ring-offset-1" : ""
+        selected ? "ring-2 ring-[#6b7a52] ring-offset-1" : ""
       }`}
     >
       {selected && (
-        <div className="absolute -top-px -left-px bg-blue-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-tl-lg rounded-br-md z-20 leading-none flex items-center h-5">
+        <div className="absolute -top-px -left-px bg-[#6b7a52] text-[#f5f1ea] text-[9px] font-bold px-2 py-0.5 rounded-tl-lg rounded-br-md z-20 leading-none flex items-center h-5">
           {label}
         </div>
       )}
@@ -189,7 +189,7 @@ function CanvasSection({
           selected ? "opacity-100" : "opacity-0"
         }`}
       >
-        <GripVertical className="w-3.5 h-3.5 text-slate-400" />
+        <GripVertical className="w-3.5 h-3.5 text-[#8b8276]" />
       </div>
       {children}
     </div>
@@ -272,8 +272,7 @@ export default function EditorPreview() {
     phase === "drop" || phase === "settle" || phase === "to-publish" || phase === "saved";
 
   return (
-    <section className="py-24 sm:py-32 bg-slate-50 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle,_#cbd5e120_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+    <section className="py-24 sm:py-32 border-t landing-divider relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
 
@@ -284,9 +283,9 @@ export default function EditorPreview() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-6 shadow-sm"
+            className="landing-kicker gap-2 mb-6"
           >
-            <Sparkles className="w-3 h-3 text-blue-600" />
+            <Sparkles className="w-3 h-3 text-[#6b7a52]" />
             Visual Editor
           </motion.div>
           <motion.h2
@@ -294,18 +293,18 @@ export default function EditorPreview() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 mb-5"
+            className="landing-serif text-[2.45rem] sm:text-[3.3rem] lg:text-[4.35rem] font-semibold mb-5 leading-[0.98]"
           >
             Visual editing.
             <br />
-            <span className="text-slate-400">Total control.</span>
+            <span className="text-[#6B7A52]">Total control.</span>
           </motion.h2>
           <motion.p
             initial={{ y: 16, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg text-slate-500 leading-relaxed"
+            className="landing-body text-[1.02rem]"
           >
             Drag sections onto your canvas, edit content inline, and publish
             your portfolio in minutes.
@@ -314,7 +313,7 @@ export default function EditorPreview() {
 
         {/* Editor mockup */}
         <motion.div
-          className="relative max-w-5xl mx-auto rounded-2xl border border-slate-200 bg-white shadow-2xl overflow-hidden"
+          className="relative max-w-5xl mx-auto border landing-divider bg-[#f8f4ee] overflow-hidden"
           initial={{ y: 40, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -334,7 +333,7 @@ export default function EditorPreview() {
                 transition={{ duration: 0.55, ease: "easeInOut" }}
               >
                 <MousePointer2
-                  className="w-4 h-4 text-slate-800 drop-shadow"
+                  className="w-4 h-4 text-[#2d2a26] drop-shadow"
                   fill="white"
                 />
               </motion.div>
@@ -342,19 +341,19 @@ export default function EditorPreview() {
           </AnimatePresence>
 
           {/* Title bar */}
-          <div className="h-11 border-b border-slate-100 bg-slate-50 flex items-center px-4 justify-between gap-4 shrink-0">
+          <div className="h-11 border-b landing-divider bg-[#f5f1ea] flex items-center px-4 justify-between gap-4 shrink-0">
             <div className="flex gap-1.5 shrink-0">
               <div className="w-3 h-3 rounded-full bg-rose-400" />
               <div className="w-3 h-3 rounded-full bg-amber-400" />
               <div className="w-3 h-3 rounded-full bg-emerald-400" />
             </div>
             <div className="flex-1 flex justify-center">
-              <div className="px-3 py-1 bg-white border border-slate-200 rounded text-xs text-slate-500 font-medium max-w-xs w-full text-center">
+              <div className="px-3 py-1 bg-[#f8f4ee] border landing-divider rounded text-xs text-[#5c554d] font-medium max-w-xs w-full text-center">
                 my-portfolio.profolio.me
               </div>
             </div>
             <div className="flex gap-2 shrink-0">
-              <div className="h-6 px-3 bg-white border border-slate-200 rounded text-[11px] text-slate-500 flex items-center font-medium">
+              <div className="h-6 px-3 bg-[#f8f4ee] border landing-divider rounded text-[11px] text-[#5c554d] flex items-center font-medium">
                 Preview
               </div>
               <motion.div
@@ -366,10 +365,10 @@ export default function EditorPreview() {
                 transition={{ duration: 0.15 }}
                 className={`h-6 px-3 rounded text-[11px] flex items-center gap-1 font-semibold transition-colors duration-300 ${
                   publishState === "saved"
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-[#6b7a52] text-[#f5f1ea]"
                     : publishState === "highlight"
-                    ? "bg-slate-700 text-white ring-2 ring-offset-1 ring-slate-400"
-                    : "bg-slate-900 text-white"
+                    ? "bg-[#5c554d] text-[#f5f1ea] ring-2 ring-offset-1 ring-[#b8ada0]"
+                    : "bg-[#2d2a26] text-[#f5f1ea]"
                 }`}
               >
                 {publishState === "saved" ? (
@@ -388,9 +387,9 @@ export default function EditorPreview() {
           <div className="flex h-[420px] sm:h-[480px]">
 
             {/* Left: Section Palette */}
-            <div className="w-48 border-r border-slate-100 bg-slate-50/60 flex-col shrink-0 hidden sm:flex">
+            <div className="w-48 border-r landing-divider bg-[#f2ece4]/70 flex-col shrink-0 hidden sm:flex">
               <div className="px-4 pt-4 pb-2">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <p className="text-[10px] font-bold text-[#5c554d] uppercase tracking-widest">
                   Sections
                 </p>
               </div>
@@ -412,11 +411,11 @@ export default function EditorPreview() {
                       transition={{ duration: 0.3, ease: "easeOut" }}
                       className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-colors select-none ${
                         isDropped
-                          ? "bg-slate-100 border-slate-200 text-slate-400 cursor-default"
-                          : "bg-white border-slate-100 text-slate-700 cursor-grab"
+                          ? "bg-[#ece4da] border-[#d8d0c6] text-[#8b8276] cursor-default"
+                          : "bg-[#f8f4ee] border-[#d8d0c6] text-[#2d2a26] cursor-grab"
                       }`}
                     >
-                      <item.icon className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <item.icon className="w-3.5 h-3.5 text-[#6b7a52] shrink-0" />
                       <span className="text-[11px] font-semibold leading-none">
                         {item.label}
                       </span>
@@ -427,7 +426,7 @@ export default function EditorPreview() {
             </div>
 
             {/* Center: Canvas */}
-            <div className="flex-1 bg-slate-100/70 p-4 sm:p-5 overflow-hidden relative">
+            <div className="flex-1 bg-[#efe8df] p-4 sm:p-5 overflow-hidden relative">
 
               {/* Flying ghost tile */}
               <AnimatePresence>
@@ -445,17 +444,17 @@ export default function EditorPreview() {
                       duration: phase === "fly" ? 0.65 : 0.25,
                       ease: "easeOut",
                     }}
-                    className="absolute top-28 left-4 right-4 z-40 pointer-events-none bg-white border-2 border-blue-400 rounded-lg px-4 py-3 shadow-xl"
+                    className="absolute top-28 left-4 right-4 z-40 pointer-events-none bg-[#f8f4ee] border-2 border-[#6b7a52] rounded-lg px-4 py-3 shadow-sm"
                     style={{ maxWidth: "calc(100% - 2rem)" }}
                   >
-                    <p className="text-[10px] font-bold text-blue-700 mb-2">
+                    <p className="text-[10px] font-bold text-[#6b7a52] mb-2">
                       Technical Skills
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {["React", "TypeScript", "Node.js"].map((s) => (
                         <span
                           key={s}
-                          className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-slate-100 text-slate-500 border border-slate-200"
+                          className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#ede5dc] text-[#5c554d] border border-[#d8d0c6]"
                         >
                           {s}
                         </span>
@@ -466,7 +465,7 @@ export default function EditorPreview() {
               </AnimatePresence>
 
               {/* White canvas card */}
-              <div className="relative h-full bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+              <div className="relative h-full bg-[#f8f4ee] rounded-xl border landing-divider flex flex-col overflow-hidden">
                 <div className="flex-1 overflow-hidden px-4 sm:px-5 py-4 flex flex-col gap-3 relative">
 
                   <CanvasSection
@@ -489,9 +488,9 @@ export default function EditorPreview() {
                         animate={{ opacity: 1, height: 54 }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.25, ease: "easeOut" }}
-                        className="border-2 border-dashed border-blue-300 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                        className="border-2 border-dashed border-[#bcc7a8] rounded-lg flex items-center justify-center overflow-hidden shrink-0"
                       >
-                        <span className="text-[10px] font-semibold text-blue-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[#6b7a52] uppercase tracking-wider">
                           Drop here
                         </span>
                       </motion.div>
@@ -520,8 +519,8 @@ export default function EditorPreview() {
                 </div>
 
                 {/* Canvas status bar */}
-                <div className="border-t border-slate-100 bg-slate-50 px-4 py-2 flex items-center justify-between shrink-0">
-                  <span className="text-[10px] text-slate-400 font-medium">
+                <div className="border-t landing-divider bg-[#f5f1ea] px-4 py-2 flex items-center justify-between shrink-0">
+                  <span className="text-[10px] text-[#5c554d] font-medium">
                     {publishState === "saved"
                       ? "Portfolio published successfully"
                       : selectedBlock === "skills"
@@ -529,18 +528,18 @@ export default function EditorPreview() {
                       : "Hero selected — edit in panel →"}
                   </span>
                   <div className="flex gap-1.5">
-                    <div className="w-6 h-1.5 rounded-full bg-slate-200" />
-                    <div className="w-3 h-1.5 rounded-full bg-slate-300" />
-                    <div className="w-2 h-1.5 rounded-full bg-slate-200" />
+                    <div className="w-6 h-1.5 rounded-full bg-[#d8d0c6]" />
+                    <div className="w-3 h-1.5 rounded-full bg-[#bcb2a5]" />
+                    <div className="w-2 h-1.5 rounded-full bg-[#d8d0c6]" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Right: Context-aware Content Panel */}
-            <div className="w-52 sm:w-56 border-l border-slate-100 bg-white hidden md:flex flex-col shrink-0">
-              <div className="px-4 pt-4 pb-3 border-b border-slate-100">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">
+            <div className="w-52 sm:w-56 border-l landing-divider bg-[#f8f4ee] hidden md:flex flex-col shrink-0">
+              <div className="px-4 pt-4 pb-3 border-b landing-divider">
+                <p className="text-[10px] font-bold text-[#5c554d] uppercase tracking-widest mb-0.5">
                   Edit Content
                 </p>
                 <AnimatePresence mode="wait">
@@ -550,7 +549,7 @@ export default function EditorPreview() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.2 }}
-                    className="text-[11px] font-semibold text-slate-700"
+                    className="text-[11px] font-semibold text-[#2d2a26]"
                   >
                     {selectedBlock === "skills" ? "Skills Section" : "Hero Section"}
                   </motion.p>
@@ -584,12 +583,12 @@ export default function EditorPreview() {
               </div>
 
               {/* Save button */}
-              <div className="border-t border-slate-100 px-4 py-3">
+              <div className="border-t landing-divider px-4 py-3">
                 <div
                   className={`h-7 w-full flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-semibold transition-all duration-300 ${
                     publishState === "saved"
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-slate-900 text-white"
+                      ? "bg-[#ebf0e2] text-[#6b7a52] border border-[#d0d9bf]"
+                      : "bg-[#2d2a26] text-[#f5f1ea]"
                   }`}
                 >
                   {publishState === "saved" ? (

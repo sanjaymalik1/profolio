@@ -15,22 +15,22 @@ export default function DashboardError({ error, reset }: ErrorProps) {
     }, [error]);
 
     return (
-        <div className="min-h-screen bg-slate-50/30 flex items-center justify-center">
+        <div className="min-h-screen landing-editorial flex items-center justify-center">
             <div className="text-center max-w-md px-4">
-                <h2 className="text-xl font-semibold text-slate-900 mb-2">Something went wrong</h2>
+                <h2 className="text-[2.1rem] font-semibold mb-2">Something went wrong</h2>
                 <p className="text-sm text-slate-500 mb-6">
                     {error.message || 'An unexpected error occurred loading the dashboard.'}
                 </p>
                 <div className="flex items-center justify-center gap-3">
                     <button
                         onClick={reset}
-                        className="px-4 py-2 text-sm font-medium bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                        className="px-4 py-2 text-[0.76rem] uppercase tracking-[0.1em] font-semibold bg-[#2d2a26] text-[#f5f1ea] rounded-lg hover:bg-[#3b3732] transition-colors"
                     >
                         Try again
                     </button>
                     <Link
                         href="/"
-                        className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                        className="px-4 py-2 text-[0.76rem] uppercase tracking-[0.1em] font-semibold text-[#5c554d] hover:text-[#2d2a26] transition-colors"
                     >
                         Go home
                     </Link>

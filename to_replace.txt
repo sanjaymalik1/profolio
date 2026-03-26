@@ -1,0 +1,115 @@
+// Convert template data to editor sections
+export const convertTemplateToSections = (templateId: string): EditorSection[] => {
+  const template = getTemplate(templateId);
+  if (!template) {
+    throw new Error(`Template ${templateId} not found`);
+  }
+
+  const sections: EditorSection[] = [];
+  let sectionOrder = 0;
+
+  // Get template sample data from the component
+  const templateData = getTemplateDefaultData(templateId);
+
+  
+  // Convert Hero Section
+  if (templateData.hero) {
+    sections.push({
+      id: generateSectionId('hero', sectionOrder),
+      type: 'hero',
+      order: sectionOrder++,
+      data: {
+        ...templateData.hero,
+        contactEmail: templateData.hero.socialLinks?.find((link: { platform: string; url: string }) => link.platform === 'email')?.url?.replace('mailto:', '') || '',
+        socialLinks: templateData.hero.socialLinks || []
+      },
+      styling: getTemplateStyling(templateId, 'hero'),
+      isEditable: true
+    });
+  }
+
+  // Convert About Section
+  if (templateData.about) {
+    sections.push({
+      id: generateSectionId('about', sectionOrder),
+      type: 'about',
+      order: sectionOrder++,
+      data: {
+        ...templateData.about,
+        personalInfo: {
+          location: templateData.hero?.location || '',
+          languages: ['English'],
+          interests: ['Technology', 'Innovation']
+        }
+      },
+      styling: getTemplateStyling(templateId, 'about'),
+      isEditable: true
+    });
+  }
+
+  // Convert Skills Section
+  if (templateData.skills) {
+    sections.push({
+      id: generateSectionId('skills', sectionOrder),
+      type: 'skills',
+      order: sectionOrder++,
+      data: {
+        ...templateData.skills,
+        skills: [] // Legacy format support
+      },
+      styling: getTemplateStyling(templateId, 'skills'),
+      isEditable: true
+    });
+  }
+
+  // Convert Projects Section
+  if (templateData.projects) {
+    // Transform projects to match the correct Project type
+    const transformedProjects = templateData.projects.projects?.map((p: { id?: string; title: string; description: string; longDescription?: string; technologies?: string[]; image?: string; images?: string[]; category?: string; links?: { live?: string; github?: string; demo?: string; documentation?: string }; featured?: boolean; status?: 'completed' | 'in-progress' | 'planned'; startDate?: string; endDate?: string; teamSize?: number; role?: string }, index: number) => ({
+      id: `project-${Date.now()}-${index}`,
+      title: p.title,
+      description: p.description,
+      longDescription: p.longDescription || p.description,
+      technologies: p.technologies || [],
+      images: p.image ? [p.image] : (p.images || []),
+      links: {
+        live: p.links?.live,
+        github: p.links?.github,
+        demo: p.links?.demo,
+        documentation: p.links?.documentation
+      },
+      featured: p.featured !== undefined ? p.featured : true,
+      category: p.category || 'Other',
+      status: p.status || 'completed' as 'completed' | 'in-progress' | 'planned',
+      startDate: p.startDate,
+      endDate: p.endDate,
+      teamSize: p.teamSize,
+      role: p.role
+    })) || [];
+
+    sections.push({
+      id: generateSectionId('projects', sectionOrder),
+      type: 'projects',
+      order: sectionOrder++,
+      data: {
+        heading: templateData.projects.heading,
+        projects: transformedProjects,
+        categories: Array.from(new Set(transformedProjects.map((p: { category?: string }) => p.category).filter((cat): cat is string => cat !== undefined)))
+      },
+      styling: getTemplateStyling(templateId, 'projects'),
+      isEditable: true
+    });
+  }
+
+  // Convert Contact Section
+  if (templateData.contact) {
+    sections.push({
+      id: generateSectionId('contact', sectionOrder),
+      type: 'contact',
+      order: sectionOrder++,
+      data: templateData.contact,
+      styling: getTemplateStyling(templateId, 'contact'),
+      isEditable: true
+    });
+  }
+

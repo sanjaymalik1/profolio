@@ -600,6 +600,33 @@ export const enhancedPortfolioTemplates: PortfolioTemplate[] = [
     updatedAt: new Date().toISOString(),
     isPopular: true,
     isPremium: false
+  },
+
+  {
+    id: 'elite-pro',
+    name: 'Elite Pro',
+    description: 'Premium, high-impact developer portfolio with bold visuals and modern sections.',
+    category: 'developer',
+    thumbnail: '/templates/dark-professional-thumb.jpg',
+    previewImages: [],
+    tags: ['premium', 'developer', 'modern', 'high-impact', 'professional'],
+    sections: createEnhancedSections('elite-pro', 'tech'),
+    colorScheme: enhancedColorSchemes.darkProfessional,
+    typography: enhancedTypographyConfigs.darkProfessional,
+    layout: enhancedLayoutConfigs.darkProfessional,
+    features: [
+      'Premium visual style',
+      'Section-focused storytelling',
+      'Modern developer showcase',
+      'Strong project presentation',
+      'Contact-first call-to-action'
+    ],
+    difficulty: 'intermediate',
+    estimatedTime: '30 minutes',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    isPopular: true,
+    isPremium: true
   }
 ];
 

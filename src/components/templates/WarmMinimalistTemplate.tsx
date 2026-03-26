@@ -1,576 +1,1101 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from 'react';
+import { EditableText } from '@/components/editor/inline/EditableText';
+import { EditableImage } from '@/components/editor/inline/EditableImage';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Mail, MapPin, Heart, Coffee, Star, Send, Building2, GraduationCap, Calendar } from 'lucide-react';
-import type { TemplateData, Project, ProjectsData, ExperienceData, Experience, EducationData, Education } from '@/types/portfolio';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
+import {
+  Github, Linkedin, Mail, MapPin, ExternalLink,
+  Building2, GraduationCap, Calendar, ArrowRight,
+  Twitter, Globe, Heart
+} from 'lucide-react';
+import type { EditorSection } from '@/types/editor';
+import { EditorContext } from '@/contexts/EditorContext';
+import type {
+  TemplateData, ProjectsData, Project,
+  ExperienceData, Experience, EducationData, Education,
+  NavbarData
+} from '@/types/portfolio';
+
+// ─── Props ───────────────────────────────────────────────────────────────────
 
 interface WarmMinimalistTemplateProps {
   data?: TemplateData;
   isPreview?: boolean;
+  sections?: EditorSection[];
+  renderSection?: (section: EditorSection, index: number, content: React.ReactNode) => React.ReactNode;
 }
 
-export function WarmMinimalistTemplate({ data, isPreview = false }: WarmMinimalistTemplateProps) {
-  const heroData = data?.hero || {
-    fullName: "Sarah Martinez",
-    title: "Creative Freelancer & Brand Designer",
-    bio: "Helping small businesses and startups create authentic brand identities that connect with their audience. Passionate about meaningful design that tells your story.",
-    profileImage: "",
-    location: "Austin, TX",
-    socialLinks: [
-      { platform: "github", url: "https://github.com/sarahmartinez" },
-      { platform: "linkedin", url: "https://linkedin.com/in/sarahmartinez" },
-      { platform: "email", url: "mailto:sarah@example.com" }
-    ]
-  };
+// ─── Animation helpers ────────────────────────────────────────────────────────
 
-  const aboutData = data?.about || {
-    heading: "About Me",
-    content: "I'm a passionate creative professional who believes great design should be accessible to everyone. With 6+ years of experience in brand design and digital marketing, I help small businesses and entrepreneurs build authentic connections with their customers through thoughtful, strategic design.",
-    highlights: [
-      "6+ years in brand & digital design",
-      "Worked with 100+ small businesses",
-      "Featured in Design Weekly magazine",
-      "Certified Google Ads specialist"
-    ]
-  };
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const, delay },
+  }),
+};
 
-  const skillsData = data?.skills || {
-    heading: "What I Do Best",
-    skillCategories: {
-      technical: [
-        { name: "Brand Identity Design", level: 95 },
-        { name: "Web Design", level: 90 },
-        { name: "Illustration", level: 85 },
-        { name: "Photography", level: 80 },
-        { name: "Content Strategy", level: 88 }
-      ],
-      tools: [
-        { name: "Adobe Creative Suite", level: 95 },
-        { name: "Figma", level: 90 },
-        { name: "Webflow", level: 85 },
-        { name: "Canva", level: 80 }
-      ]
+// ─── Social icon map ─────────────────────────────────────────────────────────
+
+const SOCIAL_ICONS: Record<string, React.ReactNode> = {
+  github: <Github className="w-4 h-4" />,
+  linkedin: <Linkedin className="w-4 h-4" />,
+  email: <Mail className="w-4 h-4" />,
+  twitter: <Twitter className="w-4 h-4" />,
+  website: <Globe className="w-4 h-4" />,
+};
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPreview: boolean; sectionId?: string }) {
+  const editorContext = React.useContext(EditorContext);
+  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
+  const heroInitial = (heroData.fullName || '').trim().charAt(0).toUpperCase() || '?';
+
+  const handleScroll = (e: React.MouseEvent, targetId: string) => {
+    if (isPreview) { e.preventDefault(); return; }
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      const navbarHeight = 64;
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - navbarHeight;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
-  const projectsData: ProjectsData = data?.projects || {
-    heading: "Recent Work",
-    categories: ["Branding", "Wellness", "Technology"],
-    projects: [
-      {
-        id: "1",
-        title: "Bloom Coffee Co.",
-        description: "Complete brand identity and packaging design for a local organic coffee roaster. Created a warm, approachable brand that reflects their commitment to sustainability.",
-        technologies: ["Brand Identity", "Packaging", "Web Design"],
-        images: [],
-        links: {},
-        featured: true,
-        category: "Branding",
-        status: "completed" as const
-      },
-      {
-        id: "2",
-        title: "Mindful Yoga Studio",
-        description: "Peaceful, zen-inspired brand design and marketing materials for a local yoga studio, including class schedules, social media templates, and signage.",
-        technologies: ["Brand Design", "Print Design", "Social Media"],
-        images: [],
-        links: {},
-        featured: true,
-        category: "Wellness",
-        status: "completed" as const
-      },
-      {
-        id: "3",
-        title: "TechStart Accelerator",
-        description: "Modern, professional brand identity for a startup accelerator program, including pitch deck templates and digital marketing materials.",
-        technologies: ["Brand Identity", "Digital Marketing", "Presentation Design"],
-        images: [],
-        links: {},
-        featured: true,
-        category: "Technology",
-        status: "completed" as const
-      }
-    ] as Project[]
-  };
-
-  const experienceData: ExperienceData = data?.experience || {
-    heading: "Experience",
-    experiences: []
-  };
-
-  const educationData: EducationData = data?.education || {
-    heading: "Education",
-    education: []
-  };
-
-  const contactData = data?.contact || {
-    heading: "Let's Create Together",
-    email: "sarah@example.com",
-    phone: "+1 (512) 555-0123",
-    location: "Austin, TX"
-  };
-
   return (
-    <div className={`min-h-screen bg-amber-50 text-amber-900 ${isPreview ? 'pointer-events-none' : ''}`}>
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 bg-gradient-to-br from-amber-50 to-orange-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center">
-            {/* Profile Image */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="mb-8"
-            >
-              <div className="w-32 h-32 mx-auto relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-200 rounded-full"></div>
-                <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center">
-                  <Heart className="w-12 h-12 text-amber-500" />
-                </div>
+    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-[#FAF9F6] via-[#F5EFE7] to-[#FAF9F6]">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 lg:py-32">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Avatar */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="order-1 flex justify-center items-center"
+          >
+            <div className="relative w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72">
+              <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-[#E8DCC8]/30 to-[#D4C5AD]/20 blur-2xl" />
+              <div className="absolute -inset-1 rounded-full border border-[#E8DCC8]" />
+              <div
+                className="relative w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-[#F5EFE7] to-[#E8DCC8] border-2 border-[#D4C5AD]/50 shadow-xl"
+              >
+                {inlineEditMode ? (
+                  <EditableImage
+                    value={heroData.profileImage || ''}
+                    onChange={(url) => {
+                      editorContext.dispatch({
+                        type: 'UPDATE_SECTION_DATA',
+                        payload: {
+                          sectionId,
+                          data: { profileImage: url }
+                        }
+                      });
+                    }}
+                    alt={heroData.fullName || 'Profile'}
+                    containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                    className="object-cover !min-h-0"
+                    emptyStateContent={<span className="text-7xl md:text-8xl font-bold text-[#C5B5A0] select-none uppercase">{heroInitial}</span>}
+                    emptyStateClassName="w-full h-full"
+                    aspectRatio="square"
+                  />
+                ) : heroData.profileImage ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={heroData.profileImage}
+                    alt={heroData.fullName || 'Profile'}
+                    className="w-full h-full object-cover"
+                    style={{ borderRadius: '50%', objectFit: 'cover' as const }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#F5EFE7] to-[#E8DCC8]">
+                    <span className="text-7xl md:text-8xl font-bold text-[#C5B5A0] select-none uppercase">
+                      {heroInitial}
+                    </span>
+                  </div>
+                )}
               </div>
+            </div>
+          </motion.div>
+
+          {/* Text */}
+          <div className="order-2">
+            <motion.h1
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={0.1}
+              className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#6B5437] leading-[1.05] tracking-tight mb-4 max-w-full break-words"
+            >
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.fullName || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { fullName: value } }
+                  })}
+                  placeholder="Your Name"
+                  className="outline-none focus:ring-2 focus:ring-[#8B6F47]/50 rounded px-1 -mx-1 max-w-full break-words"
+                  as="span"
+                />
+              ) : (
+                heroData.fullName
+              )}
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={0.2}
+              className="text-xl sm:text-2xl font-medium text-[#8B6F47] mb-6"
+            >
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.title || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { title: value } }
+                  })}
+                  placeholder="Your Title"
+                  className="outline-none focus:ring-2 focus:ring-[#8B6F47]/50 rounded px-1 -mx-1"
+                  as="span"
+                />
+              ) : (
+                heroData.title
+              )}
+            </motion.p>
+
+            <motion.p
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={0.3}
+              className="text-base md:text-lg text-[#8B7C6A] leading-relaxed max-w-xl mb-8"
+            >
+              {isPreview && editorContext && sectionId ? (
+                <EditableText
+                  value={heroData.bio || ''}
+                  onChange={(value) => editorContext.dispatch({
+                    type: 'UPDATE_SECTION_DATA',
+                    payload: { sectionId, data: { bio: value } }
+                  })}
+                  placeholder="Brief introduction about yourself and what you do."
+                  className="outline-none focus:ring-2 focus:ring-[#8B6F47]/50 rounded px-1 -mx-1"
+                  as="span"
+                  multiline
+                />
+              ) : (
+                heroData.bio
+              )}
+            </motion.p>
+
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={0.4}
+              className="flex flex-wrap gap-4 mb-8"
+            >
+              <a
+                href="#projects"
+                onClick={(e) => handleScroll(e, 'projects')}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#8B6F47] hover:bg-[#6B5437] text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+              >
+                View Work
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <a
+                href="#contact"
+                onClick={(e) => handleScroll(e, 'contact')}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-[#D4C5AD] hover:border-[#8B6F47] text-[#8B6F47] hover:text-[#6B5437] font-medium rounded-lg transition-all duration-200 hover:-translate-y-0.5"
+              >
+                Get in Touch
+              </a>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-8"
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={0.5}
+              className="flex items-center gap-3"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-sm font-medium text-amber-700 mb-6 shadow-sm">
-                <Coffee className="w-4 h-4" />
-                Available for new projects
-              </div>
-
-              <h1 className="text-4xl md:text-6xl font-light mb-4 text-amber-800">
-                Hi, I&apos;m <span className="font-medium text-red-600">{heroData.fullName.split(' ')[0]}</span>
-              </h1>
-
-              <h2 className="text-xl md:text-2xl text-amber-700 font-light mb-8">
-                {heroData.title}
-              </h2>
-
-              <p className="text-lg text-amber-800 leading-relaxed mb-8 max-w-2xl mx-auto">
-                {heroData.bio}
-              </p>
-
-              <div className="flex items-center justify-center gap-2 text-amber-600 mb-8">
-                <MapPin className="w-5 h-5" />
-                <span>{heroData.location}</span>
-              </div>
-
-              <div className="flex justify-center gap-4 mb-8">
-                {(heroData.socialLinks || []).map((link: { platform: string; url: string }, index: number) => (
-                  <motion.a
-                    key={index}
-                    href={link.url}
-                    onClick={(e) => isPreview && e.preventDefault()}
-                    target={!isPreview ? "_blank" : undefined}
-                    rel={!isPreview ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300"
-                  >
-                    {link.platform === 'github' && <Github className="w-5 h-5 text-amber-700" />}
-                    {link.platform === 'linkedin' && <Linkedin className="w-5 h-5 text-blue-600" />}
-                    {link.platform === 'email' && <Mail className="w-5 h-5 text-red-500" />}
-                  </motion.a>
-                ))}
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-red-500 text-white font-medium rounded-full hover:bg-red-600 transition-colors shadow-lg"
-              >
-                Let&apos;s Work Together
-              </motion.button>
+              {(heroData.socialLinks || []).map((link: { platform: string; url: string }, i: number) => (
+                <a
+                  key={i}
+                  href={link.url}
+                  onClick={(e) => isPreview && e.preventDefault()}
+                  target={!isPreview ? '_blank' : undefined}
+                  rel={!isPreview ? 'noopener noreferrer' : undefined}
+                  className="p-2.5 rounded-lg bg-[#F5EFE7] border border-[#E8DCC8] text-[#8B6F47] hover:text-[#6B5437] hover:border-[#D4C5AD] transition-all duration-200"
+                >
+                  {SOCIAL_ICONS[link.platform] || <Globe className="w-4 h-4" />}
+                </a>
+              ))}
             </motion.div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
 
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-4 h-4 bg-amber-300 rounded-full opacity-60"></div>
-        <div className="absolute top-40 right-20 w-6 h-6 bg-red-300 rounded-full opacity-40"></div>
-        <div className="absolute bottom-20 left-20 w-3 h-3 bg-orange-300 rounded-full opacity-50"></div>
-      </section>
+// ─── About ────────────────────────────────────────────────────────────────────
 
-      {/* About Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800">{aboutData.heading}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
+function AboutSection({ aboutData }: { aboutData: any }) {
+  return (
+    <section id="about" className="py-24 px-6 bg-white" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              About Me
+            </span>
           </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-12">
+            {aboutData.heading || 'My Story'}
+          </h2>
+        </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <p className="text-lg text-amber-800 leading-relaxed mb-8">
-                {aboutData.content}
-              </p>
-
-              <div className="space-y-4">
-                {(aboutData.highlights || []).map((highlight: string, index: number) => (
+        <div className="grid lg:grid-cols-2 gap-12">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={0.1}>
+            <p className="text-[#6B5437] text-lg leading-relaxed mb-6">
+              {aboutData.description || aboutData.content}
+            </p>
+            {(aboutData.highlights || []).length > 0 && (
+              <div className="space-y-3 mt-8">
+                {(aboutData.highlights || []).map((item: string, i: number) => (
                   <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    key={i}
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    custom={0.15 + i * 0.05}
                     className="flex items-start gap-3"
                   >
-                    <Star className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <p className="text-amber-700">{highlight}</p>
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#8B6F47] flex-shrink-0" />
+                    <span className="text-[#8B7C6A] text-base leading-relaxed">{item}</span>
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="relative"
-            >
-              <div className="aspect-square bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <Heart className="w-24 h-24 text-red-400 mx-auto mb-4" />
-                  <p className="text-amber-700 font-medium">Passionate about meaningful design</p>
-                </div>
-              </div>
-              {/* Decorative dots */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-red-400 rounded-full opacity-60"></div>
-              <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-amber-400 rounded-full opacity-60"></div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section className="py-20 px-6 bg-amber-50">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-light mb-4 text-amber-800">{skillsData.heading}</h2>
-            <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
+            )}
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Creative Skills */}
-            <div>
-              <h3 className="text-2xl font-light mb-8 text-amber-800">Creative Skills</h3>
-              <div className="space-y-6">
-                {(skillsData.skillCategories?.technical || []).map((skill: { name: string; level: number }, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl p-6 shadow-sm"
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-amber-800">{skill.name}</span>
-                      <span className="text-sm text-amber-600">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-amber-100 rounded-full h-3">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.1 }}
-                        className="bg-gradient-to-r from-red-400 to-amber-400 h-3 rounded-full"
-                      ></motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tools */}
-            <div>
-              <h3 className="text-2xl font-light mb-8 text-amber-800">Favorite Tools</h3>
-              <div className="space-y-6">
-                {(skillsData.skillCategories?.tools || []).map((skill: { name: string; level: number }, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-2xl p-6 shadow-sm"
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-amber-800">{skill.name}</span>
-                      <span className="text-sm text-amber-600">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-amber-100 rounded-full h-3">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${skill.level}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: index * 0.1 }}
-                        className="bg-gradient-to-r from-amber-400 to-orange-400 h-3 rounded-full"
-                      ></motion.div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Experience Section */}
-      {experienceData.experiences && experienceData.experiences.length > 0 && (
-        <section className="py-20 px-6 bg-orange-50/50">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mb-16"
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800 text-center">{experienceData.heading || "Experience"}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
-
-            <div className="space-y-12">
-              {experienceData.experiences.map((exp: Experience, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-amber-100/50 relative overflow-hidden"
-                >
-                  <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-300 to-red-400"></div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-                    <div>
-                      <h3 className="text-2xl font-medium text-amber-900 mb-2">{exp.position}</h3>
-                      <div className="flex items-center gap-2 text-lg text-amber-700">
-                        <Building2 className="w-5 h-5 text-red-400" />
-                        <span>{exp.company}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 px-4 py-2 rounded-full w-fit">
-                      <Calendar className="w-4 h-4" />
-                      <span>{exp.startDate} — {exp.endDate || 'Present'}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-amber-800 leading-relaxed mb-6">{exp.description}</p>
-
-                  {exp.responsibilities && exp.responsibilities.length > 0 && (
-                    <div className="space-y-3 mb-8">
-                      {exp.responsibilities.map((resp, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <Star className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                          <p className="text-amber-700 leading-relaxed">{resp}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {exp.technologies && exp.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-6 border-t border-amber-100">
-                      {exp.technologies.map((tech, i) => (
-                        <span key={i} className="px-4 py-1.5 bg-amber-50 text-amber-700 text-sm font-medium rounded-full border border-amber-200/50">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Education Section */}
-      {educationData.education && educationData.education.length > 0 && (
-        <section className="py-20 px-6 bg-amber-50">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-light mb-4 text-amber-800">{educationData.heading || "Education"}</h2>
-              <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {educationData.education.map((edu: Education, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white rounded-3xl p-8 shadow-sm border border-amber-100/50 flex flex-col h-full"
-                >
-                  <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 text-amber-600 rotate-3">
-                    <GraduationCap className="w-7 h-7 -rotate-3" />
-                  </div>
-
-                  <h3 className="text-2xl font-medium text-amber-900 mb-2">
-                    {edu.degree} {edu.field ? <span className="font-light text-amber-700 block mt-1">in {edu.field}</span> : ''}
-                  </h3>
-
-                  <div className="text-lg text-amber-600 mb-6">{edu.institution}</div>
-
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-amber-700 font-medium mb-6 pb-6 border-b border-amber-100">
-                    <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
-                      <Calendar className="w-4 h-4 text-amber-500" />
-                      <span>{edu.startDate} — {edu.endDate || 'Present'}</span>
-                    </div>
-                    {edu.gpa && <span className="bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full">GPA: {edu.gpa}</span>}
-                  </div>
-
-                  {edu.coursework && edu.coursework.length > 0 && (
-                    <div className="mt-auto pt-2">
-                      <span className="text-amber-800 font-medium text-sm block mb-3">Relevant Coursework</span>
-                      <div className="flex flex-wrap gap-2">
-                        {edu.coursework.map((course, idx) => (
-                          <span key={idx} className="bg-amber-50/80 text-amber-700 px-3 py-1.5 rounded-lg text-sm">
-                            {course}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Projects Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            custom={0.2}
+            className="space-y-4"
           >
-            <h2 className="text-4xl font-light mb-4 text-amber-800">{projectsData.heading}</h2>
-            <div className="w-16 h-1 bg-red-500 mx-auto rounded-full"></div>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {(projectsData.projects || []).map((project, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-amber-50 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+            {[
+              { label: 'Location', value: aboutData.location || 'Remote / Worldwide', icon: <MapPin className="w-4 h-4" /> },
+              { label: 'Experience', value: aboutData.experience || '5+ years', icon: <Calendar className="w-4 h-4" /> },
+              { label: 'Focus', value: aboutData.focus || 'Design & Development', icon: <Heart className="w-4 h-4" /> },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="p-5 rounded-xl bg-[#FAF9F6] border border-[#E8DCC8] hover:border-[#D4C5AD] transition-colors duration-300"
               >
-                <div className="aspect-video bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center group-hover:from-amber-300 group-hover:to-orange-300 transition-all duration-300">
-                  <div className="text-center">
-                    <Heart className="w-12 h-12 text-white mx-auto mb-2" />
-                    <p className="text-white font-medium">{project.category}</p>
+                <div className="flex items-center gap-2 text-[#8B6F47] mb-2">
+                  {item.icon}
+                  <div className="text-xs font-semibold tracking-widest uppercase">{item.label}</div>
+                </div>
+                <div className="text-[#6B5437] text-sm font-medium">{item.value}</div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Experience ───────────────────────────────────────────────────────────────
+
+function ExperienceSection({ experienceData }: { experienceData: ExperienceData }) {
+  const experiences = experienceData?.experiences || [];
+
+  if (!experiences.length) {
+    return (
+      <section id="experience" className="py-24 px-6 bg-[#FAF9F6]" style={{ scrollMarginTop: '64px' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Experience
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-12">
+            {experienceData.heading || 'Work History'}
+          </h2>
+          <p className="text-[#8B7C6A] text-center">No experience added yet</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="experience" className="py-24 px-6 bg-[#FAF9F6]" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Experience
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-16">
+            {experienceData.heading || 'Work History'}
+          </h2>
+        </motion.div>
+
+        <div className="space-y-8">
+          {experiences.map((exp: Experience, i: number) => (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              custom={i * 0.1}
+              className="relative p-6 rounded-xl bg-white border border-[#E8DCC8] hover:border-[#D4C5AD] transition-all duration-300 hover:shadow-lg"
+            >
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-lg bg-[#F5EFE7] border border-[#E8DCC8]">
+                    <Building2 className="w-5 h-5 text-[#8B6F47]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-[#6B5437]">{exp.position}</h3>
+                    <p className="text-[#8B6F47] font-medium">{exp.company}</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-2 text-sm text-[#A89B88]">
+                  <Calendar className="w-4 h-4" />
+                  <span>{(exp as any).period || `${exp.startDate} - ${exp.endDate || 'Present'}`}</span>
+                </div>
+              </div>
+              <p className="text-[#6B5437] leading-relaxed mb-4">{exp.description}</p>
+              {exp.achievements && exp.achievements.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {exp.achievements.map((achievement: string, j: number) => (
+                    <div key={j} className="flex items-start gap-2">
+                      <span className="mt-1.5 w-1 h-1 rounded-full bg-[#8B6F47] flex-shrink-0" />
+                      <span className="text-sm text-[#8B7C6A]">{achievement}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {exp.technologies && exp.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {exp.technologies.map((tech: string, j: number) => (
+                    <span
+                      key={j}
+                      className="px-3 py-1 text-xs font-medium bg-[#F5EFE7] text-[#8B6F47] rounded-full border border-[#E8DCC8]"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-                <div className="p-6">
-                  <h3 className="text-xl font-medium mb-3 text-amber-800">{project.title}</h3>
-                  <p className="text-amber-700 text-sm leading-relaxed mb-4">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {(project.technologies || []).map((tech: string, techIndex: number) => (
+// ─── Projects ─────────────────────────────────────────────────────────────────
+
+function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData: ProjectsData; isPreview: boolean; sectionId?: string }) {
+  const editorContext = React.useContext(EditorContext);
+  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
+  const projects = projectsData?.projects || [];
+
+  const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
+    if (!editorContext || !sectionId) return;
+
+    const updatedProjects = projects.map((project: Project, index: number) => {
+      if (index !== projectIndex) return project;
+      return {
+        ...project,
+        images: imageUrl ? [imageUrl] : [],
+      };
+    });
+
+    editorContext.dispatch({
+      type: 'UPDATE_SECTION_DATA',
+      payload: {
+        sectionId,
+        data: { projects: updatedProjects },
+      },
+    });
+  };
+
+  if (!projects.length) {
+    return (
+      <section id="projects" className="py-24 px-6 bg-white" style={{ scrollMarginTop: '64px' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Projects
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-12">
+            {projectsData.heading || 'My Work'}
+          </h2>
+          <p className="text-[#8B7C6A] text-center">No projects added yet</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="projects" className="py-24 px-6 bg-white" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Projects
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-16">
+            {projectsData.heading || 'My Work'}
+          </h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project: Project, i: number) => (
+            <motion.div
+              key={project.id}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              custom={i * 0.1}
+              className="group relative rounded-xl bg-[#FAF9F6] border border-[#E8DCC8] hover:border-[#D4C5AD] overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+            >
+              {inlineEditMode ? (
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[#F5EFE7] to-[#E8DCC8]">
+                  <EditableImage
+                    value={project.images?.[0] || ''}
+                    onChange={(url) => handleProjectImageChange(i, url)}
+                    alt={project.title || `Project ${i + 1}`}
+                    containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                    className="w-full h-full object-cover !min-h-0"
+                    emptyStateContent={
+                      <span className="text-4xl font-bold text-[#C5B5A0] select-none uppercase">
+                        {(project.title || '').trim().charAt(0).toUpperCase() || '?'}
+                      </span>
+                    }
+                    emptyStateClassName="w-full h-full"
+                    aspectRatio="auto"
+                  />
+                </div>
+              ) : project.images && project.images.length > 0 ? (
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[#F5EFE7] to-[#E8DCC8]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={project.images[0]}
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 bg-gradient-to-br from-[#F5EFE7] to-[#E8DCC8] flex items-center justify-center">
+                  <span className="text-4xl font-bold text-[#C5B5A0]">
+                    {(project.title || '').trim().charAt(0).toUpperCase() || '?'}
+                  </span>
+                </div>
+              )}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-[#6B5437] mb-2 group-hover:text-[#8B6F47] transition-colors">
+                  {project.title}
+                </h3>
+                <p className="text-[#8B7C6A] text-sm leading-relaxed mb-4 line-clamp-3">
+                  {project.description}
+                </p>
+                {project.technologies && project.technologies.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.technologies.slice(0, 3).map((tech: string, j: number) => (
                       <span
-                        key={techIndex}
-                        className="px-3 py-1 bg-white rounded-full text-xs text-amber-700 border border-amber-200"
+                        key={j}
+                        className="px-2 py-1 text-xs font-medium bg-white text-[#8B6F47] rounded border border-[#E8DCC8]"
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
+                )}
+                {(project.links?.github || project.links?.live) && (
+                  <div className="flex gap-2">
+                    {project.links.github && (
+                      <a
+                        href={project.links.github}
+                        onClick={(e) => isPreview && e.preventDefault()}
+                        target={!isPreview ? '_blank' : undefined}
+                        rel={!isPreview ? 'noopener noreferrer' : undefined}
+                        className="p-2 rounded-lg bg-white border border-[#E8DCC8] text-[#8B6F47] hover:border-[#8B6F47] transition-colors"
+                      >
+                        <Github className="w-4 h-4" />
+                      </a>
+                    )}
+                    {project.links.live && (
+                      <a
+                        href={project.links.live}
+                        onClick={(e) => isPreview && e.preventDefault()}
+                        target={!isPreview ? '_blank' : undefined}
+                        rel={!isPreview ? 'noopener noreferrer' : undefined}
+                        className="p-2 rounded-lg bg-white border border-[#E8DCC8] text-[#8B6F47] hover:border-[#8B6F47] transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
+
+function SkillsSection({ skillsData }: { skillsData: any }) {
+  const categories = skillsData?.skillCategories || {};
+  const hasSkills = Object.values(categories).some((cat: any) => cat && cat.length > 0);
+
+  if (!hasSkills) {
+    return (
+      <section id="skills" className="py-24 px-6 bg-[#FAF9F6]" style={{ scrollMarginTop: '64px' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Skills
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-12">
+            {skillsData.heading || 'Expertise'}
+          </h2>
+          <p className="text-[#8B7C6A] text-center">No skills added yet</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="skills" className="py-24 px-6 bg-[#FAF9F6]" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Skills
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-16">
+            {skillsData.heading || 'Expertise'}
+          </h2>
+        </motion.div>
+
+        <div className="space-y-12">
+          {Object.entries(categories).map(([category, skills]: [string, any], i: number) => {
+            if (!skills || skills.length === 0) return null;
+            return (
+              <motion.div
+                key={category}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                custom={i * 0.1}
+              >
+                <h3 className="text-sm font-semibold text-[#8B6F47] tracking-widest uppercase mb-6 capitalize">
+                  {category}
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {skills.map((skill: any, j: number) => (
+                    <motion.div
+                      key={j}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.05 + j * 0.03, ease: [0.25, 0.1, 0.25, 1] }}
+                      className="px-5 py-3 bg-white border border-[#E8DCC8] rounded-full hover:border-[#8B6F47] hover:shadow-md transition-all duration-300 cursor-default"
+                    >
+                      <span className="text-sm font-medium text-[#6B5437]">
+                        {skill.name}
+                      </span>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            ))}
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Education ────────────────────────────────────────────────────────────────
+
+function EducationSection({ educationData }: { educationData: EducationData }) {
+  const education = educationData?.education || [];
+
+  if (!education.length) {
+    return (
+      <section id="education" className="py-24 px-6 bg-white" style={{ scrollMarginTop: '64px' }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Education
+            </span>
           </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-12">
+            {educationData.heading || 'Education'}
+          </h2>
+          <p className="text-[#8B7C6A] text-center">No education added yet</p>
         </div>
       </section>
+    );
+  }
 
-      {/* Contact Section */}
-      <section className="py-20 px-6 bg-red-500 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-4xl font-light mb-8">{contactData.heading}</h2>
-            <div className="w-16 h-1 bg-white mx-auto rounded-full mb-12"></div>
+  return (
+    <section id="education" className="py-24 px-6 bg-white" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-6xl mx-auto">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Education
+            </span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-16">
+            {educationData.heading || 'Education'}
+          </h2>
+        </motion.div>
 
-            <p className="text-xl mb-12 max-w-2xl mx-auto opacity-90">
-              Have a project in mind? I&apos;d love to hear about it! Let&apos;s create something beautiful together.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <Mail className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Email</p>
-                <p className="font-medium">{contactData.email}</p>
-              </div>
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <MapPin className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Location</p>
-                <p className="font-medium">{contactData.location}</p>
-              </div>
-              <div className="bg-white bg-opacity-10 rounded-2xl p-6">
-                <Coffee className="w-8 h-8 mx-auto mb-4" />
-                <p className="opacity-80 mb-2">Status</p>
-                <p className="font-medium">Available</p>
-              </div>
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-white text-red-500 font-medium rounded-full hover:bg-amber-50 transition-all duration-300 inline-flex items-center gap-2"
+        <div className="grid md:grid-cols-2 gap-6">
+          {education.map((edu: Education, i: number) => (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              custom={i * 0.1}
+              className="p-6 rounded-xl bg-[#FAF9F6] border border-[#E8DCC8] hover:border-[#D4C5AD] transition-all duration-300"
             >
-              <Send className="w-5 h-5" />
-              Start a Project
-            </motion.button>
-          </motion.div>
+              <div className="flex items-start gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-white border border-[#E8DCC8]">
+                  <GraduationCap className="w-5 h-5 text-[#8B6F47]" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-[#6B5437] mb-1">{edu.degree}</h3>
+                  <p className="text-[#8B6F47] font-medium text-sm">{edu.institution}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-[#A89B88]">
+                <Calendar className="w-4 h-4" />
+                <span>{(edu as any).year || `${edu.startDate} - ${edu.endDate || 'Present'}`}</span>
+              </div>
+              {(edu as any).description && (
+                <p className="text-[#8B7C6A] text-sm leading-relaxed mt-3">{(edu as any).description}</p>
+              )}
+            </motion.div>
+          ))}
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
+
+function ContactSection({ contactData, isPreview }: { contactData: any; isPreview: boolean }) {
+  return (
+    <section id="contact" className="py-24 px-6 bg-[#FAF9F6]" style={{ scrollMarginTop: '64px' }}>
+      <div className="max-w-4xl mx-auto text-center">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+            <span className="text-[#A89B88] text-xs font-semibold tracking-widest uppercase">
+              Get in Touch
+            </span>
+            <span className="w-12 h-px bg-[#E8DCC8]" />
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#6B5437] mb-6">
+            {contactData.heading || "Let's Work Together"}
+          </h2>
+          <p className="text-[#8B7C6A] text-lg leading-relaxed max-w-2xl mx-auto mb-12">
+            {contactData.description || "Have a project in mind or just want to chat? I'd love to hear from you."}
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          custom={0.2}
+          className="flex flex-wrap justify-center gap-4"
+        >
+          {contactData.email && (
+            <a
+              href={`mailto:${contactData.email}`}
+              onClick={(e) => isPreview && e.preventDefault()}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#8B6F47] hover:bg-[#6B5437] text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <Mail className="w-4 h-4" />
+              Send Email
+            </a>
+          )}
+          {contactData.phone && (
+            <a
+              href={`tel:${contactData.phone}`}
+              onClick={(e) => isPreview && e.preventDefault()}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-[#D4C5AD] hover:border-[#8B6F47] text-[#8B6F47] font-medium rounded-lg transition-all duration-200 hover:-translate-y-0.5"
+            >
+              Call Me
+            </a>
+          )}
+        </motion.div>
+
+        {contactData.socialLinks && contactData.socialLinks.length > 0 && (
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            custom={0.3}
+            className="flex justify-center gap-3 mt-8"
+          >
+            {contactData.socialLinks.map((link: { platform: string; url: string }, i: number) => (
+              <a
+                key={i}
+                href={link.url}
+                onClick={(e) => isPreview && e.preventDefault()}
+                target={!isPreview ? '_blank' : undefined}
+                rel={!isPreview ? 'noopener noreferrer' : undefined}
+                className="p-3 rounded-lg bg-white border border-[#E8DCC8] text-[#8B6F47] hover:text-[#6B5437] hover:border-[#D4C5AD] transition-all duration-200"
+              >
+                {SOCIAL_ICONS[link.platform] || <Globe className="w-5 h-5" />}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+const rootClass = "min-h-screen bg-[#FAF9F6] text-[#6B5437]";
+const rootStyle = { fontFamily: 'system-ui, -apple-system, sans-serif' };
+
+function WarmMinimalistTemplateComponent({
+  data,
+  isPreview = false,
+  sections,
+  renderSection,
+}: WarmMinimalistTemplateProps) {
+
+  // ── Default data ─────────────────────────────────────────────────────────
+  const heroData = data?.hero || {
+    fullName: 'Sarah Martinez',
+    title: 'Creative Designer & Developer',
+    bio: 'Crafting beautiful, functional digital experiences with a focus on simplicity and elegance. Passionate about clean design and thoughtful user experiences.',
+    profileImage: '',
+    location: 'Remote',
+    socialLinks: [
+      { platform: 'github', url: 'https://github.com/sarahmartinez' },
+      { platform: 'linkedin', url: 'https://linkedin.com/in/sarahmartinez' },
+      { platform: 'email', url: 'mailto:sarah@example.com' },
+    ],
+  };
+
+  const aboutData = data?.about || {
+    heading: 'About Me',
+    description: "I'm a creative professional who believes in the power of simple, elegant design. With a background in both design and development, I create digital experiences that are both beautiful and functional.",
+    content: "I'm a creative professional who believes in the power of simple, elegant design. With a background in both design and development, I create digital experiences that are both beautiful and functional.",
+    highlights: [
+      '5+ years in design & development',
+      'Specializing in minimal, clean aesthetics',
+      'Focus on user-centered design',
+      'Passionate about thoughtful details',
+    ],
+    location: 'Remote / Worldwide',
+    experience: '5+ years',
+    focus: 'Design & Development',
+  };
+
+  const skillsData = data?.skills || {
+    heading: 'Skills',
+    skillCategories: {
+      technical: [
+        { name: 'UI/UX Design', level: 95 },
+        { name: 'React / Next.js', level: 90 },
+        { name: 'TypeScript', level: 88 },
+        { name: 'Figma', level: 92 },
+      ],
+      tools: [
+        { name: 'Adobe Creative Suite', level: 90 },
+        { name: 'Tailwind CSS', level: 95 },
+        { name: 'Framer Motion', level: 85 },
+      ],
+    },
+    skills: [],
+  };
+
+  const projectsData: ProjectsData = data?.projects || {
+    heading: 'Featured Work',
+    categories: [],
+    projects: [
+      {
+        id: '1',
+        title: 'Brand Identity Design',
+        description: 'Complete brand identity and visual system for a sustainable fashion startup, including logo, color palette, and design guidelines.',
+        technologies: ['Figma', 'Illustrator', 'Brand Design'],
+        images: [],
+        links: {},
+        featured: true,
+        category: 'Design',
+        status: 'completed',
+      },
+      {
+        id: '2',
+        title: 'E-commerce Website',
+        description: 'Modern, minimal e-commerce platform with seamless checkout experience and beautiful product presentations.',
+        technologies: ['Next.js', 'TypeScript', 'Stripe'],
+        images: [],
+        links: {},
+        featured: true,
+        category: 'Development',
+        status: 'completed',
+      },
+    ],
+  };
+
+  const experienceData: ExperienceData = data?.experience || {
+    heading: 'Experience',
+    experiences: [],
+  };
+
+  const educationData: EducationData = data?.education || {
+    heading: 'Education',
+    education: [],
+  };
+
+  const contactData = data?.contact || {
+    heading: "Let's Connect",
+    description: "Interested in working together? I'd love to hear about your project.",
+    email: 'hello@example.com',
+    phone: '',
+    socialLinks: [],
+  };
+
+  const navbarData: NavbarData = data?.navbar || {
+    name: heroData.fullName,
+    links: [
+      { label: 'About', href: '#about' },
+      { label: 'Projects', href: '#projects' },
+      { label: 'Experience', href: '#experience' },
+      { label: 'Skills', href: '#skills' },
+    ],
+    cta: { label: 'Contact', href: '#contact' },
+  };
+
+  // ── Section rendering (editor mode) ──────────────────────────────────────
+
+  if (sections) {
+    const heroSection = sections.find(s => s.type === 'hero');
+    const liveHeroContent = (heroSection as any)?.content || {};
+    const liveHeroData = Object.keys(liveHeroContent).length > 0 ? liveHeroContent : (heroSection?.data || heroData);
+    const liveHeroName = (liveHeroData as any)?.fullName || heroData.fullName;
+
+    const navbarSection = sections.find(s => s.type === 'navbar');
+    const hasNavbar = !!navbarSection;
+
+    return (
+      <div className={rootClass} style={rootStyle}>
+        {hasNavbar && !isPreview && (
+          <Navbar
+            sections={sections}
+            navData={navbarSection.data as any}
+            isPreview={false}
+            isInsideCanvas={false}
+            heroName={liveHeroName}
+            variant="warm"
+          />
+        )}
+
+        {sections.map((section, index) => {
+          let content: React.ReactNode = null;
+
+          switch (section.type) {
+            case 'navbar': {
+              if (!isPreview) {
+                content = <React.Fragment key={section.id} />;
+                break;
+              }
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
+              content = (
+                <Navbar
+                  key={section.id}
+                  sections={sections}
+                  navData={d}
+                  isPreview={isPreview}
+                  isInsideCanvas={true}
+                  heroName={liveHeroName}
+                  variant="warm"
+                />
+              );
+              break;
+            }
+            case 'hero': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
+              content = (
+                <HeroSection
+                  key={`hero-${section.id}-${d.profileImage || 'no-img'}`}
+                  heroData={d}
+                  isPreview={isPreview}
+                  sectionId={section.id}
+                />
+              );
+              break;
+            }
+            case 'about': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
+              content = (
+                <React.Fragment key={section.id}>
+                  <AboutSection aboutData={d} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'experience': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ExperienceData;
+              content = (
+                <React.Fragment key={section.id}>
+                  <ExperienceSection experienceData={d} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'projects': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as ProjectsData;
+              content = (
+                <React.Fragment key={section.id}>
+                  <ProjectsSection projectsData={d} isPreview={isPreview} sectionId={section.id} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'skills': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
+              content = (
+                <React.Fragment key={section.id}>
+                  <SkillsSection skillsData={d} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'education': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as EducationData;
+              content = (
+                <React.Fragment key={section.id}>
+                  <EducationSection educationData={d} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'contact': {
+              const data = (section as any)?.content || {};
+              const d = (Object.keys(data).length > 0 ? data : section.data) as any;
+              content = (
+                <React.Fragment key={section.id}>
+                  <ContactSection contactData={d} isPreview={isPreview} />
+                </React.Fragment>
+              );
+              break;
+            }
+            case 'footer': {
+              content = (
+                <Footer
+                  key={section.id}
+                  sections={sections}
+                  heroName={liveHeroName}
+                  variant="warm"
+                />
+              );
+              break;
+            }
+            default:
+              content = null;
+          }
+
+          return renderSection ? renderSection(section, index, content) : content;
+        })}
+      </div>
+    );
+  }
+
+  // ── STANDALONE MODE (public portfolio page) ────────────────────────────────
+  return (
+    <div className={rootClass} style={rootStyle}>
+      <Navbar
+        sections={sections}
+        navData={navbarData}
+        isPreview={isPreview}
+        heroName={heroData.fullName}
+        variant="warm"
+      />
+      <HeroSection heroData={heroData} isPreview={isPreview} />
+      <AboutSection aboutData={aboutData} />
+      <ExperienceSection experienceData={experienceData} />
+      <ProjectsSection projectsData={projectsData} isPreview={isPreview} />
+      <SkillsSection skillsData={skillsData} />
+      <EducationSection educationData={educationData} />
+      <ContactSection contactData={contactData} isPreview={isPreview} />
+      <Footer sections={sections} heroName={heroData.fullName} variant="warm" />
     </div>
   );
 }
+
+export const WarmMinimalistTemplate = React.memo(WarmMinimalistTemplateComponent);
+WarmMinimalistTemplate.displayName = 'WarmMinimalistTemplate';

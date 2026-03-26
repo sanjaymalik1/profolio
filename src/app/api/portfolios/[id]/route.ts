@@ -32,14 +32,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }, { status: 404 });
     }
 
-    const portfolio = await prisma.portfolio.findFirst({
-      where: {
-        id: id,
-        userId: user.id // Use database user.id (ObjectId)
-      },
+    const portfolio = await prisma.portfolio.findUnique({
+      where: { id: id },
     });
 
-    if (!portfolio) {
+    if (!portfolio || portfolio.userId !== user.id) {
       return NextResponse.json({
         success: false,
         error: 'Portfolio not found'
@@ -98,14 +95,18 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if portfolio exists and belongs to user
-    const existingPortfolio = await prisma.portfolio.findFirst({
-      where: {
-        id: id,
-        userId: user.id // Use database user.id (ObjectId)
-      },
+    const existingPortfolio = await prisma.portfolio.findUnique({
+      where: { id: id },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        slug: true,
+        isPublic: true,
+      }
     });
 
-    if (!existingPortfolio) {
+    if (!existingPortfolio || existingPortfolio.userId !== user.id) {
       return NextResponse.json({
         success: false,
         error: 'Portfolio not found'
@@ -191,14 +192,15 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if portfolio exists and belongs to user
-    const existingPortfolio = await prisma.portfolio.findFirst({
-      where: {
-        id: id,
-        userId: user.id // Use database user.id (ObjectId)
-      },
+    const existingPortfolio = await prisma.portfolio.findUnique({
+      where: { id: id },
+      select: {
+        id: true,
+        userId: true,
+      }
     });
 
-    if (!existingPortfolio) {
+    if (!existingPortfolio || existingPortfolio.userId !== user.id) {
       return NextResponse.json({
         success: false,
         error: 'Portfolio not found'

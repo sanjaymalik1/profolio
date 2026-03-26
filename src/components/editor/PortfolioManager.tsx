@@ -99,10 +99,11 @@ export const PortfolioManager: React.FC = () => {
   };
 
   // Fetch portfolio details for publishing
-  const fetchPortfolioDetails = useCallback(async () => {
-    if (portfolioId) {
+  const fetchPortfolioDetails = useCallback(async (overrideId?: string) => {
+    const idToFetch = overrideId || portfolioId;
+    if (idToFetch) {
       try {
-        const response = await fetch(`/api/portfolios/${portfolioId}`);
+        const response = await fetch(`/api/portfolios/${idToFetch}`);
         if (response.ok) {
           const data = await response.json();
           setPortfolioDetails(data.data);
@@ -124,7 +125,7 @@ export const PortfolioManager: React.FC = () => {
     if (portfolioId) {
       try {
         await saveToDatabase(state.portfolioTitle);
-        fetchPortfolioDetails();
+        fetchPortfolioDetails(portfolioId);
       } catch {
         // Error displayed by saveError state
       }
@@ -150,12 +151,14 @@ export const PortfolioManager: React.FC = () => {
   const handleSaveWithTitle = async () => {
     try {
       const title = saveTitle.trim() || 'Untitled Portfolio';
-      await saveToDatabase(title);
+      const newId = await saveToDatabase(title);
       setSaveTitle('');
       setShowSaveDialog(false);
 
-      // Reload portfolio details
-      fetchPortfolioDetails();
+      // Reload portfolio details explicitly via newly returned ID since hook state won't be fresh here yet
+      if (typeof newId === 'string') {
+        fetchPortfolioDetails(newId);
+      }
     } catch {
       // Error already displayed by saveError state
     }
