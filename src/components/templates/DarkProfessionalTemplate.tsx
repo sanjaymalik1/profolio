@@ -310,6 +310,7 @@ function StickyNavbar(props: NavbarProps) {
 
 function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPreview: boolean; sectionId?: string }) {
   const editorContext = React.useContext(EditorContext);
+  const heroInitial = (heroData.fullName || '').trim().charAt(0).toUpperCase() || '?';
 
   // Determine if we're in inline edit mode (editor context + preview mode)
   const inlineEditMode = isPreview && !!editorContext && !!sectionId;
@@ -520,6 +521,8 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                     alt={heroData.fullName || 'Profile'}
                     containerClassName="absolute inset-0 w-full h-full !min-h-0"
                     className="object-cover !min-h-0"
+                    emptyStateContent={<span className="text-6xl sm:text-7xl md:text-8xl lg:text-7xl xl:text-8xl font-bold text-slate-600 select-none uppercase">{heroInitial}</span>}
+                    emptyStateClassName="w-full h-full"
                     aspectRatio="square"
                   />
                 ) : heroData.profileImage ? (
@@ -535,7 +538,7 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                   /* FALLBACK: Show initial when no image exists */
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
                     <span className="text-6xl sm:text-7xl md:text-8xl lg:text-7xl xl:text-8xl font-bold text-slate-600 select-none uppercase">
-                      {(heroData.fullName || '?')[0]}
+                      {heroInitial}
                     </span>
                   </div>
                 )}
@@ -741,8 +744,30 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
 
-function ProjectsSection({ projectsData, isPreview }: { projectsData: ProjectsData; isPreview: boolean }) {
+function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData: ProjectsData; isPreview: boolean; sectionId?: string }) {
+  const editorContext = React.useContext(EditorContext);
+  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
   const projects = projectsData?.projects || [];
+
+  const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
+    if (!editorContext || !sectionId) return;
+
+    const updatedProjects = projects.map((project: Project, index: number) => {
+      if (index !== projectIndex) return project;
+      return {
+        ...project,
+        images: imageUrl ? [imageUrl] : [],
+      };
+    });
+
+    editorContext.dispatch({
+      type: 'UPDATE_SECTION_DATA',
+      payload: {
+        sectionId,
+        data: { projects: updatedProjects },
+      },
+    });
+  };
 
   return (
     <section id="projects" className="py-24 px-6 bg-slate-900/60" style={{ scrollMarginTop: '64px' }}>
@@ -768,6 +793,40 @@ function ProjectsSection({ projectsData, isPreview }: { projectsData: ProjectsDa
               >
                 {/* Top accent on hover */}
                 <div className="h-0.5 w-full bg-gradient-to-r from-indigo-600/0 via-indigo-500/60 to-indigo-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                {inlineEditMode ? (
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-b border-slate-800/80">
+                    <EditableImage
+                      value={project.images?.[0] || ''}
+                      onChange={(url) => handleProjectImageChange(i, url)}
+                      alt={project.title || `Project ${i + 1}`}
+                      containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                      className="w-full h-full object-cover !min-h-0"
+                      emptyStateContent={
+                        <span className="text-4xl font-bold text-slate-600 select-none uppercase">
+                          {(project.title || '').trim().charAt(0).toUpperCase() || '?'}
+                        </span>
+                      }
+                      emptyStateClassName="w-full h-full"
+                      aspectRatio="auto"
+                    />
+                  </div>
+                ) : project.images?.[0] ? (
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-b border-slate-800/80">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={project.images[0]}
+                      alt={project.title || 'Project'}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-40 bg-gradient-to-br from-slate-800 to-slate-900 border-b border-slate-800/80 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-slate-600 select-none uppercase">
+                      {(project.title || '').trim().charAt(0).toUpperCase() || '?'}
+                    </span>
+                  </div>
+                )}
 
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-4">
@@ -1046,7 +1105,7 @@ function FooterContent({ footerData, heroName }: { footerData: any; heroName?: s
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <span className="font-bold text-slate-400 text-sm">{name}</span>
         <p className="text-slate-600 text-xs text-center">
-          {footerData?.copyrightText || `© ${year} ${name}. All rights reserved.`}
+          {footerData?.copyrightText || `© ${year}. All rights reserved.`}
         </p>
         {footerData?.links?.length > 0 && (
           <div className="flex items-center gap-4">
@@ -1282,7 +1341,7 @@ export function DarkProfessionalTemplate({
               const d = section.data as ProjectsData;
               content = (
                 <React.Fragment key={section.id}>
-                  <ProjectsSection projectsData={d} isPreview={isPreview} />
+                  <ProjectsSection projectsData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;

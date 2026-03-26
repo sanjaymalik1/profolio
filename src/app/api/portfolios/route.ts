@@ -5,8 +5,16 @@ import { getUser } from '@/lib/user-helpers';
 
 // GET /api/portfolios - Get user's portfolios
 export async function GET() {
+  const apiStart = Date.now();
+  const shouldLogPerf = process.env.NODE_ENV !== 'production';
+
   try {
+    const authStart = Date.now();
     const { userId } = await auth();
+
+    if (shouldLogPerf) {
+      console.info(`[Portfolios API GET] auth() completed in ${Date.now() - authStart}ms`);
+    }
 
     if (!userId) {
       return NextResponse.json({
@@ -16,7 +24,12 @@ export async function GET() {
     }
 
     // Ensure user exists in database
+    const userLookupStart = Date.now();
     const user = await getUser(userId);
+
+    if (shouldLogPerf) {
+      console.info(`[Portfolios API GET] getUser() completed in ${Date.now() - userLookupStart}ms`);
+    }
 
     if (!user) {
       return NextResponse.json({
@@ -25,8 +38,8 @@ export async function GET() {
       }, { status: 404 });
     }
 
-    // Fetch portfolios, computing sectionCount server-side so we never
-    // send the full content payload to the dashboard (it's not needed there).
+    // Fetch portfolios for dashboard cards. Keep query simple and index-friendly.
+    const queryStart = Date.now();
     const portfolios = await prisma.portfolio.findMany({
       where: { userId: user.id },
       orderBy: { updatedAt: 'desc' },
@@ -37,7 +50,7 @@ export async function GET() {
         customSlug: true,
         template: true,
         isPublic: true,
-        content: true,       // fetch internally only to compute sectionCount
+        content: true,
         viewCount: true,
         lastPublishedAt: true,
         createdAt: true,
@@ -45,12 +58,37 @@ export async function GET() {
       },
     });
 
-    // Include content for dashboard previews, plus a lightweight sectionCount.
-    const portfolioList = portfolios.map(({ content, ...rest }) => ({
-      ...rest,
-      content: content ?? null,
-      sectionCount: (content as { sections?: unknown[] } | null)?.sections?.length ?? 0,
-    }));
+    const queryDuration = Date.now() - queryStart;
+
+    // Keep processing minimal: preserve DB payload and only add sectionCount.
+    const transformStart = Date.now();
+    const portfolioList = portfolios.map((portfolio) => {
+      const sectionCount = (portfolio.content as { sections?: unknown[] } | null)?.sections?.length ?? 0;
+      return {
+        ...portfolio,
+        sectionCount,
+      };
+    });
+
+    const transformDuration = Date.now() - transformStart;
+
+    if (shouldLogPerf) {
+      const contentBytes = portfolioList.reduce((total, portfolio) => {
+        if (!portfolio.content) return total;
+        try {
+          return total + Buffer.byteLength(JSON.stringify(portfolio.content), 'utf8');
+        } catch {
+          return total;
+        }
+      }, 0);
+
+      const responseBody = { success: true, data: portfolioList };
+      const responseBytes = Buffer.byteLength(JSON.stringify(responseBody), 'utf8');
+
+      console.info(
+        `[Portfolios API GET] count=${portfolioList.length} query=${queryDuration}ms transform=${transformDuration}ms contentBytes=${contentBytes} responseBytes=${responseBytes} total=${Date.now() - apiStart}ms`
+      );
+    }
 
     return NextResponse.json({
       success: true,

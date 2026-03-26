@@ -18,12 +18,19 @@ interface Portfolio {
 }
 
 let portfoliosInFlightRequest: Promise<Portfolio[]> | null = null;
+let portfoliosMemoryCache: Portfolio[] | null = null;
 
 export const usePortfolios = () => {
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [portfolios, setPortfolios] = useState<Portfolio[]>(() => portfoliosMemoryCache ?? []);
+  const [loading, setLoading] = useState(() => portfoliosMemoryCache === null);
 
-  const loadPortfolios = useCallback(async () => {
+  const loadPortfolios = useCallback(async (force = false) => {
+    if (!force && portfoliosMemoryCache) {
+      setPortfolios(portfoliosMemoryCache);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -59,9 +66,11 @@ export const usePortfolios = () => {
       }
 
       const loadedPortfolios = await portfoliosInFlightRequest;
+      portfoliosMemoryCache = loadedPortfolios;
       setPortfolios(loadedPortfolios);
     } catch (error) {
       console.error('[usePortfolios] Failed to fetch portfolios:', error);
+      portfoliosMemoryCache = [];
       setPortfolios([]);
     } finally {
       portfoliosInFlightRequest = null;
@@ -70,7 +79,12 @@ export const usePortfolios = () => {
   }, []);
 
   useEffect(() => {
-    loadPortfolios();
+    if (portfoliosMemoryCache) {
+      setPortfolios(portfoliosMemoryCache);
+      setLoading(false);
+      return;
+    }
+    loadPortfolios(false);
   }, [loadPortfolios]);
 
   const deletePortfolio = async (portfolioId: string) => {
@@ -82,7 +96,11 @@ export const usePortfolios = () => {
       const result = await response.json();
 
       if (result.success) {
-        setPortfolios(prev => prev.filter(p => p.id !== portfolioId));
+        setPortfolios(prev => {
+          const next = prev.filter(p => p.id !== portfolioId);
+          portfoliosMemoryCache = next;
+          return next;
+        });
         return true;
       } else {
         console.error('Error deleting portfolio:', result.error);
@@ -115,7 +133,11 @@ export const usePortfolios = () => {
       const result = await response.json();
 
       if (result.success) {
-        setPortfolios(prev => [result.data, ...prev]);
+        setPortfolios(prev => {
+          const next = [result.data, ...prev];
+          portfoliosMemoryCache = next;
+          return next;
+        });
         return true;
       } else {
         console.error('Error duplicating portfolio:', result.error);
@@ -145,7 +167,11 @@ export const usePortfolios = () => {
       const result = await response.json();
 
       if (result.success) {
-        setPortfolios(prev => [result.data, ...prev]);
+        setPortfolios(prev => {
+          const next = [result.data, ...prev];
+          portfoliosMemoryCache = next;
+          return next;
+        });
         return result.data;
       } else {
         console.error('Error creating portfolio:', result.error);
@@ -170,9 +196,11 @@ export const usePortfolios = () => {
       const result = await response.json();
 
       if (result.success) {
-        setPortfolios(prev =>
-          prev.map(p => p.id === portfolioId ? result.data : p)
-        );
+        setPortfolios(prev => {
+          const next = prev.map(p => p.id === portfolioId ? result.data : p);
+          portfoliosMemoryCache = next;
+          return next;
+        });
         return result.data;
       } else {
         console.error('Error updating portfolio:', result.error);
@@ -205,6 +233,6 @@ export const usePortfolios = () => {
     deletePortfolio,
     duplicatePortfolio,
     getPortfolioStats,
-    refetch: loadPortfolios
+    refetch: () => loadPortfolios(true)
   };
 };

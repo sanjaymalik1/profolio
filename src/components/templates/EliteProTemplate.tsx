@@ -278,6 +278,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
   const socialLinks = Array.isArray(data?.socialLinks) ? data?.socialLinks : [];
   const profileImage = (section as any)?.content?.profileImage || (section as any)?.data?.profileImage || '';
   const fullName = data?.fullName || (section as any)?.data?.fullName || 'Your Name';
+  const heroInitial = (fullName || '').trim().charAt(0).toUpperCase() || '?';
 
   const handleAvatarUpdate = (url: string) => {
     if (!editorContext || !section?.id) return;
@@ -333,6 +334,8 @@ function HeroSection({ section, isEditing }: HeroProps) {
                   alt={fullName}
                   containerClassName="absolute inset-0 w-full h-full !min-h-0"
                   className="object-cover !min-h-0 rounded-full"
+                  emptyStateContent={<span className="text-5xl font-bold text-slate-500 uppercase">{heroInitial}</span>}
+                  emptyStateClassName="w-full h-full"
                   aspectRatio="square"
                 />
               ) : profileImage ? (
@@ -345,7 +348,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
               ) : (
                 <div className="w-full h-full flex items-center justify-center rounded-full bg-gradient-to-br from-slate-800 to-slate-900">
                   <span className="text-5xl font-bold text-slate-500 uppercase">
-                    {(fullName || 'Y').charAt(0)}
+                    {heroInitial}
                   </span>
                 </div>
               )}
@@ -559,10 +562,38 @@ function AboutSection({ section }: any) {
 // PROJECTS SECTION (Modern Cards, Hover Effects)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function ProjectsSection({ section }: any) {
+function ProjectsSection({ section, isEditing }: any) {
+  const editorContext = React.useContext(EditorContext);
+  const inlineEditMode = !!isEditing && !!editorContext && !!section?.id;
   // Safe data access - prevent crashes
   const data = ((section as any)?.content || (section as any)?.data || {}) as any;
   const projects = Array.isArray(data?.projects) ? data?.projects : [];
+
+  const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
+    if (!editorContext || !section?.id) return;
+
+    const updatedProjects = projects.map((project: any, index: number) => {
+      if (index !== projectIndex) return project;
+      return {
+        ...project,
+        images: imageUrl ? [imageUrl] : [],
+      };
+    });
+
+    editorContext.dispatch({
+      type: 'UPDATE_SECTION_DATA',
+      payload: {
+        sectionId: section.id,
+        data: {
+          projects: updatedProjects,
+          content: {
+            ...(data || {}),
+            projects: updatedProjects,
+          },
+        },
+      },
+    });
+  };
 
   return (
     <section id="projects" className="relative py-32 px-6">
@@ -592,7 +623,24 @@ function ProjectsSection({ section }: any) {
             <FadeInView key={project?.id || idx} delay={idx * 0.1}>
               <div className="group relative rounded-2xl bg-white/5 border border-white/10 overflow-hidden backdrop-blur-sm hover:bg-white/[0.07] transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/10">
                 {/* Project Image */}
-                {Array.isArray(project?.images) && project?.images?.length > 0 && (
+                {inlineEditMode ? (
+                  <div className="relative h-56 overflow-hidden bg-slate-800/50">
+                    <EditableImage
+                      value={project?.images?.[0] || ''}
+                      onChange={(url) => handleProjectImageChange(idx, url)}
+                      alt={project?.title || `Project ${idx + 1}`}
+                      containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                      className="w-full h-full object-cover !min-h-0"
+                      emptyStateContent={
+                        <span className="text-5xl font-bold text-slate-500 select-none uppercase">
+                          {(project?.title || '').trim().charAt(0).toUpperCase() || '?'}
+                        </span>
+                      }
+                      emptyStateClassName="w-full h-full"
+                      aspectRatio="auto"
+                    />
+                  </div>
+                ) : Array.isArray(project?.images) && project?.images?.length > 0 ? (
                   <div className="relative h-56 overflow-hidden bg-slate-800/50">
                     <Image
                       src={project?.images?.[0] || ''}
@@ -602,6 +650,12 @@ function ProjectsSection({ section }: any) {
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-60" />
+                  </div>
+                ) : (
+                  <div className="h-56 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                    <span className="text-5xl font-bold text-slate-500 select-none uppercase">
+                      {(project?.title || '').trim().charAt(0).toUpperCase() || '?'}
+                    </span>
                   </div>
                 )}
 
@@ -772,7 +826,39 @@ function ExperienceSection({ section }: any) {
 function SkillsSection({ section }: any) {
   // Safe data access - prevent crashes
   const data = ((section as any)?.content || (section as any)?.data || {}) as any;
-  const skills = Array.isArray(data?.skills) ? data?.skills : [];
+
+  const normalizeSkillLabels = (skillsData: any): string[] => {
+    const skillCategories = skillsData?.skillCategories;
+    if (skillCategories && typeof skillCategories === 'object') {
+      const fromCategories = Object.values(skillCategories)
+        .flatMap((group) => (Array.isArray(group) ? group : []))
+        .map((item: unknown) => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object' && typeof (item as { name?: unknown }).name === 'string') {
+            return (item as { name: string }).name;
+          }
+          return '';
+        })
+        .filter((item): item is string => item.trim().length > 0);
+
+      if (fromCategories.length > 0) return fromCategories;
+    }
+
+    const rawSkills = skillsData?.skills;
+    if (!Array.isArray(rawSkills)) return [];
+
+    return rawSkills
+      .map((item: unknown) => {
+        if (typeof item === 'string') return item;
+        if (item && typeof item === 'object' && typeof (item as { name?: unknown }).name === 'string') {
+          return (item as { name: string }).name;
+        }
+        return '';
+      })
+      .filter((item): item is string => item.trim().length > 0);
+  };
+
+  const skills = normalizeSkillLabels(data);
 
   return (
     <section id="skills" className="relative py-32 px-6">
@@ -801,7 +887,7 @@ function SkillsSection({ section }: any) {
           <div className="flex flex-wrap gap-3">
             {skills.map((skill: string, idx: number) => (
               <motion.div
-                key={idx}
+                key={`${skill}-${idx}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

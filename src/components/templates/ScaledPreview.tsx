@@ -38,7 +38,7 @@ interface ScaledTemplatePreviewProps {
  *     <ScaledTemplatePreview templateId="dark-professional" />
  *   </div>
  */
-export function ScaledTemplatePreview({ templateId, data, sections }: ScaledTemplatePreviewProps) {
+function ScaledTemplatePreviewComponent({ templateId, data, sections }: ScaledTemplatePreviewProps) {
   const Component = templateId ? TEMPLATE_MAP[templateId] : undefined;
 
   // ── Case 1: Portfolio with user sections (always use PortfolioRenderer) ───────────────────
@@ -115,3 +115,5 @@ export function ScaledTemplatePreview({ templateId, data, sections }: ScaledTemp
     </div>
   );
 }
+
+export const ScaledTemplatePreview = React.memo(ScaledTemplatePreviewComponent);

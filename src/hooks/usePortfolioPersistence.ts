@@ -29,8 +29,17 @@ export const usePortfolioPersistence = () => {
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
   const pendingSaveRef = useRef(false);
+  const latestSaveOpRef = useRef(0);
+
+  const beginSaveOperation = () => {
+    latestSaveOpRef.current += 1;
+    return latestSaveOpRef.current;
+  };
+
+  const isLatestSaveOperation = (opId: number) => latestSaveOpRef.current === opId;
 
   const performAutoSave = useCallback(async () => {
+    const saveOpId = beginSaveOperation();
     isSavingRef.current = true;
     setSaveState('saving');
     setSaveError(null);
@@ -75,28 +84,36 @@ export const usePortfolioPersistence = () => {
           router.replace(`/editor-v2?id=${result.data.id}`, { scroll: false });
         }
 
-        setSaveState('saved');
-        setLastSaved(new Date());
-        setSaveError(null);
+        if (isLatestSaveOperation(saveOpId)) {
+          setSaveState('saved');
+          setLastSaved(new Date());
+          setSaveError(null);
+        }
 
         // Clear unsaved changes flag immediately after successful save
         setUnsavedChanges(false);
 
         // Reset to idle after showing success briefly
         setTimeout(() => {
-          setSaveState('idle');
+          if (isLatestSaveOperation(saveOpId)) {
+            setSaveState('idle');
+          }
         }, 2000);
       } else {
         throw new Error(result.error || 'Failed to save');
       }
     } catch (error) {
       console.error('[Auto-save] Error:', error);
-      setSaveState('error');
-      setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
+      if (isLatestSaveOperation(saveOpId)) {
+        setSaveState('error');
+        setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
+      }
 
       // Show error for 5 seconds then reset
       setTimeout(() => {
-        setSaveState('idle');
+        if (isLatestSaveOperation(saveOpId)) {
+          setSaveState('idle');
+        }
       }, 5000);
     } finally {
       isSavingRef.current = false;
@@ -139,6 +156,14 @@ export const usePortfolioPersistence = () => {
   }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, activePortfolioId, autoSaveEnabled, performAutoSave]);
 
   const saveToDatabase = useCallback(async (title?: string) => {
+    const saveOpId = beginSaveOperation();
+
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    pendingSaveRef.current = false;
+
     setSaveState('saving');
     setSaveError(null);
 
@@ -185,15 +210,19 @@ export const usePortfolioPersistence = () => {
           router.replace(`/editor-v2?id=${result.data.id}`, { scroll: false });
         }
 
-        setSaveState('saved');
-        setLastSaved(new Date());
-        setSaveError(null);
+        if (isLatestSaveOperation(saveOpId)) {
+          setSaveState('saved');
+          setLastSaved(new Date());
+          setSaveError(null);
+        }
 
         // Clear unsaved changes flag immediately after successful save
         setUnsavedChanges(false);
 
         setTimeout(() => {
-          setSaveState('idle');
+          if (isLatestSaveOperation(saveOpId)) {
+            setSaveState('idle');
+          }
         }, 2000);
 
         return result.data.id;
@@ -202,8 +231,10 @@ export const usePortfolioPersistence = () => {
       }
     } catch (error) {
       console.error('[Manual save] Error:', error);
-      setSaveState('error');
-      setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
+      if (isLatestSaveOperation(saveOpId)) {
+        setSaveState('error');
+        setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
+      }
       throw error;
     }
   }, [state, activePortfolioId, setUnsavedChanges, router]);

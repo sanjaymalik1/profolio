@@ -57,7 +57,7 @@ export const FooterPropertyForm: React.FC<FooterPropertyFormProps> = ({ section 
           id="copyrightText"
           value={footerData.copyrightText || ''}
           onChange={(e) => handleInputChange('copyrightText', e.target.value)}
-          placeholder="© 2024 Your Name. All rights reserved."
+          placeholder="© 2026 {hero.fullName} All rights reserved."
         />
       </div>
 

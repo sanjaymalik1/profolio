@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { enhancedPortfolioTemplates } from "@/lib/portfolio/enhanced-templates";
 import { getAllTemplates } from "@/components/templates";
@@ -15,12 +15,14 @@ import Link from "next/link";
 export default function TemplatesPage() {
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const router = useRouter();
-  const actualTemplates = getAllTemplates();
-  
+  const actualTemplates = useMemo(() => getAllTemplates(), []);
+
   // Only show templates that have actual components
-  const availableTemplates = enhancedPortfolioTemplates.filter(template => 
-    actualTemplates.some(actualTemplate => actualTemplate.id === template.id)
-  );
+  const availableTemplates = useMemo(() => (
+    enhancedPortfolioTemplates.filter(template =>
+      actualTemplates.some(actualTemplate => actualTemplate.id === template.id)
+    )
+  ), [actualTemplates]);
 
   const getDifficultyIcon = (difficulty: string) => {
     switch (difficulty) {

@@ -1,8 +1,9 @@
 "use client";
 
+import React, { useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,7 @@ import {
   ExternalLink,
   Pencil,
   LayoutTemplate,
+  RefreshCw,
 } from 'lucide-react';
 import { usePortfolios } from '@/hooks/usePortfolios';
 import { TemplatePreview } from '@/components/templates/TemplatePreview';
@@ -125,6 +127,8 @@ function PortfolioCard({ portfolio, onEdit, onPublish, onDelete }: PortfolioCard
   );
 }
 
+const MemoizedPortfolioCard = React.memo(PortfolioCard);
+
 // ─── Empty state ─────────────────────────────────────────────────────────────
 function EmptyState({ onCreate }: { onCreate: () => void }) {
   return (
@@ -152,11 +156,12 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
   );
 }
 
+const MemoizedEmptyState = React.memo(EmptyState);
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const { portfolios, loading: portfoliosLoading, deletePortfolio, refetch } = usePortfolios();
   const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const [publishDialogPortfolio, setPublishDialogPortfolio] = useState<{
@@ -164,13 +169,21 @@ export default function DashboardPage() {
   } | null>(null);
   const [isCreating, setIsCreating] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetch('/api/profile')
-        .catch((error) => console.error('Error fetching profile:', error))
-        .finally(() => setLoading(false));
+  const handleEdit = useCallback((id: string) => {
+    router.push(`/editor-v2?id=${id}`);
+  }, [router]);
+
+  const handlePublish = useCallback((portfolio: {
+    id: string; title: string; slug: string; customSlug?: string; isPublic: boolean; viewCount?: number;
+  }) => {
+    setPublishDialogPortfolio(portfolio);
+  }, []);
+
+  const handleDelete = useCallback((portfolio: { id: string; title: string }) => {
+    if (confirm(`Delete "${portfolio.title}"? This cannot be undone.`)) {
+      deletePortfolio(portfolio.id);
     }
-  }, [user]);
+  }, [deletePortfolio]);
 
   const createPortfolio = async (title: string, templateId?: string) => {
     setIsCreating(templateId ?? 'blank');
@@ -181,7 +194,7 @@ export default function DashboardPage() {
     router.push(editorUrl);
   };
 
-  if (!user || loading) {
+  if (!isLoaded || !user) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -249,14 +262,25 @@ export default function DashboardPage() {
             <h1 className="text-xl font-semibold text-slate-900">My Portfolios</h1>
             <p className="text-sm text-slate-500 mt-0.5">Manage and publish your portfolio sites</p>
           </div>
-          <Button
-            onClick={() => createPortfolio('Untitled Portfolio')}
-            disabled={isCreating !== null}
-            className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm text-sm"
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            {isCreating === 'blank' ? 'Creating…' : 'New Portfolio'}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => refetch()}
+              disabled={portfoliosLoading}
+              className="text-sm border-slate-200"
+            >
+              <RefreshCw className={`w-4 h-4 mr-1.5 ${portfoliosLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button
+              onClick={() => createPortfolio('Untitled Portfolio')}
+              disabled={isCreating !== null}
+              className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm text-sm"
+            >
+              <Plus className="w-4 h-4 mr-1.5" />
+              {isCreating === 'blank' ? 'Creating…' : 'New Portfolio'}
+            </Button>
+          </div>
         </div>
 
         {/* ── Portfolio grid ─────────────────────────────────────────── */}
@@ -266,21 +290,17 @@ export default function DashboardPage() {
           </div>
         ) : portfolios.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl">
-            <EmptyState onCreate={() => createPortfolio('Untitled Portfolio')} />
+            <MemoizedEmptyState onCreate={() => createPortfolio('Untitled Portfolio')} />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {portfolios.map((portfolio) => (
-              <PortfolioCard
+              <MemoizedPortfolioCard
                 key={portfolio.id}
                 portfolio={portfolio}
-                onEdit={() => router.push(`/editor-v2?id=${portfolio.id}`)}
-                onPublish={() => setPublishDialogPortfolio(portfolio)}
-                onDelete={() => {
-                  if (confirm(`Delete "${portfolio.title}"? This cannot be undone.`)) {
-                    deletePortfolio(portfolio.id);
-                  }
-                }}
+                onEdit={() => handleEdit(portfolio.id)}
+                onPublish={() => handlePublish(portfolio)}
+                onDelete={() => handleDelete(portfolio)}
               />
             ))}
           </div>

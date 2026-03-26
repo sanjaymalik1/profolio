@@ -24,7 +24,7 @@ interface PortfolioRendererProps {
   templateId?: string | null;
 }
 
-export function PortfolioRenderer({ sections, templateId }: PortfolioRendererProps) {
+function PortfolioRendererComponent({ sections, templateId }: PortfolioRendererProps) {
   // Check if ActiveTemplateComponent exists
   const ActiveTemplateComponent = templateId ? getTemplate(templateId)?.component : null;
 
@@ -166,3 +166,5 @@ export function PortfolioRenderer({ sections, templateId }: PortfolioRendererPro
     </div>
   );
 }
+
+export const PortfolioRenderer = React.memo(PortfolioRendererComponent);
