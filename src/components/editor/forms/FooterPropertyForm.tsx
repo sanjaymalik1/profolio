@@ -40,30 +40,37 @@ export const FooterPropertyForm: React.FC<FooterPropertyFormProps> = ({ section 
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          value={footerData.name || ''}
-          onChange={(e) => handleInputChange('name', e.target.value)}
-          placeholder="Brand/Company Name"
-        />
-      </div>
+    <div className="property-form">
+      <Card className="property-section">
+        <CardHeader className="property-section-header p-4 pb-2">
+          <CardTitle className="property-section-title text-sm">Branding</CardTitle>
+        </CardHeader>
+        <CardContent className="property-section-content p-4 pt-2 space-y-4">
+          <div className="property-field">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={footerData.name || ''}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Brand/Company Name"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="copyrightText">Copyright Text</Label>
-        <Input
-          id="copyrightText"
-          value={footerData.copyrightText || ''}
-          onChange={(e) => handleInputChange('copyrightText', e.target.value)}
-          placeholder="© 2026 {hero.fullName} All rights reserved."
-        />
-      </div>
+          <div className="property-field">
+            <Label htmlFor="copyrightText">Copyright Text</Label>
+            <Input
+              id="copyrightText"
+              value={footerData.copyrightText || ''}
+              onChange={(e) => handleInputChange('copyrightText', e.target.value)}
+              placeholder="© 2026 {hero.fullName} All rights reserved."
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      <Card>
-        <CardHeader className="p-4 pb-2">
-          <CardTitle className="text-sm flex items-center justify-between">
+      <Card className="property-section">
+        <CardHeader className="property-section-header p-4 pb-2">
+          <CardTitle className="property-section-title text-sm flex items-center justify-between">
             <span className="flex items-center gap-2">
               <Link className="w-4 h-4" />
               Footer Links
@@ -74,11 +81,11 @@ export const FooterPropertyForm: React.FC<FooterPropertyFormProps> = ({ section 
             </Button>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-2 space-y-4">
+        <CardContent className="property-section-content p-4 pt-2 space-y-4">
           {(footerData.links || []).map((link, index) => (
             <div key={index} className="flex gap-2 items-start bg-slate-50 p-3 rounded-md border border-slate-100 relative">
               <div className="flex-1 space-y-3">
-                <div className="space-y-1">
+                <div className="property-field">
                   <Label className="text-xs text-slate-500">Label</Label>
                   <Input
                     value={link.label}
@@ -87,7 +94,7 @@ export const FooterPropertyForm: React.FC<FooterPropertyFormProps> = ({ section 
                     className="h-8"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="property-field">
                   <Label className="text-xs text-slate-500">URL</Label>
                   <Input
                     value={link.href}

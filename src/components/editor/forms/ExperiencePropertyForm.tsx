@@ -96,16 +96,16 @@ export const ExperiencePropertyForm: React.FC<ExperiencePropertyFormProps> = ({ 
     };
 
     return (
-        <div className="space-y-5">
+        <div className="property-form">
             {/* Section heading */}
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
+            <Card className="property-section">
+                <CardHeader className="property-section-header pb-3">
+                    <CardTitle className="property-section-title text-sm flex items-center gap-2">
                         <Briefcase className="w-4 h-4" />
                         Section Heading
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="property-section-content">
                     <Input
                         value={data.heading || ''}
                         onChange={(e) =>
@@ -165,69 +165,64 @@ export const ExperiencePropertyForm: React.FC<ExperiencePropertyFormProps> = ({ 
 
                         {/* Accordion body */}
                         {expandedIndex === index && (
-                            <CardContent className="pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
+                            <CardContent className="property-section-content pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
                                 <div className="grid grid-cols-2 gap-2 pt-3">
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">Job Title *</Label>
                                         <Input
                                             value={exp.position}
                                             onChange={(e) => updateEntry(index, 'position', e.target.value)}
                                             placeholder="Senior Engineer"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">Company *</Label>
                                         <Input
                                             value={exp.company}
                                             onChange={(e) => updateEntry(index, 'company', e.target.value)}
                                             placeholder="Acme Corp"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">Start Date</Label>
                                         <Input
                                             value={exp.startDate}
                                             onChange={(e) => updateEntry(index, 'startDate', e.target.value)}
                                             placeholder="Jan 2022"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">End Date</Label>
                                         <Input
                                             value={exp.endDate || ''}
                                             onChange={(e) => updateEntry(index, 'endDate', e.target.value || undefined)}
                                             placeholder="Present"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div className="col-span-2">
+                                    <div className="property-field col-span-2">
                                         <Label className="text-xs">Location</Label>
                                         <Input
                                             value={exp.location || ''}
                                             onChange={(e) => updateEntry(index, 'location', e.target.value)}
                                             placeholder="San Francisco, CA"
-                                            className="mt-1"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Description */}
-                                <div>
+                                <div className="property-field">
                                     <Label className="text-xs">Description</Label>
                                     <Textarea
                                         value={exp.description}
                                         onChange={(e) => updateEntry(index, 'description', e.target.value)}
                                         placeholder="Brief overview of your role and impact..."
                                         rows={3}
-                                        className="mt-1 text-xs"
+                                        className="text-xs"
                                     />
                                 </div>
 
                                 {/* Responsibilities */}
-                                <div>
+                                <div className="property-field">
                                     <Label className="text-xs mb-1 block">Key Responsibilities</Label>
                                     <div className="space-y-1.5 mb-2">
                                         {(exp.responsibilities || []).map((r, ri) => (
@@ -254,7 +249,7 @@ export const ExperiencePropertyForm: React.FC<ExperiencePropertyFormProps> = ({ 
                                 </div>
 
                                 {/* Technologies */}
-                                <div>
+                                <div className="property-field">
                                     <Label className="text-xs mb-1 block">Technologies Used</Label>
                                     <div className="flex flex-wrap gap-1.5 mb-2">
                                         {(exp.technologies || []).map((tech, ti) => (

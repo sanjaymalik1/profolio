@@ -24,18 +24,18 @@ export const AboutPropertyForm: React.FC<AboutPropertyFormProps> = ({ section })
   };
 
   return (
-    <div className="space-y-5">
+    <div className="property-form">
       
       {/* Basic Information */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <User className="w-4 h-4 text-slate-600" />
             About Content
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-4">
-          <div className="space-y-2">
+        <CardContent className="property-section-content space-y-4 pt-4">
+          <div className="property-field">
             <Label htmlFor="heading" className="text-sm font-medium text-slate-700">Section Heading</Label>
             <Input
               id="heading"
@@ -46,7 +46,7 @@ export const AboutPropertyForm: React.FC<AboutPropertyFormProps> = ({ section })
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="property-field">
             <Label htmlFor="content" className="text-sm font-medium text-slate-700">About Content</Label>
             <Textarea
               id="content"
@@ -61,15 +61,15 @@ export const AboutPropertyForm: React.FC<AboutPropertyFormProps> = ({ section })
       </Card>
 
       {/* Profile Image */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <ImageIcon className="w-4 h-4 text-slate-600" />
             Profile Image
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-4">
-          <div className="space-y-2">
+        <CardContent className="property-section-content pt-4">
+          <div className="property-field">
             <Label htmlFor="profileImage" className="text-sm font-medium text-slate-700">Profile Image URL</Label>
             <Input
               id="profileImage"
@@ -83,15 +83,15 @@ export const AboutPropertyForm: React.FC<AboutPropertyFormProps> = ({ section })
       </Card>
 
       {/* Highlights */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <FileText className="w-4 h-4 text-slate-600" />
             Highlights
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-4">
-          <div className="space-y-2">
+        <CardContent className="property-section-content pt-4">
+          <div className="property-field">
             <Label htmlFor="highlights" className="text-sm font-medium text-slate-700">Key Highlights (one per line)</Label>
             <Textarea
               id="highlights"

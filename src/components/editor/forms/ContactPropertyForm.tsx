@@ -41,18 +41,18 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
   };
 
   return (
-    <div className="space-y-6">
+    <div className="property-form">
 
       {/* Section Heading */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Mail className="w-4 h-4" />
             Section Heading
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div>
+        <CardContent className="property-section-content">
+          <div className="property-field">
             <Label htmlFor="heading">Heading</Label>
             <Input
               id="heading"
@@ -65,15 +65,15 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
       </Card>
 
       {/* Contact Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Mail className="w-4 h-4" />
             Contact Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
+        <CardContent className="property-section-content space-y-4">
+          <div className="property-field">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -84,7 +84,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
             />
           </div>
 
-          <div>
+          <div className="property-field">
             <Label htmlFor="location">Location</Label>
             <Input
               id="location"
@@ -94,7 +94,7 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
             />
           </div>
 
-          <div>
+          <div className="property-field">
             <Label htmlFor="availability">Availability</Label>
             <Input
               id="availability"
@@ -107,21 +107,21 @@ export const ContactPropertyForm: React.FC<ContactPropertyFormProps> = ({ sectio
       </Card>
 
       {/* Social Links */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Link className="w-4 h-4" />
             Social Links
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="property-section-content">
           <div className="space-y-3">
             {contactData.socialLinks?.map((social, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <select
                   value={social.platform}
                   onChange={(e) => handleSocialLinkChange(index, 'platform', e.target.value)}
-                  className="px-3 py-2 border rounded-md text-sm"
+                  className="property-control px-3 py-2 border rounded-md text-sm"
                 >
                   <option value="email">Email</option>
                   <option value="github">GitHub</option>

@@ -96,16 +96,16 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
     };
 
     return (
-        <div className="space-y-5">
+        <div className="property-form">
             {/* Section heading */}
-            <Card>
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
+            <Card className="property-section">
+                <CardHeader className="property-section-header pb-3">
+                    <CardTitle className="property-section-title text-sm flex items-center gap-2">
                         <GraduationCap className="w-4 h-4" />
                         Section Heading
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="property-section-content">
                     <Input
                         value={data.heading || ''}
                         onChange={(e) =>
@@ -165,54 +165,49 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
 
                         {/* Accordion body */}
                         {expandedIndex === index && (
-                            <CardContent className="pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
+                            <CardContent className="property-section-content pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
                                 <div className="grid grid-cols-2 gap-2 pt-3">
-                                    <div className="col-span-2">
+                                    <div className="property-field col-span-2">
                                         <Label className="text-xs">Institution *</Label>
                                         <Input
                                             value={edu.institution}
                                             onChange={(e) => updateEntry(index, 'institution', e.target.value)}
                                             placeholder="MIT"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div className="col-span-2">
+                                    <div className="property-field col-span-2">
                                         <Label className="text-xs">Degree *</Label>
                                         <Input
                                             value={edu.degree}
                                             onChange={(e) => updateEntry(index, 'degree', e.target.value)}
                                             placeholder="Bachelor of Science"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div className="col-span-2">
+                                    <div className="property-field col-span-2">
                                         <Label className="text-xs">Field of Study</Label>
                                         <Input
                                             value={edu.field}
                                             onChange={(e) => updateEntry(index, 'field', e.target.value)}
                                             placeholder="Computer Science"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">Start Year</Label>
                                         <Input
                                             value={edu.startDate || ''}
                                             onChange={(e) => updateEntry(index, 'startDate', e.target.value)}
                                             placeholder="2018"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">End Year</Label>
                                         <Input
                                             value={edu.endDate || ''}
                                             onChange={(e) => updateEntry(index, 'endDate', e.target.value)}
                                             placeholder="2022"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">GPA (optional)</Label>
                                         <Input
                                             type="number"
@@ -224,22 +219,20 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
                                                 updateEntry(index, 'gpa', e.target.value ? parseFloat(e.target.value) : undefined)
                                             }
                                             placeholder="3.8"
-                                            className="mt-1"
                                         />
                                     </div>
-                                    <div>
+                                    <div className="property-field">
                                         <Label className="text-xs">Location</Label>
                                         <Input
                                             value={edu.location || ''}
                                             onChange={(e) => updateEntry(index, 'location', e.target.value)}
                                             placeholder="Cambridge, MA"
-                                            className="mt-1"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Honors & Awards */}
-                                <div>
+                                <div className="property-field">
                                     <Label className="text-xs mb-1 block">Honors & Awards</Label>
                                     <div className="flex flex-wrap gap-1.5 mb-2">
                                         {(edu.honors || []).map((h, hi) => (
@@ -269,7 +262,7 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
                                 </div>
 
                                 {/* Coursework */}
-                                <div>
+                                <div className="property-field">
                                     <Label className="text-xs mb-1 block">Relevant Coursework</Label>
                                     <div className="flex flex-wrap gap-1.5 mb-2">
                                         {(edu.coursework || []).map((c, ci) => (

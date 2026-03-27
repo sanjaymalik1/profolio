@@ -53,15 +53,15 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+    <div className="property-form space-y-4">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Settings className="w-4 h-4" />
             Template Properties
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="property-section-content">
           <Tabs defaultValue="hero" className="w-full">
             <TabsList className="flex flex-wrap w-full h-auto gap-1 mb-4 p-1 bg-slate-100/50">
               <TabsTrigger value="hero" className="text-[10px] flex-1 min-w-[60px] py-1.5 px-2">

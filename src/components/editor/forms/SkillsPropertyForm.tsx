@@ -80,18 +80,18 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="property-form">
 
       {/* Section Heading */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Code className="w-4 h-4" />
             Section Heading
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div>
+        <CardContent className="property-section-content">
+          <div className="property-field">
             <Label htmlFor="heading">Heading</Label>
             <Input
               id="heading"
@@ -105,14 +105,14 @@ export const SkillsPropertyForm: React.FC<SkillsPropertyFormProps> = ({ section 
 
       {/* Skills by Category */}
       {(['technical', 'soft', 'languages', 'tools'] as const).map((category) => (
-        <Card key={category}>
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2 capitalize">
+        <Card key={category} className="property-section">
+          <CardHeader className="property-section-header">
+            <CardTitle className="property-section-title text-sm flex items-center gap-2 capitalize">
               {getCategoryIcon(category)}
               {category === 'languages' ? 'Languages' : category} Skills
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="property-section-content">
             <div className="space-y-3">
               {skillsData.skillCategories?.[category]?.map((skill, index) => (
                 <div key={index} className="flex gap-2 items-center">

@@ -235,6 +235,10 @@
     background-size: 280px 100%;
   }
 
+  .dashboard-workspace main::before {
+    display: none;
+  }
+
   .landing-editorial .landing-serif {
     font-family: var(--font-playfair), serif;
     letter-spacing: -0.022em;
@@ -321,5 +325,107 @@
     font-family: var(--font-playfair), serif;
     letter-spacing: -0.015em;
     color: #2d2a26;
+  }
+
+  .property-panel-form .property-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .property-panel {
+    background: #f5f1ea !important;
+  }
+
+  .property-panel-form .property-section {
+    border: 1px solid #dbe2ea;
+    border-radius: 0.75rem;
+    background: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -20px rgba(15, 23, 42, 0.25);
+  }
+
+  .property-panel-form .property-section-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5eaf0;
+    padding-bottom: 0.7rem;
+  }
+
+  .property-panel-form .property-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #1f2937;
+  }
+
+  .property-panel-form .property-section-content {
+    background: #ffffff !important;
+    padding-top: 1rem;
+  }
+
+  .property-panel-form .property-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.48rem;
+  }
+
+  .property-panel-form .property-form > .property-field {
+    border: 1px solid #dbe2ea;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -20px rgba(15, 23, 42, 0.25);
+    padding: 0.85rem 0.9rem;
+  }
+
+  .property-panel-form label:not([class*='cursor-pointer']) {
+    display: block;
+    margin-bottom: 0.02rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #4b5563;
+  }
+
+  .property-panel-form .property-field-helper {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: #6b7280;
+  }
+
+  .property-panel-content {
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .property-panel-content {
+      padding-inline: 1.25rem;
+    }
+  }
+
+  @keyframes editorLoadingSkeletonShimmer {
+    0% {
+      background-position: 130% 0;
+    }
+    100% {
+      background-position: -30% 0;
+    }
+  }
+
+  .editor-loading-skeleton-shimmer {
+    background-image: linear-gradient(
+      110deg,
+      rgba(222, 211, 198, 0.82) 12%,
+      rgba(245, 241, 234, 0.95) 24%,
+      rgba(222, 211, 198, 0.82) 36%
+    );
+    background-size: 220% 100%;
+    animation: editorLoadingSkeletonShimmer 3.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .editor-loading-skeleton-shimmer {
+      animation: none;
+      background-image: none;
+      background-color: rgba(222, 211, 198, 0.82);
+    }
   }
 }
