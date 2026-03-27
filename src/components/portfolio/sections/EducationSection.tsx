@@ -46,7 +46,7 @@ export default function EducationSection({
   return (
     <section
       id="education"
-      className={`${sectionPy} px-6 bg-slate-50`}
+      className={`${sectionPy} px-6 bg-slate-50 ${isEditing ? 'cursor-pointer' : ''}`}
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={container}>

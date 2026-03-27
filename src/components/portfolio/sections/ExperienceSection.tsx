@@ -46,7 +46,7 @@ export default function ExperienceSection({
   return (
     <section
       id="experience"
-      className={`${sectionPy} px-6 bg-white`}
+      className={`${sectionPy} px-6 bg-white ${isEditing ? 'cursor-pointer' : ''}`}
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={container}>

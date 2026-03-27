@@ -2,14 +2,19 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, onClick, role, ...props }: React.ComponentProps<"div">) {
+  const isClickable = typeof onClick === "function" || role === "button"
+
   return (
     <div
       data-slot="card"
       className={cn(
         "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        isClickable && "cursor-pointer",
         className
       )}
+      onClick={onClick}
+      role={role}
       {...props}
     />
   )

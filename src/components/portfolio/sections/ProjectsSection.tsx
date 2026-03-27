@@ -47,7 +47,7 @@ export default function ProjectsSection({
   return (
     <section
       id="projects"
-      className={`${sectionPy} px-6 bg-white`}
+      className={`${sectionPy} px-6 bg-white ${isEditing ? 'cursor-pointer' : ''}`}
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={container}>

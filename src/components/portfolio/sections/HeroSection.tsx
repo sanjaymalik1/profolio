@@ -65,7 +65,7 @@ export default function HeroSection({
 
   return (
     <section
-      className="bg-white pt-16 pb-24 px-6 relative overflow-hidden"
+      className={`bg-white pt-16 pb-24 px-6 relative overflow-hidden ${isEditing ? 'cursor-pointer' : ''}`}
       onClick={isEditing ? onEdit : undefined}
     >
       <div className={`${container} flex flex-col md:flex-row items-center gap-12 relative z-10`}>
