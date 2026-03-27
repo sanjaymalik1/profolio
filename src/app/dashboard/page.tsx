@@ -91,7 +91,7 @@ function PortfolioCard({ portfolio, onEdit, onPublish, onDelete }: PortfolioCard
 
       {/* Metadata */}
       <div className="px-4 py-3 flex items-center justify-between gap-3">
-        <div className="min-w-0 flex-1" onClick={onEdit}>
+        <div className="min-w-0 flex-1 cursor-pointer" onClick={onEdit}>
           <div className="flex items-center gap-2 mb-0.5">
             <span className="text-sm font-medium text-slate-900 truncate">{portfolio.title}</span>
             {portfolio.isPublic ? (

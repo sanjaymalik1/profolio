@@ -308,7 +308,7 @@ export const EditorCanvas: React.FC<EditorCanvasProps> = ({ className = '' }) =>
             </div>
 
             {/* Section content - Static editor rendering, no animations */}
-            <div onClick={() => selectSection(section.id)} className="[&_*]:!transition-none [&_*]:!animation-none">
+            <div onClick={() => selectSection(section.id)} className="cursor-pointer [&_*]:!transition-none [&_*]:!animation-none">
               <ErrorBoundary label={`${section.type} section`}>
                 <SectionComponent />
               </ErrorBoundary>
