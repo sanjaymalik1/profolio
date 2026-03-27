@@ -10,18 +10,18 @@ export default function Hero() {
   const { user, isLoaded } = useUser();
 
   return (
-    <section className="pt-14 sm:pt-20 pb-14 border-b landing-divider relative">
+    <section className="pt-14 sm:pt-20 pb-14 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-4xl mx-auto">
 
-          <motion.div
+          {/* <motion.div
             initial={{ y: 12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.55, delay: 0.05, ease: "easeOut" }}
             className="landing-kicker mb-8"
           >
             Crafted Presence
-          </motion.div>
+          </motion.div> */}
 
           {/* Headline */}
           <motion.h1
@@ -74,7 +74,7 @@ export default function Hero() {
           </motion.div>
 
           {/* Trust bar */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -86,7 +86,7 @@ export default function Hero() {
               <strong className="text-[#2D2A26] font-semibold">1,200+</strong>{" "}
               developers &amp; designers
             </span>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>

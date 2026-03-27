@@ -76,12 +76,11 @@ function EditorLayout() {
       <header className="border-b border-[#d8d0c6] bg-[#f5f1ea]">
         <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#cfc4b7] bg-[#ece4da] flex items-center justify-center">
-                <span className="text-[#2d2a26] font-semibold text-xs sm:text-sm">P</span>
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-base font-semibold tracking-tight">Profolio</h1>
+            <div className="flex items-center">
+              <div>
+                <h1 className="landing-serif text-[1.7rem] sm:text-[2.05rem] font-semibold uppercase leading-none tracking-[-0.01em] text-[#6B7A52]">
+                  PROFOLIO
+                </h1>
                 <p className="text-[0.7rem] uppercase tracking-[0.11em] text-[#5c554d] hidden lg:block">Design your professional portfolio</p>
               </div>
             </div>

@@ -48,6 +48,8 @@ const templates = [
   },
 ];
 
+const landingTemplates = [templates[0], templates[1], templates[3]];
+
 type Template = (typeof templates)[number];
 
 function TemplateCard({ template, index }: { template: Template; index: number }) {
@@ -62,7 +64,7 @@ function TemplateCard({ template, index }: { template: Template; index: number }
       className="group cursor-pointer"
     >
       {/* Preview thumbnail */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden mb-5 border landing-divider bg-[#f8f4ee] transition-all duration-400 group-hover:-translate-y-1">
+      <div className="relative w-full aspect-[16/10] overflow-hidden mb-5 bg-[#f8f4ee] transition-all duration-400 group-hover:-translate-y-1">
 
         {/* Badge */}
         {template.badge && (
@@ -117,7 +119,7 @@ function TemplateCard({ template, index }: { template: Template; index: number }
 
 export default function TemplatesShowcase() {
   return (
-    <section id="templates" className="py-24 sm:py-32 border-t landing-divider">
+    <section id="templates" className="py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header row */}
         <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-14">
@@ -143,7 +145,7 @@ export default function TemplatesShowcase() {
 
         {/* Grid — 3 columns on large screens to match the 3 real templates */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {templates.map((template, index) => (
+          {landingTemplates.map((template, index) => (
             <TemplateCard key={template.id} template={template} index={index} />
           ))}
         </div>

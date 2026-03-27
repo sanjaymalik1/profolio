@@ -10,7 +10,7 @@ export default function CTA() {
   const { user, isLoaded } = useUser();
 
   return (
-    <section className="py-24 sm:py-32 border-t landing-divider relative overflow-hidden">
+    <section className="py-24 sm:py-32 relative overflow-hidden">
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
@@ -25,7 +25,7 @@ export default function CTA() {
 
           <h2 className="landing-serif text-[2.7rem] sm:text-[4.15rem] lg:text-[5.1rem] font-semibold mb-6 leading-[0.96]">
             Ready to make your{" "}
-            <span className="block sm:inline">portfolio shine?</span>
+            <span className="block sm:inline"><span className="text-[#6B7A52]">portfolio</span> shine?</span>
           </h2>
 
           <p className="landing-body text-[1.02rem] mb-10 max-w-xl mx-auto">

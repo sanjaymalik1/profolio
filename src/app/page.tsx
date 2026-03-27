@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <div className="landing-editorial selection:bg-[#d8d0c6] selection:text-[#2D2A26]">
       <Header />
-      <main className="overflow-hidden pt-20 sm:pt-24">
+      <main className="overflow-hidden pt-[5.15rem] sm:pt-[5.65rem]">
         <Hero />
         <EditorPreview />
         <ImportResume />

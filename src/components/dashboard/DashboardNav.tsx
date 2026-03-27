@@ -16,8 +16,11 @@ export function DashboardNav() {
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center gap-3">
-                        <Link href="/" className="text-[1.55rem] font-semibold tracking-tight leading-none text-[#2d2a26] cursor-pointer">
-                            Profolio
+                        <Link
+                            href="/"
+                            className="landing-serif shrink-0 text-[2.05rem] font-semibold uppercase leading-none tracking-[-0.01em] text-[#6B7A52]"
+                        >
+                            PROFOLIO
                         </Link>
                         <span className="text-[#b5aa9d] select-none">/</span>
                         <span className="text-[0.76rem] font-semibold uppercase tracking-[0.14em] text-[#5c554d]">Dashboard</span>
