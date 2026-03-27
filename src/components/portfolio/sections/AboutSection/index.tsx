@@ -34,15 +34,6 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
   );
 }
 
-// Tech badge component
-function TechBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-      {label}
-    </span>
-  );
-}
-
 export default function AboutSection({
   data,
   isEditing = false,
@@ -191,33 +182,94 @@ export default function AboutSection({
                 {(data.personalInfo?.location || (inlineEditMode && data.quickFacts)) && (
                   <div className="flex items-center gap-2.5 text-slate-600">
                     <MapPin className="w-4 h-4 text-slate-400" />
-                    {data.personalInfo?.location || data.quickFacts?.[0] || 'Your Location'}
+                    {inlineEditMode ? (
+                      <EditableText
+                        value={data.personalInfo?.location || data.quickFacts?.[0] || ''}
+                        onChange={(value) => onDataChange?.({
+                          personalInfo: {
+                            ...(data.personalInfo || { languages: [], interests: [] }),
+                            location: value,
+                            languages: data.personalInfo?.languages || [],
+                            interests: data.personalInfo?.interests || [],
+                          },
+                        })}
+                        placeholder="Your Location"
+                        className="outline-none focus:ring-1 focus:ring-slate-400/50 rounded px-1 -mx-1"
+                        as="span"
+                      />
+                    ) : (
+                      data.personalInfo?.location || data.quickFacts?.[0] || 'Your Location'
+                    )}
                   </div>
                 )}
 
                 {/* Languages */}
-                {(data.personalInfo?.languages && data.personalInfo.languages.length > 0) && (
+                {(data.personalInfo?.languages && data.personalInfo.languages.length > 0) || inlineEditMode ? (
                   <div>
                     <p className="text-xs text-slate-400 mb-1.5">Languages</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {data.personalInfo.languages.map((l, i) => (
-                        <TechBadge key={i} label={l} />
+                      {(data.personalInfo?.languages || []).map((l, i) => (
+                        <span key={i} className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={l || ''}
+                              onChange={(value) => {
+                                const nextLanguages = [...(data.personalInfo?.languages || [])];
+                                nextLanguages[i] = value;
+                                onDataChange?.({
+                                  personalInfo: {
+                                    ...(data.personalInfo || { interests: [] }),
+                                    languages: nextLanguages,
+                                    interests: data.personalInfo?.interests || [],
+                                  },
+                                });
+                              }}
+                              placeholder="Language"
+                              className="outline-none focus:ring-1 focus:ring-slate-400/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            l
+                          )}
+                        </span>
                       ))}
                     </div>
                   </div>
-                )}
+                ) : null}
 
                 {/* Interests */}
-                {(data.personalInfo?.interests && data.personalInfo.interests.length > 0) && (
+                {(data.personalInfo?.interests && data.personalInfo.interests.length > 0) || inlineEditMode ? (
                   <div>
                     <p className="text-xs text-slate-400 mb-1.5">Interests</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {data.personalInfo.interests.map((l, i) => (
-                        <TechBadge key={i} label={l} />
+                      {(data.personalInfo?.interests || []).map((l, i) => (
+                        <span key={i} className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={l || ''}
+                              onChange={(value) => {
+                                const nextInterests = [...(data.personalInfo?.interests || [])];
+                                nextInterests[i] = value;
+                                onDataChange?.({
+                                  personalInfo: {
+                                    ...(data.personalInfo || { languages: [] }),
+                                    languages: data.personalInfo?.languages || [],
+                                    interests: nextInterests,
+                                  },
+                                });
+                              }}
+                              placeholder="Interest"
+                              className="outline-none focus:ring-1 focus:ring-slate-400/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            l
+                          )}
+                        </span>
                       ))}
                     </div>
                   </div>
-                )}
+                ) : null}
 
                 {/* Quote */}
                 {data.quote && (

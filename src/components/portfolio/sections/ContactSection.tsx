@@ -27,6 +27,22 @@ interface ContactSectionProps {
 // Design tokens
 const container = 'max-w-5xl mx-auto px-6';
 const sectionPy = 'py-24';
+const VALID_SOCIAL_PLATFORMS: ContactData['socialLinks'][number]['platform'][] = [
+  'email',
+  'website',
+  'linkedin',
+  'github',
+  'twitter',
+  'instagram',
+  'dribbble',
+  'behance',
+  'youtube',
+  'medium',
+];
+
+function isValidSocialPlatform(value: string): value is ContactData['socialLinks'][number]['platform'] {
+  return VALID_SOCIAL_PLATFORMS.includes(value as ContactData['socialLinks'][number]['platform']);
+}
 
 // Section heading component
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -154,11 +170,43 @@ export default function ContactSection({
               initial={!isEditing ? { opacity: 0 } : undefined}
               animate={!isEditing ? { opacity: 1 } : undefined}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="flex items-center gap-2"
+              className={inlineEditMode ? 'space-y-3' : 'flex items-center gap-2'}
             >
-              {data.socialLinks.map((link, i) => (
-                <SocialLink key={i} platform={link.platform} url={link.url} isPreview={isPreview} />
-              ))}
+              {data.socialLinks.map((link, i) => {
+                if (!inlineEditMode) {
+                  return <SocialLink key={i} platform={link.platform} url={link.url} isPreview={isPreview} />;
+                }
+
+                return (
+                  <div key={i} className="flex items-center gap-2 sm:gap-3">
+                    <SocialLink platform={link.platform} url={link.url} isPreview={isPreview} />
+                    <EditableField
+                      value={link.platform || ''}
+                      onChange={(value) => {
+                        const normalized = value.trim().toLowerCase();
+                        if (!isValidSocialPlatform(normalized)) return;
+                        const updatedLinks = [...(data.socialLinks || [])];
+                        updatedLinks[i] = { ...updatedLinks[i], platform: normalized };
+                        onDataChange?.({ socialLinks: updatedLinks });
+                      }}
+                      placeholder="platform"
+                      type="text"
+                      className="text-slate-500 text-xs sm:text-sm"
+                    />
+                    <EditableField
+                      value={link.url || ''}
+                      onChange={(value) => {
+                        const updatedLinks = [...(data.socialLinks || [])];
+                        updatedLinks[i] = { ...updatedLinks[i], url: value };
+                        onDataChange?.({ socialLinks: updatedLinks });
+                      }}
+                      placeholder="https://..."
+                      type="url"
+                      className="text-slate-500 text-xs sm:text-sm min-w-[160px]"
+                    />
+                  </div>
+                );
+              })}
             </motion.div>
           )}
         </div>

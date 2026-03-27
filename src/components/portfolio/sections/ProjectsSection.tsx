@@ -33,15 +33,6 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
   );
 }
 
-// Tech badge component
-function TechBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-      {label}
-    </span>
-  );
-}
-
 export default function ProjectsSection({
   data,
   isEditing = false,
@@ -181,7 +172,26 @@ export default function ProjectsSection({
                   {(project.technologies || []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {project.technologies.slice(0, 4).map((t, ti) => (
-                        <TechBadge key={ti} label={t} />
+                        <span key={ti} className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={t || ''}
+                              onChange={(v) => {
+                                const updated = [...projects];
+                                const idx = projects.findIndex(p => p.id === project.id);
+                                const nextTechnologies = [...(project.technologies || [])];
+                                nextTechnologies[ti] = v;
+                                updated[idx] = { ...project, technologies: nextTechnologies };
+                                onDataChange?.({ projects: updated });
+                              }}
+                              placeholder="Tech"
+                              className="outline-none focus:ring-1 focus:ring-slate-400/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            t
+                          )}
+                        </span>
                       ))}
                       {project.technologies.length > 4 && (
                         <span className="text-xs text-slate-400 self-center">

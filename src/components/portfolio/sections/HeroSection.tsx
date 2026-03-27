@@ -180,7 +180,7 @@ export default function HeroSection({
           </motion.p>
 
           {/* Location */}
-          {data.location && (
+          {(data.location || inlineEditMode) && (
             <motion.div
               initial={!isEditing ? { opacity: 0 } : undefined}
               animate={!isEditing ? { opacity: 1 } : undefined}
@@ -188,7 +188,19 @@ export default function HeroSection({
               className="flex items-center gap-1.5 text-sm text-slate-400 mb-10"
             >
               <MapPin className="w-4 h-4" />
-              <span>{data.location}</span>
+              <span>
+                {inlineEditMode ? (
+                  <EditableText
+                    value={data.location || ''}
+                    onChange={(value) => onDataChange?.({ location: value })}
+                    placeholder="Your Location"
+                    className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                    as="span"
+                  />
+                ) : (
+                  data.location
+                )}
+              </span>
             </motion.div>
           )}
 

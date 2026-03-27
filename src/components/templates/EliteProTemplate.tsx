@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
 import { EditableText } from '@/components/editor/inline/EditableText';
+import { updateArrayItem, useTemplateInlineEditor } from './inline-edit-utils';
 import { motion, useInView } from 'framer-motion';
 import { Navbar } from '@/components/common/Navbar';
 import { Footer } from '@/components/common/Footer';
@@ -128,8 +129,7 @@ interface HeroProps {
 }
 
 function HeroSection({ section, isEditing }: HeroProps) {
-  const editorContext = React.useContext(EditorContext);
-  const inlineEditMode = isEditing && !!editorContext && !!section?.id;
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isEditing, section?.id);
 
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
@@ -171,12 +171,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
               {inlineEditMode ? (
                 <EditableImage
                   value={profileImage}
-                  onChange={(url) => {
-                    editorContext.dispatch({
-                      type: 'UPDATE_SECTION_DATA',
-                      payload: { sectionId: section.id, data: { profileImage: url } }
-                    });
-                  }}
+                  onChange={(url) => updateSectionData({ profileImage: url })}
                   alt={fullName}
                   containerClassName="absolute inset-0 w-full h-full !min-h-0"
                   className="object-cover !min-h-0 rounded-full"
@@ -224,10 +219,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
               {inlineEditMode ? (
                 <EditableText
                   value={normalizedData?.fullName || ''}
-                  onChange={(value) => editorContext.dispatch({
-                    type: 'UPDATE_SECTION_DATA',
-                    payload: { sectionId: section.id, data: { fullName: value } }
-                  })}
+                  onChange={(value) => updateSectionData({ fullName: value })}
                   placeholder="Your Name"
                   className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
                   as="span"
@@ -249,10 +241,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
             {inlineEditMode ? (
               <EditableText
                 value={normalizedData?.title || ''}
-                onChange={(value) => editorContext.dispatch({
-                  type: 'UPDATE_SECTION_DATA',
-                  payload: { sectionId: section.id, data: { title: value } }
-                })}
+                onChange={(value) => updateSectionData({ title: value })}
                 placeholder="Your Title"
                 className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
                 as="span"
@@ -274,10 +263,7 @@ function HeroSection({ section, isEditing }: HeroProps) {
             {inlineEditMode ? (
               <EditableText
                 value={normalizedData?.bio || ''}
-                onChange={(value) => editorContext.dispatch({
-                  type: 'UPDATE_SECTION_DATA',
-                  payload: { sectionId: section.id, data: { bio: value } }
-                })}
+                onChange={(value) => updateSectionData({ bio: value })}
                 placeholder="Your bio..."
                 className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-2 -mx-2"
                 as="span"
@@ -345,7 +331,8 @@ function HeroSection({ section, isEditing }: HeroProps) {
 // ABOUT SECTION (Split Layout, Highlight Cards)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function AboutSection({ section }: any) {
+function AboutSection({ section, isEditing }: any) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
@@ -365,7 +352,17 @@ function AboutSection({ section }: any) {
 
           {/* Heading */}
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {normalizedData?.heading || 'About Me'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="About Me"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || 'About Me'
+            )}
           </h2>
         </FadeInView>
 
@@ -374,7 +371,18 @@ function AboutSection({ section }: any) {
           <FadeInView delay={0.1}>
             <div className="space-y-6">
               <p className="text-lg text-slate-300 leading-relaxed">
-                {normalizedData?.description || normalizedData?.content || 'Tell your story...'}
+                {inlineEditMode ? (
+                  <EditableText
+                    value={normalizedData?.description || normalizedData?.content || ''}
+                    onChange={(value) => updateSectionData({ description: value, content: value })}
+                    placeholder="Tell your story..."
+                    className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                    as="span"
+                    multiline
+                  />
+                ) : (
+                  normalizedData?.description || normalizedData?.content || 'Tell your story...'
+                )}
               </p>
 
               {/* Highlights */}
@@ -385,7 +393,22 @@ function AboutSection({ section }: any) {
                       <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shrink-0 mt-0.5">
                         <Sparkles className="w-3.5 h-3.5 text-white" />
                       </div>
-                      <p className="text-slate-300">{highlight}</p>
+                      <p className="text-slate-300">
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={highlight || ''}
+                            onChange={(value) => {
+                              const nextHighlights = updateArrayItem(highlights, idx, () => value);
+                              updateSectionData({ highlights: nextHighlights });
+                            }}
+                            placeholder="Highlight"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          highlight
+                        )}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -404,7 +427,19 @@ function AboutSection({ section }: any) {
                     </div>
                     <div>
                       <div className="text-sm text-slate-400 mb-1">Location</div>
-                      <div className="text-white font-semibold">{personalInfo?.location}</div>
+                      <div className="text-white font-semibold">
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={personalInfo?.location || ''}
+                            onChange={(value) => updateSectionData({ personalInfo: { ...(personalInfo || {}), location: value } })}
+                            placeholder="Location"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          personalInfo?.location
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -418,7 +453,22 @@ function AboutSection({ section }: any) {
                     </div>
                     <div>
                       <div className="text-sm text-slate-400 mb-1">Languages</div>
-                      <div className="text-white font-semibold">{languages.join(', ')}</div>
+                      <div className="text-white font-semibold">
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={languages.join(', ')}
+                            onChange={(value) => {
+                              const languageItems = value.split(',').map((item) => item.trim()).filter(Boolean);
+                              updateSectionData({ personalInfo: { ...(personalInfo || {}), languages: languageItems } });
+                            }}
+                            placeholder="English, Spanish"
+                            className="outline-none focus:ring-2 focus:ring-purple-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          languages.join(', ')
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -432,7 +482,19 @@ function AboutSection({ section }: any) {
                     </div>
                     <div className="overflow-hidden">
                       <div className="text-sm text-slate-400 mb-1">Email</div>
-                      <div className="text-white font-semibold truncate">{normalizedData?.contactEmail}</div>
+                      <div className="text-white font-semibold truncate">
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={normalizedData?.contactEmail || ''}
+                            onChange={(value) => updateSectionData({ contactEmail: value })}
+                            placeholder="your@email.com"
+                            className="outline-none focus:ring-2 focus:ring-emerald-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          normalizedData?.contactEmail
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -450,16 +512,13 @@ function AboutSection({ section }: any) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function ProjectsSection({ section, isEditing }: any) {
-  const editorContext = React.useContext(EditorContext);
-  const inlineEditMode = !!isEditing && !!editorContext && !!section?.id;
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
-  const projects = Array.isArray(normalizedData?.projects) ? normalizedData?.projects : [];
+  const projects: any[] = Array.isArray(normalizedData?.projects) ? normalizedData?.projects : [];
 
   const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
-    if (!editorContext || !section?.id) return;
-
     const updatedProjects = projects.map((project: any, index: number) => {
       if (index !== projectIndex) return project;
       return {
@@ -468,19 +527,7 @@ function ProjectsSection({ section, isEditing }: any) {
       };
     });
 
-    editorContext.dispatch({
-      type: 'UPDATE_SECTION_DATA',
-      payload: {
-        sectionId: section.id,
-        data: {
-          projects: updatedProjects,
-          content: {
-            ...(normalizedData || {}),
-            projects: updatedProjects,
-          },
-        },
-      },
-    });
+    updateSectionData({ projects: updatedProjects });
   };
 
   return (
@@ -493,7 +540,17 @@ function ProjectsSection({ section, isEditing }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {normalizedData?.heading || 'Featured Projects'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Featured Projects"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || 'Featured Projects'
+            )}
           </h2>
         </FadeInView>
 
@@ -550,11 +607,38 @@ function ProjectsSection({ section, isEditing }: any) {
                 {/* Content */}
                 <div className="p-6">
                   <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors duration-300">
-                    {project?.title || 'Untitled Project'}
+                    {inlineEditMode ? (
+                      <EditableText
+                        value={project?.title || ''}
+                        onChange={(value) => {
+                          const updatedProjects = updateArrayItem(projects, idx, (item) => ({ ...item, title: value }));
+                          updateSectionData({ projects: updatedProjects });
+                        }}
+                        placeholder="Untitled Project"
+                        className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                        as="span"
+                      />
+                    ) : (
+                      project?.title || 'Untitled Project'
+                    )}
                   </h3>
 
                   <p className="text-slate-400 mb-4 line-clamp-3 leading-relaxed">
-                    {project?.description || ''}
+                    {inlineEditMode ? (
+                      <EditableText
+                        value={project?.description || ''}
+                        onChange={(value) => {
+                          const updatedProjects = updateArrayItem(projects, idx, (item) => ({ ...item, description: value }));
+                          updateSectionData({ projects: updatedProjects });
+                        }}
+                        placeholder="Project description"
+                        className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                        as="span"
+                        multiline
+                      />
+                    ) : (
+                      project?.description || ''
+                    )}
                   </p>
 
                   {/* Tech Stack */}
@@ -565,7 +649,21 @@ function ProjectsSection({ section, isEditing }: any) {
                           key={i}
                           className="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20"
                         >
-                          {tech}
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={tech || ''}
+                              onChange={(value) => {
+                                const nextTechnologies = updateArrayItem(project?.technologies || [], i, () => value);
+                                const updatedProjects = updateArrayItem(projects, idx, (item) => ({ ...item, technologies: nextTechnologies }));
+                                updateSectionData({ projects: updatedProjects });
+                              }}
+                              placeholder="Tech"
+                              className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            tech
+                          )}
                         </span>
                       ))}
                     </div>
@@ -610,10 +708,11 @@ function ProjectsSection({ section, isEditing }: any) {
 // EXPERIENCE SECTION (Modern Timeline/Cards)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function ExperienceSection({ section }: any) {
+function ExperienceSection({ section, isEditing }: any) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
-  const experiences = Array.isArray(normalizedData?.experience)
+  const experiences: any[] = Array.isArray(normalizedData?.experience)
     ? normalizedData.experience
     : Array.isArray(normalizedData?.experiences)
       ? normalizedData.experiences
@@ -629,7 +728,17 @@ function ExperienceSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {normalizedData?.heading || 'Professional Experience'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Professional Experience"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || 'Professional Experience'
+            )}
           </h2>
         </FadeInView>
 
@@ -652,19 +761,75 @@ function ExperienceSection({ section }: any) {
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-                      {exp?.position || 'Position'}
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={exp?.position || ''}
+                          onChange={(value) => {
+                            const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, position: value }));
+                            updateSectionData({ experiences: updatedExperiences });
+                          }}
+                          placeholder="Position"
+                          className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      ) : (
+                        exp?.position || 'Position'
+                      )}
                     </h3>
                     <div className="flex items-center gap-3 text-slate-400 mb-3">
                       <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4" />
-                        <span className="font-medium">{exp?.company || 'Company'}</span>
+                        <span className="font-medium">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={exp?.company || ''}
+                              onChange={(value) => {
+                                const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, company: value }));
+                                updateSectionData({ experiences: updatedExperiences });
+                              }}
+                              placeholder="Company"
+                              className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            exp?.company || 'Company'
+                          )}
+                        </span>
                       </div>
                       {(exp?.startDate || exp?.endDate) && (
                         <>
                           <span className="text-slate-600">•</span>
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
-                            <span>{exp?.startDate || ''} - {exp?.endDate || 'Present'}</span>
+                            <span>
+                              {inlineEditMode ? (
+                                <>
+                                  <EditableText
+                                    value={exp?.startDate || ''}
+                                    onChange={(value) => {
+                                      const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, startDate: value }));
+                                      updateSectionData({ experiences: updatedExperiences });
+                                    }}
+                                    placeholder="Start"
+                                    className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                    as="span"
+                                  />
+                                  <span> - </span>
+                                  <EditableText
+                                    value={exp?.endDate || ''}
+                                    onChange={(value) => {
+                                      const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, endDate: value || undefined }));
+                                      updateSectionData({ experiences: updatedExperiences });
+                                    }}
+                                    placeholder="Present"
+                                    className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                    as="span"
+                                  />
+                                </>
+                              ) : (
+                                <>{exp?.startDate || ''} - {exp?.endDate || 'Present'}</>
+                              )}
+                            </span>
                           </div>
                         </>
                       )}
@@ -673,7 +838,21 @@ function ExperienceSection({ section }: any) {
                 </div>
 
                 <p className="text-slate-300 mb-4 leading-relaxed">
-                  {exp?.description || ''}
+                  {inlineEditMode ? (
+                    <EditableText
+                      value={exp?.description || ''}
+                      onChange={(value) => {
+                        const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, description: value }));
+                        updateSectionData({ experiences: updatedExperiences });
+                      }}
+                      placeholder="Description"
+                      className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                      as="span"
+                      multiline
+                    />
+                  ) : (
+                    exp?.description || ''
+                  )}
                 </p>
 
                 {/* Responsibilities */}
@@ -682,7 +861,23 @@ function ExperienceSection({ section }: any) {
                     {exp?.responsibilities?.map((resp: string, i: number) => (
                       <li key={i} className="flex items-start gap-3 text-slate-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
-                        <span>{resp}</span>
+                        <span>
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={resp || ''}
+                              onChange={(value) => {
+                                const nextResponsibilities = updateArrayItem(exp?.responsibilities || [], i, () => value);
+                                const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, responsibilities: nextResponsibilities }));
+                                updateSectionData({ experiences: updatedExperiences });
+                              }}
+                              placeholder="Responsibility"
+                              className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            resp
+                          )}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -696,7 +891,21 @@ function ExperienceSection({ section }: any) {
                         key={i}
                         className="px-3 py-1 text-xs font-medium rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20"
                       >
-                        {tech}
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={tech || ''}
+                            onChange={(value) => {
+                              const nextTechnologies = updateArrayItem(exp?.technologies || [], i, () => value);
+                              const updatedExperiences = updateArrayItem(experiences, idx, (item) => ({ ...item, technologies: nextTechnologies }));
+                              updateSectionData({ experiences: updatedExperiences });
+                            }}
+                            placeholder="Technology"
+                            className="outline-none focus:ring-2 focus:ring-purple-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          tech
+                        )}
                       </span>
                     ))}
                   </div>
@@ -714,7 +923,8 @@ function ExperienceSection({ section }: any) {
 // SKILLS SECTION (Pills/Tags, Visually Structured)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function SkillsSection({ section }: any) {
+function SkillsSection({ section, isEditing }: any) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
@@ -751,6 +961,43 @@ function SkillsSection({ section }: any) {
   };
 
   const skills = normalizeSkillLabels(normalizedData);
+  const skillCategories = normalizedData?.skillCategories;
+  const flattenedCategoryMap = skillCategories && typeof skillCategories === 'object'
+    ? Object.entries(skillCategories).flatMap(([key, group]) => {
+      if (!Array.isArray(group)) return [];
+      return group.map((_, idx) => ({ key, idx }));
+    })
+    : [];
+
+  const updateSkillLabel = (skillIndex: number, value: string) => {
+    if (flattenedCategoryMap[skillIndex]) {
+      const target = flattenedCategoryMap[skillIndex];
+      const currentGroup = Array.isArray((skillCategories as Record<string, unknown>)?.[target.key])
+        ? ((skillCategories as Record<string, unknown>)[target.key] as unknown[])
+        : [];
+      const updatedGroup = updateArrayItem(currentGroup, target.idx, (item: unknown) => {
+        if (typeof item === 'string') return value;
+        if (item && typeof item === 'object') return { ...(item as Record<string, unknown>), name: value };
+        return value;
+      });
+      updateSectionData({
+        skillCategories: {
+          ...(skillCategories as Record<string, unknown>),
+          [target.key]: updatedGroup,
+        },
+      });
+      return;
+    }
+
+    if (Array.isArray(normalizedData?.skills)) {
+      const updatedSkills = updateArrayItem(normalizedData.skills, skillIndex, (item: unknown) => {
+        if (typeof item === 'string') return value;
+        if (item && typeof item === 'object') return { ...(item as Record<string, unknown>), name: value };
+        return value;
+      });
+      updateSectionData({ skills: updatedSkills });
+    }
+  };
 
   return (
     <section id="skills" className="relative py-32 px-6">
@@ -762,7 +1009,17 @@ function SkillsSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {normalizedData?.heading || 'Skills & Expertise'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Skills & Expertise"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || 'Skills & Expertise'
+            )}
           </h2>
         </FadeInView>
 
@@ -787,7 +1044,17 @@ function SkillsSection({ section }: any) {
                 whileHover={{ scale: 1.05, y: -2 }}
                 className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm text-slate-200 font-medium hover:bg-white/10 hover:border-white/20 hover:text-white hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300"
               >
-                {skill || ''}
+                {inlineEditMode ? (
+                  <EditableText
+                    value={skill || ''}
+                    onChange={(value) => updateSkillLabel(idx, value)}
+                    placeholder="Skill"
+                    className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                    as="span"
+                  />
+                ) : (
+                  skill || ''
+                )}
               </motion.div>
             ))}
           </div>
@@ -801,11 +1068,12 @@ function SkillsSection({ section }: any) {
 // EDUCATION SECTION
 // ═══════════════════════════════════════════════════════════════════════════
 
-function EducationSection({ section }: any) {
+function EducationSection({ section, isEditing }: any) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
-  const education = Array.isArray(normalizedData?.education)
+  const education: any[] = Array.isArray(normalizedData?.education)
     ? normalizedData.education
     : [];
 
@@ -819,7 +1087,17 @@ function EducationSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-16">
-            {normalizedData?.heading || 'Education'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Education"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || 'Education'
+            )}
           </h2>
         </FadeInView>
 
@@ -842,14 +1120,87 @@ function EducationSection({ section }: any) {
 
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-                      {edu?.degree || 'Degree'} {edu?.field && `in ${edu?.field}`}
+                      {inlineEditMode ? (
+                        <>
+                          <EditableText
+                            value={edu?.degree || ''}
+                            onChange={(value) => {
+                              const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, degree: value }));
+                              updateSectionData({ education: updatedEducation });
+                            }}
+                            placeholder="Degree"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                          {edu?.field ? (
+                            <>
+                              <span> in </span>
+                              <EditableText
+                                value={edu?.field || ''}
+                                onChange={(value) => {
+                                  const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, field: value }));
+                                  updateSectionData({ education: updatedEducation });
+                                }}
+                                placeholder="Field"
+                                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            </>
+                          ) : null}
+                        </>
+                      ) : (
+                        <>{edu?.degree || 'Degree'} {edu?.field && `in ${edu?.field}`}</>
+                      )}
                     </h3>
                     <div className="flex items-center gap-3 text-slate-400 mb-3">
-                      <span className="font-medium">{edu?.institution || 'Institution'}</span>
+                      <span className="font-medium">
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={edu?.institution || ''}
+                            onChange={(value) => {
+                              const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, institution: value }));
+                              updateSectionData({ education: updatedEducation });
+                            }}
+                            placeholder="Institution"
+                            className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          edu?.institution || 'Institution'
+                        )}
+                      </span>
                       {(edu?.startDate || edu?.endDate) && (
                         <>
                           <span className="text-slate-600">•</span>
-                          <span>{edu?.startDate || ''} - {edu?.endDate || 'Present'}</span>
+                          <span>
+                            {inlineEditMode ? (
+                              <>
+                                <EditableText
+                                  value={edu?.startDate || ''}
+                                  onChange={(value) => {
+                                    const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, startDate: value }));
+                                    updateSectionData({ education: updatedEducation });
+                                  }}
+                                  placeholder="Start"
+                                  className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                  as="span"
+                                />
+                                <span> - </span>
+                                <EditableText
+                                  value={edu?.endDate || ''}
+                                  onChange={(value) => {
+                                    const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, endDate: value || undefined }));
+                                    updateSectionData({ education: updatedEducation });
+                                  }}
+                                  placeholder="Present"
+                                  className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                  as="span"
+                                />
+                              </>
+                            ) : (
+                              <>{edu?.startDate || ''} - {edu?.endDate || 'Present'}</>
+                            )}
+                          </span>
                         </>
                       )}
                     </div>
@@ -861,7 +1212,21 @@ function EducationSection({ section }: any) {
                             key={i}
                             className="px-3 py-1 text-xs font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
                           >
-                            {course}
+                            {inlineEditMode ? (
+                              <EditableText
+                                value={course || ''}
+                                onChange={(value) => {
+                                  const nextCoursework = updateArrayItem(edu?.coursework || [], i, () => value);
+                                  const updatedEducation = updateArrayItem(education, idx, (item) => ({ ...item, coursework: nextCoursework }));
+                                  updateSectionData({ education: updatedEducation });
+                                }}
+                                placeholder="Course"
+                                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            ) : (
+                              course
+                            )}
                           </span>
                         ))}
                       </div>
@@ -881,7 +1246,8 @@ function EducationSection({ section }: any) {
 // CONTACT SECTION (Clean CTA)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function ContactSection({ section }: any) {
+function ContactSection({ section, isEditing }: any) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(!!isEditing, section?.id);
   // Safe data access - prevent crashes
   const data = (section as any)?.content || {};
   const normalizedData = (Object.keys(data).length > 0 ? data : (section as any)?.data || {}) as any;
@@ -898,11 +1264,32 @@ function ContactSection({ section }: any) {
           </div>
 
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            {normalizedData?.heading || "Let's Work Together"}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Let's Work Together"
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              normalizedData?.heading || "Let's Work Together"
+            )}
           </h2>
 
           <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-            {normalizedData?.availability || 'Available for freelance projects, collaborations, and full-time opportunities.'}
+            {inlineEditMode ? (
+              <EditableText
+                value={normalizedData?.availability || ''}
+                onChange={(value) => updateSectionData({ availability: value })}
+                placeholder="Available for freelance projects, collaborations, and full-time opportunities."
+                className="outline-none focus:ring-2 focus:ring-blue-500/50 rounded px-1 -mx-1"
+                as="span"
+                multiline
+              />
+            ) : (
+              normalizedData?.availability || 'Available for freelance projects, collaborations, and full-time opportunities.'
+            )}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -912,7 +1299,17 @@ function ContactSection({ section }: any) {
                 className="px-10 py-5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:scale-105 flex items-center gap-3"
               >
                 <Mail className="w-5 h-5" />
-                Send Email
+                {inlineEditMode ? (
+                  <EditableText
+                    value={normalizedData?.email || ''}
+                    onChange={(value) => updateSectionData({ email: value })}
+                    placeholder="email@example.com"
+                    className="outline-none focus:ring-2 focus:ring-blue-300/60 rounded px-1 -mx-1"
+                    as="span"
+                  />
+                ) : (
+                  'Send Email'
+                )}
               </a>
             )}
 
