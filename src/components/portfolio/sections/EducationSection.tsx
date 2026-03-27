@@ -31,15 +31,6 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
   );
 }
 
-// Tech badge component
-function TechBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-      {label}
-    </span>
-  );
-}
-
 export default function EducationSection({
   data,
   isEditing = false,
@@ -117,6 +108,22 @@ export default function EducationSection({
                           {edu.field && ` in ${edu.field}`}
                         </>
                       )}
+                      {inlineEditMode && (
+                        <>
+                          <span> in </span>
+                          <EditableText
+                            value={edu.field || ''}
+                            onChange={(value) => {
+                              const updated = [...educationList];
+                              updated[i] = { ...edu, field: value };
+                              onDataChange?.({ education: updated });
+                            }}
+                            placeholder="Field"
+                            className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        </>
+                      )}
                     </h3>
                     <p className="text-sm text-slate-600 mt-0.5">
                       {inlineEditMode ? (
@@ -137,13 +144,74 @@ export default function EducationSection({
                     </p>
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-2">
                       <Calendar className="w-3.5 h-3.5" />
-                      {edu.startDate} — {edu.endDate || 'Present'}
-                      {edu.gpa && <span className="ml-2">· GPA: {edu.gpa}</span>}
+                      {inlineEditMode ? (
+                        <>
+                          <EditableText
+                            value={edu.startDate || ''}
+                            onChange={(value) => {
+                              const updated = [...educationList];
+                              updated[i] = { ...edu, startDate: value };
+                              onDataChange?.({ education: updated });
+                            }}
+                            placeholder="Start"
+                            className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                          <span> — </span>
+                          <EditableText
+                            value={edu.endDate || ''}
+                            onChange={(value) => {
+                              const updated = [...educationList];
+                              updated[i] = { ...edu, endDate: value || undefined };
+                              onDataChange?.({ education: updated });
+                            }}
+                            placeholder="Present"
+                            className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                          <span className="ml-2">· GPA: </span>
+                          <EditableText
+                            value={edu.gpa !== undefined ? String(edu.gpa) : ''}
+                            onChange={(value) => {
+                              const numericValue = Number(value);
+                              const updated = [...educationList];
+                              updated[i] = { ...edu, gpa: Number.isFinite(numericValue) ? numericValue : edu.gpa };
+                              onDataChange?.({ education: updated });
+                            }}
+                            placeholder="4.0"
+                            className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          {edu.startDate} — {edu.endDate || 'Present'}
+                          {edu.gpa && <span className="ml-2">· GPA: {edu.gpa}</span>}
+                        </>
+                      )}
                     </div>
                     {(edu.coursework || []).length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-3">
                         {edu.coursework!.map((c, ci) => (
-                          <TechBadge key={ci} label={c} />
+                          <span key={ci} className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                            {inlineEditMode ? (
+                              <EditableText
+                                value={c || ''}
+                                onChange={(value) => {
+                                  const updated = [...educationList];
+                                  const nextCoursework = [...(edu.coursework || [])];
+                                  nextCoursework[ci] = value;
+                                  updated[i] = { ...edu, coursework: nextCoursework };
+                                  onDataChange?.({ education: updated });
+                                }}
+                                placeholder="Course"
+                                className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            ) : (
+                              c
+                            )}
+                          </span>
                         ))}
                       </div>
                     )}

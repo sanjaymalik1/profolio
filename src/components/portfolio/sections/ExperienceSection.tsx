@@ -31,15 +31,6 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
   );
 }
 
-// Tech badge component
-function TechBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-      {label}
-    </span>
-  );
-}
-
 export default function ExperienceSection({
   data,
   isEditing = false,
@@ -138,12 +129,59 @@ export default function ExperienceSection({
                           ) : (
                             exp.company
                           )}
-                          {exp.location && <span className="text-slate-400">· {exp.location}</span>}
+                          {(exp.location || inlineEditMode) && (
+                            <span className="text-slate-400">
+                              {' · '}
+                              {inlineEditMode ? (
+                                <EditableText
+                                  value={exp.location || ''}
+                                  onChange={(value) => {
+                                    const updated = [...experiences];
+                                    updated[i] = { ...exp, location: value || undefined };
+                                    onDataChange?.({ experiences: updated });
+                                  }}
+                                  placeholder="Location"
+                                  className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                                  as="span"
+                                />
+                              ) : (
+                                exp.location
+                              )}
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full whitespace-nowrap">
                         <Calendar className="w-3.5 h-3.5" />
-                        {exp.startDate} — {exp.endDate || 'Present'}
+                        {inlineEditMode ? (
+                          <>
+                            <EditableText
+                              value={exp.startDate || ''}
+                              onChange={(value) => {
+                                const updated = [...experiences];
+                                updated[i] = { ...exp, startDate: value };
+                                onDataChange?.({ experiences: updated });
+                              }}
+                              placeholder="Start"
+                              className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                            <span> — </span>
+                            <EditableText
+                              value={exp.endDate || ''}
+                              onChange={(value) => {
+                                const updated = [...experiences];
+                                updated[i] = { ...exp, endDate: value || undefined };
+                                onDataChange?.({ experiences: updated });
+                              }}
+                              placeholder="Present"
+                              className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          </>
+                        ) : (
+                          <>{exp.startDate} — {exp.endDate || 'Present'}</>
+                        )}
                       </div>
                     </div>
 
@@ -175,7 +213,23 @@ export default function ExperienceSection({
                         {exp.responsibilities.map((r, ri) => (
                           <li key={ri} className="flex items-start gap-2 text-sm text-slate-600">
                             <span className="text-slate-300 mt-1.5">▸</span>
-                            {r}
+                            {inlineEditMode ? (
+                              <EditableText
+                                value={r || ''}
+                                onChange={(value) => {
+                                  const updated = [...experiences];
+                                  const nextResponsibilities = [...(exp.responsibilities || [])];
+                                  nextResponsibilities[ri] = value;
+                                  updated[i] = { ...exp, responsibilities: nextResponsibilities };
+                                  onDataChange?.({ experiences: updated });
+                                }}
+                                placeholder="Responsibility"
+                                className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            ) : (
+                              r
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -185,7 +239,25 @@ export default function ExperienceSection({
                     {(exp.technologies || []).length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-4 border-t border-slate-100">
                         {exp.technologies!.map((t, ti) => (
-                          <TechBadge key={ti} label={t} />
+                          <span key={ti} className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                            {inlineEditMode ? (
+                              <EditableText
+                                value={t || ''}
+                                onChange={(value) => {
+                                  const updated = [...experiences];
+                                  const nextTechnologies = [...(exp.technologies || [])];
+                                  nextTechnologies[ti] = value;
+                                  updated[i] = { ...exp, technologies: nextTechnologies };
+                                  onDataChange?.({ experiences: updated });
+                                }}
+                                placeholder="Technology"
+                                className="outline-none focus:ring-2 focus:ring-slate-900/20 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            ) : (
+                              t
+                            )}
+                          </span>
                         ))}
                       </div>
                     )}

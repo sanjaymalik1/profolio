@@ -4,6 +4,7 @@
 import React from 'react';
 import { EditableText } from '@/components/editor/inline/EditableText';
 import { EditableImage } from '@/components/editor/inline/EditableImage';
+import { updateArrayItem, useTemplateInlineEditor } from './inline-edit-utils';
 import { motion } from 'framer-motion';
 import { Navbar } from '@/components/common/Navbar';
 import { Footer } from '@/components/common/Footer';
@@ -13,7 +14,6 @@ import {
   Twitter, Globe, ChevronDown
 } from 'lucide-react';
 import type { EditorSection } from '@/types/editor';
-import { EditorContext } from '@/contexts/EditorContext';
 import type {
   TemplateData, ProjectsData, Project,
   ExperienceData, Experience, EducationData, Education,
@@ -76,11 +76,8 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
 function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPreview: boolean; sectionId?: string }) {
-  const editorContext = React.useContext(EditorContext);
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
   const heroInitial = (heroData.fullName || '').trim().charAt(0).toUpperCase() || '?';
-
-  // Determine if we're in inline edit mode (editor context + preview mode)
-  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
 
   const handleScroll = (e: React.MouseEvent, targetId: string) => {
     if (isPreview) { e.preventDefault(); return; }
@@ -123,7 +120,17 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide mb-6 sm:mb-8">
                 <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-                {heroData.location || 'Available for Work'}
+                {inlineEditMode ? (
+                  <EditableText
+                    value={heroData.location || ''}
+                    onChange={(value) => updateSectionData({ location: value })}
+                    placeholder="Available for Work"
+                    className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                    as="span"
+                  />
+                ) : (
+                  heroData.location || 'Available for Work'
+                )}
               </div>
             </motion.div>
 
@@ -134,13 +141,10 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.1}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-[64px] font-extrabold text-slate-100 leading-[1.05] tracking-tight mb-4 sm:mb-6"
             >
-              {isPreview && editorContext && sectionId ? (
+              {inlineEditMode ? (
                 <EditableText
                   value={heroData.fullName || ''}
-                  onChange={(value) => editorContext.dispatch({
-                    type: 'UPDATE_SECTION_DATA',
-                    payload: { sectionId, data: { fullName: value } }
-                  })}
+                  onChange={(value) => updateSectionData({ fullName: value })}
                   placeholder="Your Name"
                   className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
                   as="span"
@@ -157,13 +161,10 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.2}
               className="text-lg sm:text-xl md:text-2xl font-medium text-indigo-400 mb-4 sm:mb-6"
             >
-              {isPreview && editorContext && sectionId ? (
+              {inlineEditMode ? (
                 <EditableText
                   value={heroData.title || ''}
-                  onChange={(value) => editorContext.dispatch({
-                    type: 'UPDATE_SECTION_DATA',
-                    payload: { sectionId, data: { title: value } }
-                  })}
+                  onChange={(value) => updateSectionData({ title: value })}
                   placeholder="Your Title"
                   className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
                   as="span"
@@ -180,13 +181,10 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
               custom={0.3}
               className="text-base md:text-lg text-slate-400 leading-relaxed max-w-xl mb-8 sm:mb-10"
             >
-              {isPreview && editorContext && sectionId ? (
+              {inlineEditMode ? (
                 <EditableText
                   value={heroData.bio || ''}
-                  onChange={(value) => editorContext.dispatch({
-                    type: 'UPDATE_SECTION_DATA',
-                    payload: { sectionId, data: { bio: value } }
-                  })}
+                  onChange={(value) => updateSectionData({ bio: value })}
                   placeholder="Brief introduction about yourself and what you do."
                   className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
                   as="span"
@@ -267,15 +265,7 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                   /* EDITOR MODE: Use EditableImage component */
                   <EditableImage
                     value={heroData.profileImage || ''}
-                    onChange={(url) => {
-                      editorContext.dispatch({
-                        type: 'UPDATE_SECTION_DATA',
-                        payload: {
-                          sectionId,
-                          data: { profileImage: url }
-                        }
-                      });
-                    }}
+                    onChange={(url) => updateSectionData({ profileImage: url })}
                     alt={heroData.fullName || 'Profile'}
                     containerClassName="absolute inset-0 w-full h-full !min-h-0"
                     className="object-cover !min-h-0"
@@ -308,7 +298,19 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
                 transition={{ delay: 0.8, duration: 0.4 }}
                 className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-900 border border-slate-700/80 rounded-full shadow-xl whitespace-nowrap max-w-[90%] truncate"
               >
-                <span className="text-[10px] sm:text-xs font-semibold text-slate-300">{heroData.title}</span>
+                <span className="text-[10px] sm:text-xs font-semibold text-slate-300">
+                  {inlineEditMode ? (
+                    <EditableText
+                      value={heroData.title || ''}
+                      onChange={(value) => updateSectionData({ title: value })}
+                      placeholder="Your Title"
+                      className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                      as="span"
+                    />
+                  ) : (
+                    heroData.title
+                  )}
+                </span>
               </motion.div>
             </div>
           </motion.div>
@@ -339,21 +341,49 @@ function HeroSection({ heroData, isPreview, sectionId }: { heroData: any; isPrev
 
 // ─── About ────────────────────────────────────────────────────────────────────
 
-function AboutSection({ aboutData }: { aboutData: any }) {
+function AboutSection({ aboutData, isPreview, sectionId }: { aboutData: any; isPreview: boolean; sectionId?: string }) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
+  const highlights = Array.isArray(aboutData?.highlights) ? aboutData.highlights : [];
+
   return (
     <section id="about" className="py-24 px-6 bg-slate-900/60" style={{ scrollMarginTop: '64px' }}>
       <div className="max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <SectionLabel>About Me</SectionLabel>
-          <SectionHeading>{aboutData.heading || 'About'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={aboutData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="About"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              aboutData.heading || 'About'
+            )}
+          </SectionHeading>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={0.1}>
-            <p className="text-slate-300 text-lg leading-relaxed mb-8">{aboutData.description || aboutData.content}</p>
-            {(aboutData.highlights || []).length > 0 && (
+            <p className="text-slate-300 text-lg leading-relaxed mb-8">
+              {inlineEditMode ? (
+                <EditableText
+                  value={aboutData?.description || aboutData?.content || ''}
+                  onChange={(value) => updateSectionData({ description: value, content: value })}
+                  placeholder="Tell your story and background."
+                  className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                  as="span"
+                  multiline
+                />
+              ) : (
+                aboutData.description || aboutData.content
+              )}
+            </p>
+            {highlights.length > 0 && (
               <div className="space-y-3">
-                {(aboutData.highlights || []).map((item: string, i: number) => (
+                {highlights.map((item: string, i: number) => (
                   <motion.div
                     key={i}
                     variants={fadeUp}
@@ -364,7 +394,22 @@ function AboutSection({ aboutData }: { aboutData: any }) {
                     className="flex items-start gap-3"
                   >
                     <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
-                    <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
+                    <span className="text-slate-300 text-sm leading-relaxed">
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={item || ''}
+                          onChange={(value) => {
+                            const nextHighlights = updateArrayItem(highlights, i, () => value);
+                            updateSectionData({ highlights: nextHighlights });
+                          }}
+                          placeholder="Highlight"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      ) : (
+                        item
+                      )}
+                    </span>
                   </motion.div>
                 ))}
               </div>
@@ -401,13 +446,28 @@ function AboutSection({ aboutData }: { aboutData: any }) {
 
 // ─── Experience ───────────────────────────────────────────────────────────────
 
-function ExperienceSection({ experienceData }: { experienceData: ExperienceData }) {
-  if (!experienceData?.experiences?.length) {
+function ExperienceSection({ experienceData, isPreview, sectionId }: { experienceData: ExperienceData; isPreview: boolean; sectionId?: string }) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
+  const experiences = Array.isArray(experienceData?.experiences) ? experienceData.experiences : [];
+
+  if (!experiences.length) {
     return (
       <section id="experience" className="py-24 px-6 bg-slate-950" style={{ scrollMarginTop: '64px' }}>
         <div className="max-w-6xl mx-auto">
           <SectionLabel>Work History</SectionLabel>
-          <SectionHeading>{experienceData?.heading || 'Experience'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={experienceData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Experience"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              experienceData?.heading || 'Experience'
+            )}
+          </SectionHeading>
           <p className="text-slate-500 text-sm">No experience entries yet.</p>
         </div>
       </section>
@@ -419,7 +479,19 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
       <div className="max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <SectionLabel>Work History</SectionLabel>
-          <SectionHeading>{experienceData.heading || 'Experience'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={experienceData.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Experience"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              experienceData.heading || 'Experience'
+            )}
+          </SectionHeading>
         </motion.div>
 
         <div className="relative">
@@ -427,7 +499,7 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
           <div className="absolute left-0 md:left-4 top-0 bottom-0 w-px bg-gradient-to-b from-indigo-500/40 via-slate-700/60 to-transparent" />
 
           <div className="space-y-10">
-            {experienceData.experiences.map((exp: Experience, i: number) => (
+            {experiences.map((exp: Experience, i: number) => (
               <motion.div
                 key={exp.id || i}
                 variants={fadeUp}
@@ -444,27 +516,112 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
                     <div>
                       <h3 className="text-lg font-bold text-slate-100 group-hover:text-indigo-300 transition-colors">
-                        {exp.position}
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={exp.position || ''}
+                            onChange={(value) => {
+                              const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, position: value }));
+                              updateSectionData({ experiences: nextExperiences });
+                            }}
+                            placeholder="Position"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          exp.position
+                        )}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Building2 className="w-4 h-4 text-indigo-400/70" />
-                        <span className="text-indigo-400 font-medium text-sm">{exp.company}</span>
+                        <span className="text-indigo-400 font-medium text-sm">
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={exp.company || ''}
+                              onChange={(value) => {
+                                const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, company: value }));
+                                updateSectionData({ experiences: nextExperiences });
+                              }}
+                              placeholder="Company"
+                              className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            exp.company
+                          )}
+                        </span>
                         {exp.location && (
                           <>
                             <span className="text-slate-600">·</span>
-                            <span className="text-slate-500 text-sm">{exp.location}</span>
+                            <span className="text-slate-500 text-sm">
+                              {inlineEditMode ? (
+                                <EditableText
+                                  value={exp.location || ''}
+                                  onChange={(value) => {
+                                    const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, location: value }));
+                                    updateSectionData({ experiences: nextExperiences });
+                                  }}
+                                  placeholder="Location"
+                                  className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                                  as="span"
+                                />
+                              ) : (
+                                exp.location
+                              )}
+                            </span>
                           </>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-slate-500 shrink-0">
                       <Calendar className="w-3.5 h-3.5" />
-                      {exp.startDate} — {exp.endDate || 'Present'}
+                      {inlineEditMode ? (
+                        <>
+                          <EditableText
+                            value={exp.startDate || ''}
+                            onChange={(value) => {
+                              const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, startDate: value }));
+                              updateSectionData({ experiences: nextExperiences });
+                            }}
+                            placeholder="Start"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                          <span> — </span>
+                          <EditableText
+                            value={exp.endDate || ''}
+                            onChange={(value) => {
+                              const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, endDate: value || undefined }));
+                              updateSectionData({ experiences: nextExperiences });
+                            }}
+                            placeholder="Present"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        </>
+                      ) : (
+                        <>{exp.startDate} — {exp.endDate || 'Present'}</>
+                      )}
                     </div>
                   </div>
 
                   {exp.description && (
-                    <p className="text-slate-400 text-sm leading-relaxed mb-4">{exp.description}</p>
+                    <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={exp.description || ''}
+                          onChange={(value) => {
+                            const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, description: value }));
+                            updateSectionData({ experiences: nextExperiences });
+                          }}
+                          placeholder="Describe your role"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                          multiline
+                        />
+                      ) : (
+                        exp.description
+                      )}
+                    </p>
                   )}
 
                   {exp.responsibilities?.length > 0 && (
@@ -472,7 +629,21 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
                       {exp.responsibilities.map((r, ri) => (
                         <li key={ri} className="flex items-start gap-2.5 text-sm text-slate-400">
                           <span className="text-indigo-500 mt-1 text-xs">▸</span>
-                          {r}
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={r || ''}
+                              onChange={(value) => {
+                                const nextResponsibilities = updateArrayItem(exp.responsibilities || [], ri, () => value);
+                                const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, responsibilities: nextResponsibilities }));
+                                updateSectionData({ experiences: nextExperiences });
+                              }}
+                              placeholder="Responsibility"
+                              className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            r
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -485,7 +656,21 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
                           key={ti}
                           className="px-2.5 py-1 text-xs rounded-md bg-indigo-950/50 text-indigo-300 border border-indigo-900/60"
                         >
-                          {t}
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={t || ''}
+                              onChange={(value) => {
+                                const nextTechnologies = updateArrayItem(exp.technologies || [], ti, () => value);
+                                const nextExperiences = updateArrayItem(experiences, i, (item) => ({ ...item, technologies: nextTechnologies }));
+                                updateSectionData({ experiences: nextExperiences });
+                              }}
+                              placeholder="Technology"
+                              className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            t
+                          )}
                         </span>
                       ))}
                     </div>
@@ -503,13 +688,10 @@ function ExperienceSection({ experienceData }: { experienceData: ExperienceData 
 // ─── Projects ─────────────────────────────────────────────────────────────────
 
 function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData: ProjectsData; isPreview: boolean; sectionId?: string }) {
-  const editorContext = React.useContext(EditorContext);
-  const inlineEditMode = isPreview && !!editorContext && !!sectionId;
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
   const projects = projectsData?.projects || [];
 
   const handleProjectImageChange = (projectIndex: number, imageUrl: string) => {
-    if (!editorContext || !sectionId) return;
-
     const updatedProjects = projects.map((project: Project, index: number) => {
       if (index !== projectIndex) return project;
       return {
@@ -518,13 +700,7 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
       };
     });
 
-    editorContext.dispatch({
-      type: 'UPDATE_SECTION_DATA',
-      payload: {
-        sectionId,
-        data: { projects: updatedProjects },
-      },
-    });
+    updateSectionData({ projects: updatedProjects });
   };
 
   return (
@@ -532,7 +708,19 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
       <div className="max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <SectionLabel>Selected Work</SectionLabel>
-          <SectionHeading>{projectsData?.heading || 'Projects'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={projectsData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Projects"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              projectsData?.heading || 'Projects'
+            )}
+          </SectionHeading>
         </motion.div>
 
         {projects.length === 0 ? (
@@ -589,7 +777,20 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors leading-snug">
-                      {project.title}
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={project.title || ''}
+                          onChange={(value) => {
+                            const updatedProjects = updateArrayItem(projects, i, (item) => ({ ...item, title: value }));
+                            updateSectionData({ projects: updatedProjects });
+                          }}
+                          placeholder="Project title"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      ) : (
+                        project.title
+                      )}
                     </h3>
                     <div className="flex gap-2 ml-3 shrink-0">
                       {project.links?.github && (
@@ -620,7 +821,21 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
                   </div>
 
                   <p className="text-slate-400 text-sm leading-relaxed flex-1 mb-5">
-                    {project.description}
+                    {inlineEditMode ? (
+                      <EditableText
+                        value={project.description || ''}
+                        onChange={(value) => {
+                          const updatedProjects = updateArrayItem(projects, i, (item) => ({ ...item, description: value }));
+                          updateSectionData({ projects: updatedProjects });
+                        }}
+                        placeholder="Project description"
+                        className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                        as="span"
+                        multiline
+                      />
+                    ) : (
+                      project.description
+                    )}
                   </p>
 
                   {project.technologies?.length > 0 && (
@@ -630,7 +845,21 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
                           key={ti}
                           className="px-2 py-0.5 text-xs rounded-md bg-slate-800 text-slate-400 border border-slate-700/60"
                         >
-                          {tech}
+                          {inlineEditMode ? (
+                            <EditableText
+                              value={tech || ''}
+                              onChange={(value) => {
+                                const nextTechnologies = updateArrayItem(project.technologies || [], ti, () => value);
+                                const updatedProjects = updateArrayItem(projects, i, (item) => ({ ...item, technologies: nextTechnologies }));
+                                updateSectionData({ projects: updatedProjects });
+                              }}
+                              placeholder="Tech"
+                              className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                              as="span"
+                            />
+                          ) : (
+                            tech
+                          )}
                         </span>
                       ))}
                     </div>
@@ -647,7 +876,8 @@ function ProjectsSection({ projectsData, isPreview, sectionId }: { projectsData:
 
 // ─── Skills ───────────────────────────────────────────────────────────────────
 
-function SkillsSection({ skillsData }: { skillsData: any }) {
+function SkillsSection({ skillsData, isPreview, sectionId }: { skillsData: any; isPreview: boolean; sectionId?: string }) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
   const categories = skillsData?.skillCategories || {};
   const technical: Array<{ name: string }> = categories.technical || [];
   const tools: Array<{ name: string }> = categories.tools || [];
@@ -655,18 +885,30 @@ function SkillsSection({ skillsData }: { skillsData: any }) {
   const languages: Array<{ name: string }> = categories.languages || [];
 
   const groups = [
-    { label: 'Languages & Frameworks', items: technical, style: 'bg-indigo-950/60 text-indigo-300 border-indigo-900/50 hover:border-indigo-500/50' },
-    { label: 'Tools & Infrastructure', items: tools, style: 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:border-slate-500/50' },
-    { label: 'Soft Skills', items: soft, style: 'bg-emerald-950/40 text-emerald-300 border-emerald-900/50 hover:border-emerald-500/50' },
-    { label: 'Languages', items: languages, style: 'bg-amber-950/40 text-amber-300 border-amber-900/50 hover:border-amber-500/50' },
-  ].filter((g) => g.items.length > 0);
+    { key: 'technical' as const, label: 'Languages & Frameworks', items: technical, style: 'bg-indigo-950/60 text-indigo-300 border-indigo-900/50 hover:border-indigo-500/50' },
+    { key: 'tools' as const, label: 'Tools & Infrastructure', items: tools, style: 'bg-slate-800/60 text-slate-300 border-slate-700/50 hover:border-slate-500/50' },
+    { key: 'soft' as const, label: 'Soft Skills', items: soft, style: 'bg-emerald-950/40 text-emerald-300 border-emerald-900/50 hover:border-emerald-500/50' },
+    { key: 'languages' as const, label: 'Languages', items: languages, style: 'bg-amber-950/40 text-amber-300 border-amber-900/50 hover:border-amber-500/50' },
+  ].filter((g) => g.items.length > 0 || inlineEditMode);
 
   return (
     <section id="skills" className="py-24 px-6 bg-slate-950" style={{ scrollMarginTop: '64px' }}>
       <div className="max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <SectionLabel>What I Know</SectionLabel>
-          <SectionHeading>{skillsData?.heading || 'Skills'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={skillsData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Skills"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              skillsData?.heading || 'Skills'
+            )}
+          </SectionHeading>
         </motion.div>
 
         {groups.length === 0 ? (
@@ -696,7 +938,25 @@ function SkillsSection({ skillsData }: { skillsData: any }) {
                       whileHover={{ scale: 1.05 }}
                       className={`px-3.5 py-1.5 text-sm font-medium rounded-lg border cursor-default transition-all duration-200 ${group.style}`}
                     >
-                      {skill.name}
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={skill?.name || ''}
+                          onChange={(value) => {
+                            const updatedGroupItems = updateArrayItem(group.items || [], si, (item) => ({ ...item, name: value }));
+                            updateSectionData({
+                              skillCategories: {
+                                ...categories,
+                                [group.key]: updatedGroupItems,
+                              },
+                            });
+                          }}
+                          placeholder="Skill"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      ) : (
+                        skill.name
+                      )}
                     </motion.span>
                   ))}
                 </div>
@@ -711,7 +971,8 @@ function SkillsSection({ skillsData }: { skillsData: any }) {
 
 // ─── Education ────────────────────────────────────────────────────────────────
 
-function EducationSection({ educationData }: { educationData: EducationData }) {
+function EducationSection({ educationData, isPreview, sectionId }: { educationData: EducationData; isPreview: boolean; sectionId?: string }) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
   const items = educationData?.education || [];
 
   return (
@@ -719,7 +980,19 @@ function EducationSection({ educationData }: { educationData: EducationData }) {
       <div className="max-w-6xl mx-auto">
         <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
           <SectionLabel>Academic Background</SectionLabel>
-          <SectionHeading>{educationData?.heading || 'Education'}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={educationData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Education"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              educationData?.heading || 'Education'
+            )}
+          </SectionHeading>
         </motion.div>
 
         {items.length === 0 ? (
@@ -742,25 +1015,134 @@ function EducationSection({ educationData }: { educationData: EducationData }) {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-100 text-base leading-snug group-hover:text-indigo-300 transition-colors">
-                      {edu.degree}{edu.field ? ` — ${edu.field}` : ''}
+                      {inlineEditMode ? (
+                        <>
+                          <EditableText
+                            value={edu.degree || ''}
+                            onChange={(value) => {
+                              const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, degree: value }));
+                              updateSectionData({ education: updatedItems });
+                            }}
+                            placeholder="Degree"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                          {edu.field ? (
+                            <>
+                              <span> — </span>
+                              <EditableText
+                                value={edu.field || ''}
+                                onChange={(value) => {
+                                  const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, field: value }));
+                                  updateSectionData({ education: updatedItems });
+                                }}
+                                placeholder="Field"
+                                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                                as="span"
+                              />
+                            </>
+                          ) : null}
+                        </>
+                      ) : (
+                        <>{edu.degree}{edu.field ? ` — ${edu.field}` : ''}</>
+                      )}
                     </h3>
-                    <div className="text-indigo-400 text-sm font-medium mt-0.5">{edu.institution}</div>
+                    <div className="text-indigo-400 text-sm font-medium mt-0.5">
+                      {inlineEditMode ? (
+                        <EditableText
+                          value={edu.institution || ''}
+                          onChange={(value) => {
+                            const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, institution: value }));
+                            updateSectionData({ education: updatedItems });
+                          }}
+                          placeholder="Institution"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      ) : (
+                        edu.institution
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pb-4 mb-4 border-b border-slate-800/60">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
-                    {edu.startDate} — {edu.endDate || 'Present'}
+                    {inlineEditMode ? (
+                      <>
+                        <EditableText
+                          value={edu.startDate || ''}
+                          onChange={(value) => {
+                            const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, startDate: value }));
+                            updateSectionData({ education: updatedItems });
+                          }}
+                          placeholder="Start"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                        <span> — </span>
+                        <EditableText
+                          value={edu.endDate || ''}
+                          onChange={(value) => {
+                            const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, endDate: value || undefined }));
+                            updateSectionData({ education: updatedItems });
+                          }}
+                          placeholder="Present"
+                          className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                          as="span"
+                        />
+                      </>
+                    ) : (
+                      <>{edu.startDate} — {edu.endDate || 'Present'}</>
+                    )}
                   </div>
-                  {edu.gpa && <span className="text-slate-400">GPA: {edu.gpa}</span>}
+                  {edu.gpa && (
+                    <span className="text-slate-400">
+                      {inlineEditMode ? (
+                        <>
+                          GPA:{' '}
+                          <EditableText
+                            value={String(edu.gpa)}
+                            onChange={(value) => {
+                              const numericValue = Number(value);
+                              const updatedItems = updateArrayItem(items, i, (item) => ({
+                                ...item,
+                                gpa: Number.isFinite(numericValue) ? numericValue : item.gpa,
+                              }));
+                              updateSectionData({ education: updatedItems });
+                            }}
+                            placeholder="4.0"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        </>
+                      ) : (
+                        <>GPA: {edu.gpa}</>
+                      )}
+                    </span>
+                  )}
                 </div>
 
                 {edu.coursework && edu.coursework.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {edu.coursework.map((c, ci) => (
                       <span key={ci} className="px-2 py-0.5 text-xs rounded bg-slate-800 text-slate-400 border border-slate-700/50">
-                        {c}
+                        {inlineEditMode ? (
+                          <EditableText
+                            value={c || ''}
+                            onChange={(value) => {
+                              const nextCoursework = updateArrayItem(edu.coursework || [], ci, () => value);
+                              const updatedItems = updateArrayItem(items, i, (item) => ({ ...item, coursework: nextCoursework }));
+                              updateSectionData({ education: updatedItems });
+                            }}
+                            placeholder="Course"
+                            className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                            as="span"
+                          />
+                        ) : (
+                          c
+                        )}
                       </span>
                     ))}
                   </div>
@@ -776,7 +1158,9 @@ function EducationSection({ educationData }: { educationData: EducationData }) {
 
 // ─── Contact ──────────────────────────────────────────────────────────────────
 
-function ContactSection({ contactData, isPreview }: { contactData: any; isPreview: boolean }) {
+function ContactSection({ contactData, isPreview, sectionId }: { contactData: any; isPreview: boolean; sectionId?: string }) {
+  const { inlineEditMode, updateSectionData } = useTemplateInlineEditor(isPreview, sectionId);
+
   return (
     <section id="contact" className="py-24 px-6 bg-slate-950 relative overflow-hidden" style={{ scrollMarginTop: '64px' }}>
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-indigo-600/6 rounded-full blur-3xl pointer-events-none" />
@@ -790,7 +1174,19 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
           className="text-center"
         >
           <SectionLabel>Get In Touch</SectionLabel>
-          <SectionHeading>{contactData?.heading || "Let's Work Together"}</SectionHeading>
+          <SectionHeading>
+            {inlineEditMode ? (
+              <EditableText
+                value={contactData?.heading || ''}
+                onChange={(value) => updateSectionData({ heading: value })}
+                placeholder="Let's Work Together"
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              contactData?.heading || "Let's Work Together"
+            )}
+          </SectionHeading>
         </motion.div>
 
         <motion.div
@@ -802,7 +1198,18 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
           className="max-w-2xl mx-auto text-center"
         >
           <p className="text-slate-400 text-lg leading-relaxed mb-10">
-            {contactData?.availability || "I'm currently open to new opportunities. Whether you have a project in mind or just want to say hello, my inbox is always open."}
+            {inlineEditMode ? (
+              <EditableText
+                value={contactData?.availability || ''}
+                onChange={(value) => updateSectionData({ availability: value })}
+                placeholder="I'm currently open to new opportunities."
+                className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                as="span"
+                multiline
+              />
+            ) : (
+              contactData?.availability || "I'm currently open to new opportunities. Whether you have a project in mind or just want to say hello, my inbox is always open."
+            )}
           </p>
 
           <a
@@ -811,20 +1218,54 @@ function ContactSection({ contactData, isPreview }: { contactData: any; isPrevie
             className="group inline-flex items-center gap-3 px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-xl hover:shadow-indigo-500/20 hover:-translate-y-0.5 mb-10"
           >
             <Mail className="w-5 h-5 group-hover:rotate-12 transition-transform duration-200" />
-            {contactData?.email || 'Send me an email'}
+            {inlineEditMode ? (
+              <EditableText
+                value={contactData?.email || ''}
+                onChange={(value) => updateSectionData({ email: value })}
+                placeholder="Send me an email"
+                className="outline-none focus:ring-2 focus:ring-indigo-400/50 rounded px-1 -mx-1"
+                as="span"
+              />
+            ) : (
+              contactData?.email || 'Send me an email'
+            )}
           </a>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-10 text-sm text-slate-500">
             {contactData?.email && (
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-indigo-500" />
-                <span>{contactData.email}</span>
+                <span>
+                  {inlineEditMode ? (
+                    <EditableText
+                      value={contactData.email || ''}
+                      onChange={(value) => updateSectionData({ email: value })}
+                      placeholder="email@example.com"
+                      className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                      as="span"
+                    />
+                  ) : (
+                    contactData.email
+                  )}
+                </span>
               </div>
             )}
             {contactData?.location && (
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-indigo-500" />
-                <span>{contactData.location}</span>
+                <span>
+                  {inlineEditMode ? (
+                    <EditableText
+                      value={contactData.location || ''}
+                      onChange={(value) => updateSectionData({ location: value })}
+                      placeholder="Location"
+                      className="outline-none focus:ring-2 focus:ring-indigo-500/50 rounded px-1 -mx-1"
+                      as="span"
+                    />
+                  ) : (
+                    contactData.location
+                  )}
+                </span>
               </div>
             )}
           </div>
@@ -1058,7 +1499,7 @@ function DarkProfessionalTemplateComponent({
               const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
-                  <AboutSection aboutData={d} />
+                  <AboutSection aboutData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;
@@ -1068,7 +1509,7 @@ function DarkProfessionalTemplateComponent({
               const d = (Object.keys(data).length > 0 ? data : section.data) as ExperienceData;
               content = (
                 <React.Fragment key={section.id}>
-                  <ExperienceSection experienceData={d} />
+                  <ExperienceSection experienceData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;
@@ -1088,7 +1529,7 @@ function DarkProfessionalTemplateComponent({
               const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
-                  <SkillsSection skillsData={d} />
+                  <SkillsSection skillsData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;
@@ -1098,7 +1539,7 @@ function DarkProfessionalTemplateComponent({
               const d = (Object.keys(data).length > 0 ? data : section.data) as EducationData;
               content = (
                 <React.Fragment key={section.id}>
-                  <EducationSection educationData={d} />
+                  <EducationSection educationData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;
@@ -1108,7 +1549,7 @@ function DarkProfessionalTemplateComponent({
               const d = (Object.keys(data).length > 0 ? data : section.data) as any;
               content = (
                 <React.Fragment key={section.id}>
-                  <ContactSection contactData={d} isPreview={isPreview} />
+                  <ContactSection contactData={d} isPreview={isPreview} sectionId={section.id} />
                 </React.Fragment>
               );
               break;
@@ -1145,11 +1586,11 @@ function DarkProfessionalTemplateComponent({
         variant="dark"
       />
       <HeroSection heroData={heroData} isPreview={isPreview} />
-      <AboutSection aboutData={aboutData} />
-      <ExperienceSection experienceData={experienceData} />
+      <AboutSection aboutData={aboutData} isPreview={isPreview} />
+      <ExperienceSection experienceData={experienceData} isPreview={isPreview} />
       <ProjectsSection projectsData={projectsData} isPreview={isPreview} />
-      <SkillsSection skillsData={skillsData} />
-      <EducationSection educationData={educationData} />
+      <SkillsSection skillsData={skillsData} isPreview={isPreview} />
+      <EducationSection educationData={educationData} isPreview={isPreview} />
       <ContactSection contactData={contactData} isPreview={isPreview} />
       <Footer sections={sections} heroName={heroData.fullName} variant="dark" />
     </div>
