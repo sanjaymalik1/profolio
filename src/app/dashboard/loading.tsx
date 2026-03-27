@@ -2,7 +2,7 @@
 // to the dashboard before the page component renders.
 export default function DashboardLoading() {
     return (
-        <div className="landing-editorial min-h-screen">
+        <div className="landing-editorial dashboard-workspace min-h-screen">
             {/* Nav skeleton */}
             <div className="bg-[#f5f1ea] border-b border-[#d8d0c6] h-16" />
 

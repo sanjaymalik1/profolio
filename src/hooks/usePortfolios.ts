@@ -40,13 +40,20 @@ export const usePortfolios = () => {
   const [loading, setLoading] = useState(() => portfoliosMemoryCache === null);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchPortfoliosPage = useCallback(async (pageToLoad: number): Promise<PaginatedPortfoliosResponse> => {
-    const response = await fetch(`/api/portfolios?page=${pageToLoad}&limit=${PAGE_SIZE}`, {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache'
-      }
+  const fetchPortfoliosPage = useCallback(async (
+    pageToLoad: number,
+    options?: { fresh?: boolean }
+  ): Promise<PaginatedPortfoliosResponse> => {
+    const search = new URLSearchParams({
+      page: String(pageToLoad),
+      limit: String(PAGE_SIZE),
     });
+
+    if (options?.fresh) {
+      search.set('fresh', '1');
+    }
+
+    const response = await fetch(`/api/portfolios?${search.toString()}`);
 
     if (response.status === 401) {
       console.warn('[usePortfolios] Unauthorized - user not signed in');
@@ -61,7 +68,7 @@ export const usePortfolios = () => {
     const result = await response.json();
 
     if (result.success) {
-      const parsedPortfolios = (result.portfolios ?? result.data ?? []) as Portfolio[];
+      const parsedPortfolios = (result.data ?? result.portfolios ?? []) as Portfolio[];
       const parsedTotal = typeof result.total === 'number' ? result.total : parsedPortfolios.length;
       return {
         portfolios: parsedPortfolios,
@@ -86,7 +93,7 @@ export const usePortfolios = () => {
 
     try {
       if (force || !portfoliosInFlightRequest) {
-        portfoliosInFlightRequest = fetchPortfoliosPage(1);
+        portfoliosInFlightRequest = fetchPortfoliosPage(1, { fresh: force });
       }
 
       const loaded = await portfoliosInFlightRequest;

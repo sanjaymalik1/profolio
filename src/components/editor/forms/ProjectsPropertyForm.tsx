@@ -80,18 +80,18 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
   };
 
   return (
-    <div className="space-y-6">
+    <div className="property-form">
 
       {/* Section Heading */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <FolderOpen className="w-4 h-4" />
             Section Heading
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div>
+        <CardContent className="property-section-content">
+          <div className="property-field">
             <Label htmlFor="heading">Heading</Label>
             <Input
               id="heading"
@@ -104,14 +104,14 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
       </Card>
 
       {/* Project Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <Badge className="w-4 h-4" />
             Project Categories
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="property-section-content">
           <div className="space-y-3">
             {projectsData.categories?.map((category, index) => (
               <div key={index} className="flex gap-2 items-center">
@@ -145,14 +145,14 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
       </Card>
 
       {/* Projects */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
+      <Card className="property-section">
+        <CardHeader className="property-section-header">
+          <CardTitle className="property-section-title text-sm flex items-center gap-2">
             <FolderOpen className="w-4 h-4" />
             Projects ({projectsData.projects?.length || 0})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="property-section-content">
           <div className="space-y-6">
             {projectsData.projects?.map((project, index) => (
               <div key={project.id} className="border rounded-lg p-4 space-y-3">
@@ -168,7 +168,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
+                  <div className="property-field">
                     <Label>Title</Label>
                     <Input
                       value={project.title}
@@ -176,12 +176,12 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                       placeholder="Project title"
                     />
                   </div>
-                  <div>
+                  <div className="property-field">
                     <Label>Category</Label>
                     <select
                       value={project.category}
                       onChange={(e) => updateProject(index, 'category', e.target.value)}
-                      className="w-full px-3 py-2 border rounded-md text-sm"
+                      className="property-control w-full px-3 py-2 border rounded-md text-sm"
                     >
                       {projectsData.categories?.map((cat, catIndex) => (
                         <option key={catIndex} value={cat}>{cat}</option>
@@ -190,7 +190,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                   </div>
                 </div>
 
-                <div>
+                <div className="property-field">
                   <Label>Description</Label>
                   <Textarea
                     value={project.description}
@@ -201,7 +201,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
+                  <div className="property-field">
                     <Label>Live URL</Label>
                     <Input
                       value={project.links.live || ''}
@@ -209,7 +209,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                       placeholder="https://..."
                     />
                   </div>
-                  <div>
+                  <div className="property-field">
                     <Label>GitHub URL</Label>
                     <Input
                       value={project.links.github || ''}
@@ -231,7 +231,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                   <select
                     value={project.status}
                     onChange={(e) => updateProject(index, 'status', e.target.value)}
-                    className="px-3 py-1 border rounded text-sm"
+                    className="property-control px-3 py-1 border rounded text-sm"
                   >
                     <option value="completed">Completed</option>
                     <option value="in-progress">In Progress</option>

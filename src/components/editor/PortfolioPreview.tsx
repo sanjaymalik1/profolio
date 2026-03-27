@@ -39,6 +39,16 @@ import type { EditorSection } from '@/types/editor';
 
 export type PreviewDevice = 'desktop' | 'tablet' | 'mobile';
 
+const DEVICE_WIDTH_PRESETS: Record<Exclude<PreviewDevice, 'desktop'>, number> = {
+  tablet: 768,
+  mobile: 390,
+};
+
+const MOBILE_MIN_HEIGHT = 844;
+const TABLET_MIN_HEIGHT = 1024;
+const DESKTOP_MIN_HEIGHT = 720;
+const PREVIEW_HORIZONTAL_PADDING = 32;
+
 // Type guard for TemplateSectionData
 function isTemplateSectionData(data: unknown): data is TemplateSectionData {
   return (
@@ -55,6 +65,7 @@ export const PortfolioPreview: React.FC = () => {
   const [previewDevice, setPreviewDevice] = React.useState<PreviewDevice>('desktop');
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [showPreview, setShowPreview] = React.useState(true);
+  const [previewScale, setPreviewScale] = React.useState(1);
   const previewContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Get active template config
@@ -85,31 +96,45 @@ export const PortfolioPreview: React.FC = () => {
     }
   };
 
-  const getDeviceStyles = () => {
-    switch (previewDevice) {
-      case 'mobile':
-        return {
-          width: '375px',
-          minHeight: '667px',
-          transform: 'scale(0.8)',
-          transformOrigin: 'top left'
-        };
-      case 'tablet':
-        return {
-          width: '768px',
-          minHeight: '1024px',
-          transform: 'scale(0.7)',
-          transformOrigin: 'top left'
-        };
-      case 'desktop':
-      default:
-        return {
-          width: '100%',
-          minHeight: '100vh',
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        };
-    }
+  React.useEffect(() => {
+    const viewport = previewContainerRef.current;
+    if (!viewport) return;
+
+    const recalcScale = () => {
+      if (previewDevice === 'desktop') {
+        setPreviewScale(1);
+        return;
+      }
+
+      const targetWidth = DEVICE_WIDTH_PRESETS[previewDevice];
+      const availableWidth = Math.max(0, viewport.clientWidth - PREVIEW_HORIZONTAL_PADDING);
+      const nextScale = Math.min(1, availableWidth / targetWidth);
+      const clamped = Math.max(0.28, Number.isFinite(nextScale) ? nextScale : 1);
+      setPreviewScale(clamped);
+    };
+
+    recalcScale();
+
+    const observer = new ResizeObserver(recalcScale);
+    observer.observe(viewport);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [previewDevice]);
+
+  const targetDeviceWidth = previewDevice === 'desktop' ? undefined : DEVICE_WIDTH_PRESETS[previewDevice];
+  const targetMinHeight = previewDevice === 'mobile'
+    ? MOBILE_MIN_HEIGHT
+    : previewDevice === 'tablet'
+      ? TABLET_MIN_HEIGHT
+      : DESKTOP_MIN_HEIGHT;
+
+  const frameStyle: React.CSSProperties = {
+    width: previewDevice === 'desktop' ? '100%' : `${targetDeviceWidth}px`,
+    minHeight: `${targetMinHeight}px`,
+    transform: `scale(${previewScale})`,
+    transformOrigin: 'top center',
   };
 
   const renderSection = (section: EditorSection) => {
@@ -313,11 +338,11 @@ export const PortfolioPreview: React.FC = () => {
       </div>
 
       {/* Preview Content */}
-      <div ref={previewContainerRef} className="relative flex-1 overflow-auto bg-[#f5f1ea]">
+      <div ref={previewContainerRef} className="relative flex-1 overflow-y-auto overflow-x-hidden bg-[#f5f1ea]">
         <div className="absolute inset-0 pointer-events-none opacity-35 bg-[linear-gradient(to_right,#d8d0c6_1px,transparent_1px)] bg-[length:280px_100%]" />
-        <div className="relative p-6 flex justify-center">
+        <div className="relative p-4 sm:p-6 flex justify-center items-start">
           <div
-            style={getDeviceStyles()}
+            style={frameStyle}
             className={`bg-white shadow-xl transition-all duration-300 ${previewDevice !== 'desktop' ? 'border border-[#d8d0c6] rounded-lg' : ''
               }`}
           >

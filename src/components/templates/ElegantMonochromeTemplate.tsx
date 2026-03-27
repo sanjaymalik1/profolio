@@ -160,7 +160,7 @@ function SocialLinks({ socialLinks }: { socialLinks?: Array<{ platform: string; 
   if (!socialLinks || socialLinks.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center justify-center gap-3.5">
       {socialLinks.map((link, idx) => {
         const Icon = getIcon(link.platform);
         return (
@@ -169,11 +169,11 @@ function SocialLinks({ socialLinks }: { socialLinks?: Array<{ platform: string; 
             href={link.url}
             target={link.platform === 'email' ? undefined : '_blank'}
             rel={link.platform === 'email' ? undefined : 'noopener noreferrer'}
-            className="w-10 h-10 border border-black/20 flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-200"
-            whileHover={{ scale: 1.05 }}
+            className="w-11 h-11 rounded-full border border-black/15 bg-white text-black/70 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.7)] flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 hover:border-black/30 hover:text-black hover:shadow-[0_14px_26px_-18px_rgba(0,0,0,0.75)]"
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Icon className="w-4 h-4" />
+            <Icon className="w-[18px] h-[18px]" />
           </motion.a>
         );
       })}
@@ -205,24 +205,29 @@ function HeroSection({
   const heroInitial = (fullName || '').trim().charAt(0).toUpperCase() || '?';
 
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center bg-white py-20">
+    <section id="hero" className="min-h-screen flex items-center justify-center bg-white py-24 md:py-28">
       <div className="max-w-6xl mx-auto px-6 w-full">
         <motion.div
           initial="hidden"
           animate="show"
           variants={fadeUp}
-          className="flex flex-col items-center text-center space-y-8"
+          className="flex flex-col items-center text-center space-y-7 md:space-y-9"
         >
           {/* Avatar */}
           <div className="relative">
-            <div className="w-32 h-32 border-2 border-black overflow-hidden">
+            <div
+              className="relative w-36 h-36 md:w-40 md:h-40 border border-black/15 overflow-hidden bg-white shadow-[0_20px_36px_-28px_rgba(0,0,0,0.85)]"
+              style={{ borderRadius: '9999px' }}
+            >
               {inlineEditMode ? (
                 <EditableImage
                   value={profileImage}
                   onChange={(url) => updateSectionData({ profileImage: url })}
                   alt={fullName}
+                  containerClassName="absolute inset-0 w-full h-full !min-h-0"
+                  className="w-full h-full !min-h-0 object-cover rounded-[9999px]"
                   emptyStateContent={<span className="text-4xl font-light text-gray-600">{heroInitial}</span>}
-                  emptyStateClassName="w-full h-full"
+                  emptyStateClassName="w-full h-full rounded-[9999px]"
                   aspectRatio="square"
                 />
               ) : profileImage ? (
@@ -232,10 +237,14 @@ function HeroSection({
                   width={128}
                   height={128}
                   unoptimized
-                  className="w-full h-full object-cover"
+                  className="w-full h-full"
+                  style={{ borderRadius: '9999px', objectFit: 'cover' }}
                 />
               ) : (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <div
+                  className="w-full h-full bg-gray-100 flex items-center justify-center"
+                  style={{ borderRadius: '9999px' }}
+                >
                   <span className="text-4xl font-light text-gray-600">
                     {heroInitial}
                   </span>
@@ -245,8 +254,8 @@ function HeroSection({
           </div>
 
           {/* Name */}
-          <div>
-            <h1 className="text-5xl md:text-6xl font-light tracking-tight mb-4">
+          <div className="space-y-2.5 md:space-y-3">
+            <h1 className="text-5xl md:text-7xl font-semibold tracking-[-0.02em] leading-[1.04] text-black mb-0">
               {inlineEditMode ? (
                 <EditableText
                   value={fullName}
@@ -259,7 +268,7 @@ function HeroSection({
                 fullName
               )}
             </h1>
-            <p className="text-xl text-gray-600 tracking-wide mb-2">
+            <p className="text-base md:text-lg text-gray-600 tracking-[0.08em] mb-1">
               {inlineEditMode ? (
                 <EditableText
                   value={title}
@@ -273,8 +282,8 @@ function HeroSection({
               )}
             </p>
             {location && (
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                <MapPin className="w-4 h-4" />
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-500 pt-0.5">
+                <MapPin className="w-4 h-4 text-gray-500/90" />
                 <span>
                   {inlineEditMode ? (
                     <EditableText
@@ -293,8 +302,8 @@ function HeroSection({
           </div>
 
           {/* Bio */}
-          <div className="max-w-2xl">
-            <p className="text-lg text-gray-700 leading-relaxed">
+          <div className="max-w-[44rem] px-2 pt-1">
+            <p className="text-base md:text-lg text-gray-700 leading-8 md:leading-9">
               {inlineEditMode ? (
                 <EditableText
                   value={bio}
@@ -311,7 +320,9 @@ function HeroSection({
           </div>
 
           {/* Social Links */}
-          <SocialLinks socialLinks={socialLinks} />
+          <div className="pt-1 md:pt-2">
+            <SocialLinks socialLinks={socialLinks} />
+          </div>
         </motion.div>
       </div>
     </section>

@@ -46,14 +46,14 @@ const variantStyles: Record<NavbarVariant, Record<string, string>> = {
     mobile: 'bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/60',
   },
   mono: {
-    shell: 'border-b border-black/10 bg-white',
-    shellInside: 'border-b border-black/10 bg-white max-w-6xl mx-auto',
-    brand: 'text-xl font-light tracking-wider text-black',
-    link: 'text-gray-600 hover:text-black',
+    shell: 'border-b border-black/8 bg-white/95 backdrop-blur-sm',
+    shellInside: 'border-b border-black/8 bg-white max-w-6xl mx-auto',
+    brand: 'text-xl font-light tracking-[0.08em] text-black',
+    link: 'text-gray-600 hover:text-black hover:bg-black/[0.03]',
     linkActive: 'text-black font-medium',
-    activeBg: 'bg-black/5 border border-black/10',
+    activeBg: 'bg-black/[0.04] border border-black/[0.08]',
     cta: 'border border-black text-black hover:bg-black hover:text-white',
-    mobile: 'border-b border-black/10 bg-white',
+    mobile: 'border-b border-black/8 bg-white',
   },
   elite: {
     shell: 'backdrop-blur-md bg-white/5 border-b border-white/10',
@@ -162,7 +162,7 @@ function NavbarComponent({
 
   return (
     <div className={shellClassName}>
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 md:px-8 h-16 md:h-[4.25rem] flex items-center justify-between">
         <a
           href="#"
           onClick={handleBrandClick}

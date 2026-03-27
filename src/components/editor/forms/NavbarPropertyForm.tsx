@@ -48,21 +48,28 @@ export const NavbarPropertyForm: React.FC<NavbarPropertyFormProps> = ({ section 
     (navbarData.autoGenerateLinks === undefined && (!navbarData.links || navbarData.links.length === 0));
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          value={navbarData.name || ''}
-          onChange={(e) => handleInputChange('name', e.target.value)}
-          placeholder="Brand Name"
-        />
-      </div>
+    <div className="property-form">
+      <Card className="property-section">
+        <CardHeader className="property-section-header p-4 pb-2">
+          <CardTitle className="property-section-title text-sm">Brand</CardTitle>
+        </CardHeader>
+        <CardContent className="property-section-content p-4 pt-2">
+          <div className="property-field">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={navbarData.name || ''}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Brand Name"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      <Card>
-        <CardHeader className="p-4 pb-2 border-b border-slate-100">
+      <Card className="property-section">
+        <CardHeader className="property-section-header p-4 pb-2 border-b border-slate-100">
           <div className="flex items-center justify-between mb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
+            <CardTitle className="property-section-title text-sm flex items-center gap-2">
               <Link className="w-4 h-4" />
               Navigation Links
             </CardTitle>
@@ -88,11 +95,11 @@ export const NavbarPropertyForm: React.FC<NavbarPropertyFormProps> = ({ section 
             </div>
           )}
         </CardHeader>
-        <CardContent className="p-4 pt-4 space-y-4">
+        <CardContent className="property-section-content p-4 pt-4 space-y-4">
           {(navbarData.links || []).map((link, index) => (
             <div key={index} className={`flex gap-2 items-start bg-slate-50 p-3 rounded-md border border-slate-100 relative ${isAutoGenerate ? 'opacity-70' : ''}`}>
               <div className="flex-1 space-y-3">
-                <div className="space-y-1">
+                <div className="property-field">
                   <Label className="text-xs text-slate-500">Label</Label>
                   <Input
                     value={link.label}
@@ -102,7 +109,7 @@ export const NavbarPropertyForm: React.FC<NavbarPropertyFormProps> = ({ section 
                     disabled={isAutoGenerate}
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="property-field">
                   <Label className="text-xs text-slate-500">URL</Label>
                   <Input
                     value={link.href}
@@ -133,12 +140,12 @@ export const NavbarPropertyForm: React.FC<NavbarPropertyFormProps> = ({ section 
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="p-4 pb-2">
-          <CardTitle className="text-sm">CTA Button</CardTitle>
+      <Card className="property-section">
+        <CardHeader className="property-section-header p-4 pb-2">
+          <CardTitle className="property-section-title text-sm">CTA Button</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3 bg-slate-50 rounded-b-lg border-t border-slate-100">
-          <div className="space-y-1">
+        <CardContent className="property-section-content p-4 pt-2 space-y-3 bg-slate-50 rounded-b-lg border-t border-slate-100">
+          <div className="property-field">
             <Label className="text-xs text-slate-500">Label</Label>
             <Input
               value={navbarData.cta?.label || ''}
@@ -147,7 +154,7 @@ export const NavbarPropertyForm: React.FC<NavbarPropertyFormProps> = ({ section 
               className="bg-white h-8"
             />
           </div>
-          <div className="space-y-1">
+          <div className="property-field">
             <Label className="text-xs text-slate-500">URL</Label>
             <Input
               value={navbarData.cta?.href || ''}

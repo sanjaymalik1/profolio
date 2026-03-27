@@ -55,18 +55,18 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
   };
 
   return (
-    <div className="space-y-5">
+    <div className="property-form">
 
       {/* Basic Information */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <User className="w-4 h-4 text-slate-600" />
             Basic Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-4">
-          <div className="space-y-2">
+        <CardContent className="property-section-content space-y-4 pt-4">
+          <div className="property-field">
             <Label htmlFor="fullName" className="text-sm font-medium text-slate-700">Full Name</Label>
             <Input
               id="fullName"
@@ -77,7 +77,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="property-field">
             <Label htmlFor="title" className="text-sm font-medium text-slate-700">Professional Title</Label>
             <Input
               id="title"
@@ -90,7 +90,7 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
 
 
 
-          <div className="space-y-2">
+          <div className="property-field">
             <Label htmlFor="bio" className="text-sm font-medium text-slate-700">Bio</Label>
             <Textarea
               id="bio"
@@ -105,17 +105,17 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
       </Card>
 
       {/* Contact Information */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <Mail className="w-4 h-4 text-slate-600" />
             Contact Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-4">
+        <CardContent className="property-section-content space-y-4 pt-4">
 
 
-          <div className="space-y-2">
+          <div className="property-field">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">Location</Label>
             <Input
               id="location"
@@ -129,15 +129,15 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
       </Card>
 
       {/* Images */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <ImageIcon className="w-4 h-4 text-slate-600" />
             Images
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 pt-4">
-          <div className="space-y-2">
+        <CardContent className="property-section-content space-y-4 pt-4">
+          <div className="property-field">
             <Label htmlFor="profileImage" className="text-sm font-medium text-slate-700">Profile Image URL</Label>
             <Input
               id="profileImage"
@@ -152,21 +152,21 @@ export const HeroPropertyForm: React.FC<HeroPropertyFormProps> = ({ section }) =
       </Card>
 
       {/* Social Links */}
-      <Card className="border-slate-200 shadow-sm">
-        <CardHeader className="pb-3 bg-slate-50">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+      <Card className="property-section border-slate-200 shadow-sm">
+        <CardHeader className="property-section-header pb-3 bg-slate-50">
+          <CardTitle className="property-section-title text-sm font-semibold flex items-center gap-2 text-slate-900">
             <Link className="w-4 h-4 text-slate-600" />
             Social Links
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-4">
+        <CardContent className="property-section-content pt-4">
           <div className="space-y-3">
             {heroData.socialLinks?.map((social, index) => (
               <div key={index} className="flex gap-2 items-center">
                 <select
                   value={social.platform}
                   onChange={(e) => handleSocialLinkChange(index, 'platform', e.target.value)}
-                  className="px-3 py-2 border border-slate-200 rounded-md text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="property-control px-3 py-2 border border-slate-200 rounded-md text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                 >
                   <option value="github">GitHub</option>
                   <option value="linkedin">LinkedIn</option>

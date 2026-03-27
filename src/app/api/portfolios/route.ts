@@ -3,6 +3,79 @@ import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/user-helpers';
 
+const DEFAULT_LIMIT = 4;
+const MAX_LIMIT = 12;
+const DASHBOARD_CACHE_TTL_MS = 8_000;
+
+type PortfolioListResponse = {
+  success: true;
+  data: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    customSlug: string | null;
+    template: string;
+    isPublic: boolean;
+    content: { sections: unknown[] } | null;
+    sectionCount: number;
+    viewCount: number;
+    lastPublishedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }>;
+  total: number;
+};
+
+type CacheEntry = {
+  expiresAt: number;
+  payload: PortfolioListResponse;
+};
+
+const dashboardListCache = new Map<string, CacheEntry>();
+
+function cacheKey(userId: string, page: number, limit: number) {
+  return `${userId}:${page}:${limit}`;
+}
+
+function pruneExpiredDashboardCache() {
+  const now = Date.now();
+  for (const [key, entry] of dashboardListCache.entries()) {
+    if (entry.expiresAt <= now) {
+      dashboardListCache.delete(key);
+    }
+  }
+}
+
+function clearDashboardCacheForUser(userId: string) {
+  const prefix = `${userId}:`;
+  for (const key of dashboardListCache.keys()) {
+    if (key.startsWith(prefix)) {
+      dashboardListCache.delete(key);
+    }
+  }
+}
+
+function extractPreviewSections(content: unknown): { sections: unknown[] } | null {
+  const sections = (content as { sections?: unknown[] } | null | undefined)?.sections;
+  if (!Array.isArray(sections)) return null;
+
+  // Keep only section fields needed by dashboard preview renderer.
+  const normalizedSections = sections.map((section) => {
+    if (!section || typeof section !== 'object') return section;
+    const typedSection = section as Record<string, unknown>;
+    return {
+      id: typedSection.id,
+      type: typedSection.type,
+      data: typedSection.data,
+      styling: typedSection.styling,
+      isEditable: typedSection.isEditable,
+      order: typedSection.order,
+    };
+  });
+
+  return { sections: normalizedSections };
+}
+
 // GET /api/portfolios - Get user's portfolios
 export async function GET(request: NextRequest) {
   const apiStart = Date.now();
@@ -11,9 +84,11 @@ export async function GET(request: NextRequest) {
   try {
     const pageParam = request.nextUrl.searchParams.get('page');
     const limitParam = request.nextUrl.searchParams.get('limit');
+    const forceRefresh = request.nextUrl.searchParams.get('fresh') === '1';
 
     const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
-    const limit = Math.max(1, Number.parseInt(limitParam ?? '50', 10) || 50);
+    const parsedLimit = Number.parseInt(limitParam ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT;
+    const limit = Math.min(MAX_LIMIT, Math.max(1, parsedLimit));
     const skip = (page - 1) * limit;
 
     const authStart = Date.now();
@@ -45,6 +120,23 @@ export async function GET(request: NextRequest) {
       }, { status: 404 });
     }
 
+    pruneExpiredDashboardCache();
+    const key = cacheKey(user.id, page, limit);
+    if (!forceRefresh) {
+      const cached = dashboardListCache.get(key);
+      if (cached && cached.expiresAt > Date.now()) {
+        if (shouldLogPerf) {
+          console.info(`[Portfolios API GET] cache hit page=${page} limit=${limit} count=${cached.payload.data.length} total=${Date.now() - apiStart}ms`);
+        }
+        return NextResponse.json(cached.payload, {
+          headers: {
+            'Cache-Control': 'private, max-age=8, stale-while-revalidate=30',
+            Vary: 'Cookie',
+          },
+        });
+      }
+    }
+
     // Fetch portfolios for dashboard cards. Keep query simple and index-friendly.
     const queryStart = Date.now();
     const [portfolios, total] = await prisma.$transaction([
@@ -72,41 +164,51 @@ export async function GET(request: NextRequest) {
 
     const queryDuration = Date.now() - queryStart;
 
-    // Keep processing minimal: preserve DB payload and only add sectionCount.
+    // Keep processing minimal and preview-oriented.
     const transformStart = Date.now();
     const portfolioList = portfolios.map((portfolio) => {
-      const sectionCount = (portfolio.content as { sections?: unknown[] } | null)?.sections?.length ?? 0;
+      const sections = (portfolio.content as { sections?: unknown[] } | null)?.sections;
+      const sectionCount = Array.isArray(sections) ? sections.length : 0;
       return {
-        ...portfolio,
+        id: portfolio.id,
+        title: portfolio.title,
+        slug: portfolio.slug,
+        customSlug: portfolio.customSlug,
+        template: portfolio.template,
+        isPublic: portfolio.isPublic,
+        content: extractPreviewSections(portfolio.content),
         sectionCount,
+        viewCount: portfolio.viewCount,
+        lastPublishedAt: portfolio.lastPublishedAt,
+        createdAt: portfolio.createdAt,
+        updatedAt: portfolio.updatedAt,
       };
     });
 
     const transformDuration = Date.now() - transformStart;
 
+    const payload: PortfolioListResponse = {
+      success: true,
+      data: portfolioList,
+      total,
+    };
+
+    dashboardListCache.set(key, {
+      expiresAt: Date.now() + DASHBOARD_CACHE_TTL_MS,
+      payload,
+    });
+
     if (shouldLogPerf) {
-      const contentBytes = portfolioList.reduce((total, portfolio) => {
-        if (!portfolio.content) return total;
-        try {
-          return total + Buffer.byteLength(JSON.stringify(portfolio.content), 'utf8');
-        } catch {
-          return total;
-        }
-      }, 0);
-
-      const responseBody = { success: true, data: portfolioList };
-      const responseBytes = Buffer.byteLength(JSON.stringify(responseBody), 'utf8');
-
       console.info(
-        `[Portfolios API GET] page=${page} limit=${limit} count=${portfolioList.length} totalCount=${total} query=${queryDuration}ms transform=${transformDuration}ms contentBytes=${contentBytes} responseBytes=${responseBytes} total=${Date.now() - apiStart}ms`
+        `[Portfolios API GET] page=${page} limit=${limit} count=${portfolioList.length} totalCount=${total} query=${queryDuration}ms transform=${transformDuration}ms total=${Date.now() - apiStart}ms`
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: portfolioList,
-      portfolios: portfolioList,
-      total
+    return NextResponse.json(payload, {
+      headers: {
+        'Cache-Control': 'private, max-age=8, stale-while-revalidate=30',
+        Vary: 'Cookie',
+      },
     });
 
   } catch (error) {
@@ -175,6 +277,8 @@ export async function POST(request: NextRequest) {
         content: content || {},
       },
     });
+
+    clearDashboardCacheForUser(user.id);
 
     return NextResponse.json({
       success: true,

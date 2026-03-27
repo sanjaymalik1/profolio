@@ -215,7 +215,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen landing-editorial">
+    <div className="min-h-screen landing-editorial dashboard-workspace">
       <DashboardNav />
 
       <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 pb-20">
@@ -290,7 +290,7 @@ export default function DashboardPage() {
               className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm text-sm"
             >
               <Plus className="w-4 h-4 mr-1.5" />
-              {isCreating === 'blank' ? 'Creating…' : 'New Portfolio'}
+              {isCreating === 'blank' ? 'Creating…' : 'Create Portfolio'}
             </Button>
           </div>
         </div>
