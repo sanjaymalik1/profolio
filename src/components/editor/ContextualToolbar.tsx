@@ -161,7 +161,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
   return (
     <div
       ref={toolbarRef}
-      className="fixed z-[100] bg-white border border-gray-200 rounded-lg shadow-lg px-2 sm:px-2 py-2 sm:py-2"
+      className="fixed z-[100] bg-white border border-gray-200 rounded-lg shadow-lg px-2 sm:px-2 py-2 sm:py-2 max-w-[calc(100vw-1rem)] overflow-x-auto"
       style={{
         top: position.top,
         left: position.left,
@@ -169,7 +169,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
       onClick={handleClick}
       onMouseDown={handleMouseDown}
     >
-      <div className="flex items-center gap-1 sm:gap-1">
+      <div className="flex items-center gap-1 sm:gap-1 min-w-max">
         {/* Text Formatting - touch-friendly buttons */}
         <div className="flex items-center gap-0.5 border-r border-gray-200 pr-1.5 sm:pr-2 mr-1">
           <button

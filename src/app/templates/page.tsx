@@ -41,7 +41,7 @@ export default function TemplatesPage() {
     <div className="landing-editorial">
       {/* Header */}
       <div className="bg-[#f5f1ea] border-b border-[#d8d0c6]">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <Link href="/">
             <Button variant="ghost" className="gap-2 text-[#5c554d] hover:text-[#2d2a26] hover:bg-[#ece4da]">
               <ArrowLeft className="w-4 h-4" />
@@ -52,12 +52,12 @@ export default function TemplatesPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-12">
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="text-4xl md:text-5xl font-semibold mb-4"
+            className="text-3xl sm:text-4xl md:text-5xl font-semibold mb-4"
           >
             Portfolio Templates
           </motion.h1>
@@ -73,7 +73,7 @@ export default function TemplatesPage() {
 
         {/* Templates Grid */}
         <div className="flex justify-center mb-16">
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl">
+          <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl w-full">
             {availableTemplates.map((template, index) => (
               <motion.div
                 key={template.id}

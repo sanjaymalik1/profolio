@@ -167,7 +167,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="property-field">
                     <Label>Title</Label>
                     <Input
@@ -200,7 +200,7 @@ export const ProjectsPropertyForm: React.FC<ProjectsPropertyFormProps> = ({ sect
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="property-field">
                     <Label>Live URL</Label>
                     <Input

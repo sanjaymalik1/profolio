@@ -33,26 +33,28 @@ function PortfolioRendererComponent({ sections, templateId }: PortfolioRendererP
 
   if (ActiveTemplateComponent) {
     return (
-      <ActiveTemplateComponent
-        isPreview={false}
-        sections={sections}
-        renderSection={(section: EditorSection, index: number, content: React.ReactNode) => {
-          if (content) return <React.Fragment key={section.id}>{content}</React.Fragment>;
-          // Default section render logic
-          switch (section.type) {
-            case 'hero': return <ErrorBoundary key={section.id} label="Hero"><HeroSection data={section.data as unknown as HeroData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'about': return <ErrorBoundary key={section.id} label="About"><AboutSection data={section.data as unknown as AboutData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'skills': return <ErrorBoundary key={section.id} label="Skills"><SkillsSection data={section.data as unknown as SkillsData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'projects': return <ErrorBoundary key={section.id} label="Projects"><ProjectsSection data={section.data as unknown as ProjectsData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'contact': return <ErrorBoundary key={section.id} label="Contact"><ContactSection data={section.data as unknown as ContactData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'experience': return <ErrorBoundary key={section.id} label="Experience"><ExperienceSection data={section.data as unknown as ExperienceData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'education': return <ErrorBoundary key={section.id} label="Education"><EducationSection data={section.data as unknown as EducationData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'navbar': return <ErrorBoundary key={section.id} label="Navbar"><NavbarSection data={section.data as unknown as NavbarData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            case 'footer': return <ErrorBoundary key={section.id} label="Footer"><FooterSection data={section.data as unknown as FooterData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
-            default: return null;
-          }
-        }}
-      />
+      <div className="overflow-x-hidden">
+        <ActiveTemplateComponent
+          isPreview={false}
+          sections={sections}
+          renderSection={(section: EditorSection, index: number, content: React.ReactNode) => {
+            if (content) return <React.Fragment key={section.id}>{content}</React.Fragment>;
+            // Default section render logic
+            switch (section.type) {
+              case 'hero': return <ErrorBoundary key={section.id} label="Hero"><HeroSection data={section.data as unknown as HeroData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'about': return <ErrorBoundary key={section.id} label="About"><AboutSection data={section.data as unknown as AboutData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'skills': return <ErrorBoundary key={section.id} label="Skills"><SkillsSection data={section.data as unknown as SkillsData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'projects': return <ErrorBoundary key={section.id} label="Projects"><ProjectsSection data={section.data as unknown as ProjectsData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'contact': return <ErrorBoundary key={section.id} label="Contact"><ContactSection data={section.data as unknown as ContactData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'experience': return <ErrorBoundary key={section.id} label="Experience"><ExperienceSection data={section.data as unknown as ExperienceData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'education': return <ErrorBoundary key={section.id} label="Education"><EducationSection data={section.data as unknown as EducationData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'navbar': return <ErrorBoundary key={section.id} label="Navbar"><NavbarSection data={section.data as unknown as NavbarData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              case 'footer': return <ErrorBoundary key={section.id} label="Footer"><FooterSection data={section.data as unknown as FooterData} styling={section.styling} isEditing={false} isPublicView={true} /></ErrorBoundary>;
+              default: return null;
+            }
+          }}
+        />
+      </div>
     );
   }
 
@@ -61,27 +63,36 @@ function PortfolioRendererComponent({ sections, templateId }: PortfolioRendererP
     const templateId = (templateSection.data as { templateId?: string })?.templateId;
     const templateData = (templateSection.data as { templateData?: unknown })?.templateData || templateSection.data;
 
+    let renderedTemplate: React.ReactNode = null;
+
     switch (templateId) {
       case 'dark-professional':
-        return <DarkProfessionalTemplate data={templateData} isPreview={false} />;
+        renderedTemplate = <DarkProfessionalTemplate data={templateData} isPreview={false} />;
+        break;
       case 'elegant-monochrome':
-        return <ElegantMonochromeTemplate data={templateData} isPreview={false} />;
+        renderedTemplate = <ElegantMonochromeTemplate data={templateData} isPreview={false} />;
+        break;
       case 'warm-minimalist':
-        return <WarmMinimalistTemplate data={templateData} isPreview={false} />;
+        renderedTemplate = <WarmMinimalistTemplate data={templateData} isPreview={false} />;
+        break;
       case 'elite-pro':
-        return <EliteProTemplate data={templateData} isPreview={false} />;
+        renderedTemplate = <EliteProTemplate data={templateData} isPreview={false} />;
+        break;
       default:
-        return (
+        renderedTemplate = (
           <div className="min-h-screen flex items-center justify-center">
             <p>Unknown template: {templateId}</p>
           </div>
         );
+        break;
     }
+
+    return <div className="overflow-x-hidden">{renderedTemplate}</div>;
   }
 
   // Render individual sections for generic portfolios
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {sections.map((section) => {
         // Wrapper with section ID for anchor linking
         const SectionWrapper = ({ children }: { children: React.ReactNode }) => (

@@ -10,6 +10,11 @@ export default function Header() {
     <header className="fixed inset-x-0 top-0 z-50 border-b landing-divider bg-[var(--landing-bg)] shadow-[0_14px_28px_-20px_rgba(107,122,82,0.42)]">
       <div className="mx-auto w-full max-w-[88rem] px-3 sm:px-6">
         <div className="grid h-[4.25rem] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-8">
+          <nav className="flex md:hidden items-center gap-3 text-[0.66rem] font-bold uppercase tracking-[0.12em] text-[#5c554d]">
+            <a className="transition-colors hover:text-[#6b7a52]" href="#templates">Templates</a>
+            <Link href="/contact" className="transition-colors hover:text-[#6b7a52]">Contact</Link>
+          </nav>
+
           <nav className="hidden md:flex items-center gap-7 text-[0.78rem] font-bold uppercase tracking-[0.12em] text-[#5c554d]">
             <a className="transition-colors hover:text-[#6b7a52]" href="#templates">Templates</a>
             <Link href="/contact" className="transition-colors hover:text-[#6b7a52]">Contact</Link>

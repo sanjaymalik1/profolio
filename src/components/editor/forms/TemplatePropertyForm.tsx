@@ -242,7 +242,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
                     </Button>
 
                     <div className="space-y-3 mt-4">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
                           <Label className="text-[10px] text-slate-500 mb-1 block">Position</Label>
                           <Input
@@ -261,7 +261,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
                           <Label className="text-[10px] text-slate-500 mb-1 block">Start Date</Label>
                           <Input
@@ -339,7 +339,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
                     </Button>
 
                     <div className="space-y-3 mt-4">
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
                           <Label className="text-[10px] text-slate-500 mb-1 block">Degree</Label>
                           <Input
@@ -359,7 +359,7 @@ export const TemplatePropertyForm: React.FC<TemplatePropertyFormProps> = ({ sect
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
                           <Label className="text-[10px] text-slate-500 mb-1 block">Start Date</Label>
                           <Input

@@ -166,7 +166,7 @@ export const ExperiencePropertyForm: React.FC<ExperiencePropertyFormProps> = ({ 
                         {/* Accordion body */}
                         {expandedIndex === index && (
                             <CardContent className="property-section-content pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
-                                <div className="grid grid-cols-2 gap-2 pt-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3">
                                     <div className="property-field">
                                         <Label className="text-xs">Job Title *</Label>
                                         <Input
@@ -199,7 +199,7 @@ export const ExperiencePropertyForm: React.FC<ExperiencePropertyFormProps> = ({ 
                                             placeholder="Present"
                                         />
                                     </div>
-                                    <div className="property-field col-span-2">
+                                    <div className="property-field sm:col-span-2">
                                         <Label className="text-xs">Location</Label>
                                         <Input
                                             value={exp.location || ''}

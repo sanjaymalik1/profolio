@@ -21,6 +21,7 @@ import {
   EyeOff,
   Loader2
 } from 'lucide-react';
+import { buildPortfolioUrl } from '@/lib/portfolio-url';
 
 interface PublishDialogProps {
   portfolioId: string;
@@ -76,7 +77,8 @@ export function PublishDialog({
       }
 
       setIsPublic(true);
-      setPublicUrl(data.data.publicUrl);
+      const publishedSlug = data?.data?.customSlug || data?.data?.slug || customSlug || currentSlug;
+      setPublicUrl(buildPortfolioUrl(publishedSlug));
       onPublishSuccess?.();
     } catch {
       setError('An error occurred while publishing');

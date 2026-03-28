@@ -166,8 +166,8 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
                         {/* Accordion body */}
                         {expandedIndex === index && (
                             <CardContent className="property-section-content pt-0 pb-4 px-3 space-y-3 border-t border-slate-100">
-                                <div className="grid grid-cols-2 gap-2 pt-3">
-                                    <div className="property-field col-span-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-3">
+                                    <div className="property-field sm:col-span-2">
                                         <Label className="text-xs">Institution *</Label>
                                         <Input
                                             value={edu.institution}
@@ -175,7 +175,7 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
                                             placeholder="MIT"
                                         />
                                     </div>
-                                    <div className="property-field col-span-2">
+                                    <div className="property-field sm:col-span-2">
                                         <Label className="text-xs">Degree *</Label>
                                         <Input
                                             value={edu.degree}
@@ -183,7 +183,7 @@ export const EducationPropertyForm: React.FC<EducationPropertyFormProps> = ({ se
                                             placeholder="Bachelor of Science"
                                         />
                                     </div>
-                                    <div className="property-field col-span-2">
+                                    <div className="property-field sm:col-span-2">
                                         <Label className="text-xs">Field of Study</Label>
                                         <Input
                                             value={edu.field}

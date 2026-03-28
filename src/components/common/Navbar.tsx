@@ -162,11 +162,11 @@ function NavbarComponent({
 
   return (
     <div className={shellClassName}>
-      <div className="max-w-6xl mx-auto px-6 md:px-8 h-16 md:h-[4.25rem] flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 h-16 md:h-[4.25rem] flex items-center justify-between gap-3">
         <a
           href="#"
           onClick={handleBrandClick}
-          className={`${styles.brand} transition-colors`}
+          className={`${styles.brand} transition-colors truncate max-w-[60vw] sm:max-w-none`}
         >
           {resolvedHeroName}
         </a>
@@ -221,7 +221,7 @@ function NavbarComponent({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
-            className={`md:hidden px-6 py-4 space-y-1 ${styles.mobile}`}
+            className={`md:hidden px-4 sm:px-6 py-4 space-y-1 ${styles.mobile}`}
           >
             {NAV_ITEMS.map((item) => (
               <a
