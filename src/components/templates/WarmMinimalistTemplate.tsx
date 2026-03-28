@@ -1215,7 +1215,7 @@ function ContactSection({ contactData, isPreview, sectionId }: { contactData: an
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const rootClass = "min-h-screen bg-[#FAF9F6] text-[#6B5437]";
+const rootClass = "min-h-screen bg-[#FAF9F6] text-[#6B5437] overflow-x-hidden";
 const rootStyle = { fontFamily: 'system-ui, -apple-system, sans-serif' };
 
 function WarmMinimalistTemplateComponent({

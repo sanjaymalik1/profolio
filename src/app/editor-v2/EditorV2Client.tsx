@@ -19,7 +19,9 @@ import {
   Eye,
   LogIn,
   ArrowLeft,
-  FileBadge
+  FileBadge,
+  PanelLeft,
+  SlidersHorizontal
 } from 'lucide-react';
 import { EditorLoadingSkeleton } from './EditorLoadingSkeleton';
 import { ResumeImportModal } from '@/components/editor/ResumeImportModal';
@@ -29,6 +31,8 @@ function EditorLayout() {
   const [activeTab, setActiveTab] = React.useState('canvas');
   const [isMounted, setIsMounted] = React.useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = React.useState(false);
+  const [showMobileSections, setShowMobileSections] = React.useState(true);
+  const [showMobileProperties, setShowMobileProperties] = React.useState(false);
   const { state, isLoading } = useEditor();
 
   // Client-only rendering guard to prevent hydration mismatches
@@ -86,7 +90,7 @@ function EditorLayout() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 min-w-0 overflow-x-auto">
             {/* Back to Dashboard */}
             {isLoaded && user && (
               <Button
@@ -135,6 +139,16 @@ function EditorLayout() {
               <span className="text-[0.74rem] font-semibold uppercase tracking-[0.1em]">Import Resume</span>
             </Button>
 
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsResumeModalOpen(true)}
+              className="sm:hidden h-8 w-8 p-0 border-[#d8d0c6] text-[#5c554d] hover:bg-[#ece4da] hover:text-[#2d2a26] bg-[#f8f4ee]"
+              title="Import Resume"
+            >
+              <FileBadge className="w-4 h-4" />
+            </Button>
+
             {/* Portfolio Management */}
             <PortfolioManager />
           </div>
@@ -142,7 +156,7 @@ function EditorLayout() {
       </header>
 
       {/* Editor Layout - Responsive with mobile-first approach */}
-      <div className="flex h-[calc(100vh-3rem)] sm:h-[calc(100vh-3.5rem)]">
+      <div className="flex h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)]">
 
         {/* Left Sidebar - Section Palette (Hidden on mobile/tablet, visible on desktop) */}
         {showSectionPalette && (
@@ -157,7 +171,41 @@ function EditorLayout() {
         <main className="flex-1 overflow-hidden bg-[#f5f1ea] min-w-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             <TabsContent value="canvas" className="h-full m-0 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto">
+              {showSectionPalette && (
+                <section className="mb-4 lg:hidden rounded-lg border border-slate-200/60 bg-white/70 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowMobileSections((prev) => !prev)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-left"
+                  >
+                    <span className="text-xs uppercase tracking-[0.11em] font-semibold text-[#5c554d]">Sections</span>
+                    <PanelLeft className="w-4 h-4 text-[#5c554d]" />
+                  </button>
+                  {showMobileSections && (
+                    <div className="border-t border-slate-200/60 p-3 max-h-[45vh] overflow-y-auto bg-[#f5f1ea]">
+                      <SectionPalette />
+                    </div>
+                  )}
+                </section>
+              )}
+
               <EditorCanvas />
+
+              <section className="mt-4 md:hidden rounded-lg border border-slate-200/60 bg-white/70 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowMobileProperties((prev) => !prev)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 text-left"
+                >
+                  <span className="text-xs uppercase tracking-[0.11em] font-semibold text-[#5c554d]">Properties</span>
+                  <SlidersHorizontal className="w-4 h-4 text-[#5c554d]" />
+                </button>
+                {showMobileProperties && (
+                  <div className="border-t border-slate-200/60 p-3 bg-[#f5f1ea]">
+                    <PropertyPanel mobile />
+                  </div>
+                )}
+              </section>
             </TabsContent>
             <TabsContent value="preview" className="h-full m-0 overflow-hidden bg-[#f5f1ea]">
               <PortfolioPreview />

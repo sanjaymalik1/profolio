@@ -87,7 +87,7 @@ export const ContextualToolbar: React.FC<ContextualToolbarProps> = ({
     <div
       className={cn(
         'fixed z-50 bg-white border border-slate-200 shadow-lg rounded-lg',
-        'flex items-center gap-1 p-1.5',
+        'flex items-center gap-1 p-1.5 max-w-[calc(100vw-1rem)] overflow-x-auto',
         'transition-opacity duration-200',
         visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}

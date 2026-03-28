@@ -20,6 +20,22 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+Portfolio public links use a dynamic base URL.
+
+- `NEXT_PUBLIC_SITE_URL` (recommended in production)
+	- Example: `https://yourdomain.com`
+
+Behavior:
+
+- Client-side link generation uses:
+	1. `NEXT_PUBLIC_SITE_URL` if set
+	2. `window.location.origin` otherwise
+- Server-side link generation uses `NEXT_PUBLIC_SITE_URL`.
+
+For Vercel, set `NEXT_PUBLIC_SITE_URL` in Project Settings -> Environment Variables.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -27,6 +27,7 @@ import {
   Save
 } from 'lucide-react';
 import { PublishDialog } from '@/components/portfolio/PublishDialog';
+import { buildPortfolioUrl } from '@/lib/portfolio-url';
 
 export const PortfolioManager: React.FC = () => {
   const { user, isLoaded } = useUser();
@@ -188,14 +189,14 @@ export const PortfolioManager: React.FC = () => {
     if (!isMounted || !portfolioDetails?.isPublic) {
       return undefined;
     }
-    return `${window.location.origin}/p/${portfolioDetails.customSlug || portfolioDetails.slug}`;
+    return buildPortfolioUrl(portfolioDetails.customSlug || portfolioDetails.slug);
   }, [isMounted, portfolioDetails]);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
 
       {/* Portfolio Title */}
-      <div className="flex items-center gap-2">
+      <div className="hidden md:flex items-center gap-2 min-w-0">
         {isEditingTitle ? (
           <div className="flex items-center gap-1">
             <Input
@@ -240,7 +241,7 @@ export const PortfolioManager: React.FC = () => {
 
       {/* Save Button + Status Indicator */}
       {isLoaded && user && (
-        <div className="flex items-center gap-1.5 text-xs border-l pl-3">
+        <div className="flex items-center gap-1.5 text-xs border-l pl-2 sm:pl-3">
           <Button
             variant="ghost"
             size="sm"
@@ -276,7 +277,7 @@ export const PortfolioManager: React.FC = () => {
 
       {/* Error Display */}
       {saveError && (
-        <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-md">
+        <div className="hidden sm:flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-md">
           <AlertCircle className="w-3.5 h-3.5" />
           <span className="max-w-[200px] truncate">{saveError}</span>
           <button onClick={clearSaveError} className="hover:text-red-800">×</button>

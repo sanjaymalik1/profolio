@@ -275,8 +275,8 @@ export const PortfolioPreview: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#f5f1ea] editor-typography">
       {/* Preview Controls */}
-      <div className="flex items-center justify-between p-4 border-b border-[#d8d0c6] bg-[#f5f1ea]">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 sm:p-4 border-b border-[#d8d0c6] bg-[#f5f1ea]">
+        <div className="flex items-center gap-2 min-w-0">
           <Badge variant="outline" className="text-[0.7rem] uppercase tracking-[0.1em] border-[#d8d0c6] text-[#5c554d]">
             <Eye className="w-3 h-3 mr-1" />
             Live Preview
@@ -286,9 +286,9 @@ export const PortfolioPreview: React.FC = () => {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto min-w-0">
           {/* Device Toggle */}
-          <div className="flex items-center border border-[#d8d0c6] rounded-lg bg-[#f8f4ee]">
+          <div className="flex items-center border border-[#d8d0c6] rounded-lg bg-[#f8f4ee] shrink-0">
             <Button
               variant={previewDevice === 'desktop' ? 'default' : 'ghost'}
               size="sm"
@@ -385,11 +385,11 @@ export const PortfolioPreview: React.FC = () => {
 
       {/* Preview Info */}
       <div className="px-4 py-2 border-t border-[#d8d0c6] bg-[#f5f1ea] text-[0.72rem] uppercase tracking-[0.1em] text-[#5c554d]">
-        <div className="flex items-center justify-between">
-          <span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="truncate">
             Device: {previewDevice} • Sections: {state.sections.length}
           </span>
-          <span>
+          <span className="hidden sm:inline">
             Updates automatically as you edit
           </span>
         </div>

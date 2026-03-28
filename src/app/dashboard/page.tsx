@@ -23,6 +23,7 @@ import { PublishDialog } from '@/components/portfolio/PublishDialog';
 import { DashboardNav } from '@/components/dashboard/DashboardNav';
 import { TEMPLATE_REGISTRY, getTemplateName } from '@/lib/portfolio/registry';
 import { ScaledTemplatePreview } from '@/components/templates/ScaledPreview';
+import { buildPortfolioUrl } from '@/lib/portfolio-url';
 import type { EditorSection } from '@/types/editor';
 
 // ─── Portfolio card ──────────────────────────────────────────────────────────
@@ -117,7 +118,7 @@ function PortfolioCard({ portfolio, onEdit, onPublish, onDelete }: PortfolioCard
         {/* Delete — visible on hover */}
         <button
           onClick={(e) => { e.stopPropagation(); onDelete(); }}
-          className="p-1.5 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-150 shrink-0"
+          className="p-1.5 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-150 shrink-0"
           title="Delete portfolio"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -235,7 +236,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {TEMPLATE_REGISTRY.map((template) => (
               <div
                 key={template.id}
@@ -266,7 +267,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Workspace header ───────────────────────────────────────── */}
-        <div className="flex items-center justify-between mb-6 pt-8 border-t border-slate-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 pt-8 border-t border-slate-200">
           <div>
             <h1 className="text-xl font-semibold text-slate-900">My Portfolios</h1>
             <p className="text-sm text-slate-500 mt-0.5">Manage and publish your portfolio sites</p>
@@ -274,12 +275,12 @@ export default function DashboardPage() {
               Showing {portfolios.length} of {total} portfolios
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => refetch()}
               disabled={portfoliosLoading}
-              className="text-sm border-slate-200"
+              className="text-sm border-slate-200 flex-1 sm:flex-none"
             >
               <RefreshCw className={`w-4 h-4 mr-1.5 ${portfoliosLoading ? 'animate-spin' : ''}`} />
               Refresh
@@ -287,7 +288,7 @@ export default function DashboardPage() {
             <Button
               onClick={() => createPortfolio('Untitled Portfolio')}
               disabled={isCreating !== null}
-              className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm text-sm"
+              className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm text-sm flex-1 sm:flex-none"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               {isCreating === 'blank' ? 'Creating…' : 'Create Portfolio'}
@@ -306,7 +307,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {portfolios.map((portfolio) => (
                 <MemoizedPortfolioCard
                   key={portfolio.id}
@@ -351,7 +352,7 @@ export default function DashboardPage() {
           isPublic={publishDialogPortfolio.isPublic || false}
           currentSlug={publishDialogPortfolio.slug}
           customSlug={publishDialogPortfolio.customSlug}
-          publicUrl={publishDialogPortfolio.isPublic ? `${window.location.origin}/p/${publishDialogPortfolio.customSlug || publishDialogPortfolio.slug}` : undefined}
+          publicUrl={publishDialogPortfolio.isPublic ? buildPortfolioUrl(publishDialogPortfolio.customSlug || publishDialogPortfolio.slug) : undefined}
           viewCount={publishDialogPortfolio.viewCount || 0}
           isOpen={true}
           onClose={() => setPublishDialogPortfolio(null)}

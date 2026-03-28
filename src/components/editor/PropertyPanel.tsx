@@ -697,7 +697,11 @@ const SectionDataPropertyForm: React.FC<{ section: EditorSection; activeTemplate
   );
 };
 
-export const PropertyPanel: React.FC = () => {
+interface PropertyPanelProps {
+  mobile?: boolean;
+}
+
+export const PropertyPanel: React.FC<PropertyPanelProps> = ({ mobile = false }) => {
   const { state } = useEditor();
   const selectedSection = state.selectedSectionId
     ? state.sections.find((section: EditorSection) => section.id === state.selectedSectionId)
@@ -735,8 +739,14 @@ export const PropertyPanel: React.FC = () => {
     return <SectionDataPropertyForm section={selectedSection} activeTemplateId={activeTemplateId} />;
   };
 
+  const wrapperClassName = mobile
+    ? 'property-panel w-full bg-[#f5f1ea] border border-slate-200/60 rounded-lg overflow-hidden flex flex-col editor-typography'
+    : 'property-panel hidden md:flex w-64 lg:w-72 xl:w-80 2xl:w-96 bg-[#f5f1ea] border-l border-slate-200/50 flex-col h-full editor-typography';
+
+  const WrapperTag = mobile ? 'div' : 'aside';
+
   return (
-    <aside className="property-panel hidden md:flex w-64 lg:w-72 xl:w-80 2xl:w-96 bg-[#f5f1ea] border-l border-slate-200/50 flex-col h-full editor-typography">
+    <WrapperTag className={wrapperClassName}>
       <div className="p-3 sm:p-4 border-b border-slate-200/50">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold flex items-center gap-2 text-[#2d2a26]">
@@ -751,13 +761,13 @@ export const PropertyPanel: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="property-panel-content p-4 sm:p-5">
+      <div className={mobile ? 'max-h-[55vh] overflow-y-auto overflow-x-hidden' : 'flex-1 overflow-y-auto overflow-x-hidden'}>
+        <div className={mobile ? 'property-panel-content p-3 sm:p-4' : 'property-panel-content p-4 sm:p-5'}>
           <div className="property-panel-form">
             {renderPropertyForm()}
           </div>
         </div>
       </div>
-    </aside>
+    </WrapperTag>
   );
 };

@@ -1282,7 +1282,7 @@ function ElegantMonochromeTemplateComponent({
     const hasNavbar = !!navbarSection;
 
     return (
-      <div className="bg-white text-black min-h-screen">
+      <div className="bg-white text-black min-h-screen overflow-x-hidden">
         {hasNavbar && !isPreview && (
           <Navbar
             sections={sections}
@@ -1414,7 +1414,7 @@ function ElegantMonochromeTemplateComponent({
   // ─── Standalone rendering (for public page) ──────────────────────────────────
 
   return (
-    <div className="bg-white text-black min-h-screen">
+    <div className="bg-white text-black min-h-screen overflow-x-hidden">
       <Navbar
         sections={sections}
         navData={navData}

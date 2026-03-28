@@ -121,6 +121,19 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+
   body {
     background-color: var(--landing-bg);
     color: var(--landing-text);
@@ -393,6 +406,16 @@
 
   .property-panel-content {
     padding-inline: 1rem;
+  }
+
+  .property-panel-form {
+    overflow-wrap: anywhere;
+  }
+
+  .property-panel-form input,
+  .property-panel-form select,
+  .property-panel-form textarea {
+    max-width: 100%;
   }
 
   @media (min-width: 640px) {

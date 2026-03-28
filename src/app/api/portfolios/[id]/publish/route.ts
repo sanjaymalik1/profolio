@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/user-helpers';
+import { buildPortfolioUrlServer } from '@/lib/portfolio-url';
 
 interface RouteParams {
   params: Promise<{
@@ -127,7 +128,7 @@ export async function POST(
 
     // Generate public URL
     const publicSlug = updatedPortfolio.customSlug || updatedPortfolio.slug;
-    const publicUrl = isPublic ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/p/${publicSlug}` : null;
+    const publicUrl = isPublic ? buildPortfolioUrlServer(publicSlug) : null;
 
     return NextResponse.json({
       success: true,

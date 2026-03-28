@@ -69,30 +69,30 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="!max-w-[85vw] sm:!max-w-[85vw] md:!max-w-[80vw] lg:!max-w-[75vw] max-h-[90vh] w-full h-full flex flex-col overflow-hidden p-0">
+      <DialogContent className="!max-w-[95vw] sm:!max-w-[85vw] md:!max-w-[80vw] lg:!max-w-[75vw] max-h-[95vh] sm:max-h-[90vh] w-full h-full flex flex-col overflow-hidden p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>{template.name} Template Preview</DialogTitle>
           <DialogDescription>Preview of the {template.name} portfolio template</DialogDescription>
         </DialogHeader>
 
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-white sticky top-0 z-50">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-6 border-b bg-white sticky top-0 z-50">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <div className="flex items-center gap-2">
               {getCategoryIcon(template.category)}
               <div>
-                <h2 className="text-xl font-semibold">{template.name}</h2>
+                <h2 className="text-base sm:text-xl font-semibold">{template.name}</h2>
                 <p className="text-sm text-gray-500 capitalize">{template.category} Template</p>
               </div>
             </div>
-            <Badge variant="secondary" className="capitalize">
+            <Badge variant="secondary" className="capitalize hidden sm:inline-flex">
               {template.category}
             </Badge>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
             {/* Device Toggle */}
-            <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-lg">
+            <div className="flex items-center gap-1 sm:gap-2 p-1 bg-gray-100 rounded-lg shrink-0">
               <Button
                 variant={previewDevice === 'desktop' ? 'default' : 'ghost'}
                 size="sm"
@@ -120,10 +120,10 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 onClick={handleUseTemplate}
-                className="gap-2"
+                className="gap-2 text-xs sm:text-sm px-3 sm:px-4"
               >
                 <Sparkles className="w-4 h-4" />
                 Use Template
@@ -156,12 +156,12 @@ export function TemplatePreview({ templateId, isOpen, onClose, onUseTemplate }: 
         </div>
 
         {/* Footer Info */}
-        <div className="border-t bg-white p-4">
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <div className="flex items-center gap-4">
+        <div className="border-t bg-white p-3 sm:p-4">
+          <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 gap-2">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <span>Template: {template.name}</span>
-              <span>•</span>
-              <span>Category: {template.category}</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">Category: {template.category}</span>
             </div>
             <div className="flex items-center gap-2">
               <span>Preview Mode: {previewDevice}</span>
