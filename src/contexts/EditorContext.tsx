@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect, useState, useRef } from 'react';
 import {
   EditorState,
   EditorAction,
@@ -221,7 +221,7 @@ const updateNavbarLinks = (sections: EditorSection[]): EditorSection[] => {
 
   const navbar = sections[navbarIndex];
   const navData = navbar.data as NavbarData;
-  const isAutoMode = navData.autoGenerateLinks === true || 
+  const isAutoMode = navData.autoGenerateLinks === true ||
     (navData.autoGenerateLinks === undefined && (!navData.links || navData.links.length === 0));
 
   if (!isAutoMode) return sections;
@@ -295,7 +295,7 @@ const ensureStructure = (sections: EditorSection[]): EditorSection[] => {
 
   // Ensure proper ordering (navbar first, footer last)
   result = ensureSectionOrder(result);
-  
+
   // Update navbar links if auto mode is enabled
   return updateNavbarLinks(result);
 };
@@ -797,6 +797,8 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
   const [state, dispatch] = useReducer(editorReducer, initialState);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const lastLoadedPortfolioIdRef = useRef<string | null>(null);
+  const hasLoadedOnceRef = useRef(false);
 
   // Wait for hydration before accessing localStorage
   useEffect(() => {
@@ -806,6 +808,17 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
   // Load portfolio from API based on portfolioId
   useEffect(() => {
     if (!isHydrated) return;
+
+    const shouldSkipReload =
+      hasLoadedOnceRef.current &&
+      lastLoadedPortfolioIdRef.current === null &&
+      Boolean(portfolioId) &&
+      !templateId;
+
+    if (shouldSkipReload) {
+      lastLoadedPortfolioIdRef.current = portfolioId ?? null;
+      return;
+    }
 
     const loadPortfolio = async () => {
       try {
@@ -877,7 +890,10 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children, portfo
       }
     };
 
-    loadPortfolio();
+    loadPortfolio().finally(() => {
+      hasLoadedOnceRef.current = true;
+      lastLoadedPortfolioIdRef.current = portfolioId ?? null;
+    });
   }, [isHydrated, portfolioId, templateId]);
 
   return (

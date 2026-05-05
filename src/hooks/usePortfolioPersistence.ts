@@ -7,12 +7,24 @@ import { useSearchParams, useRouter } from 'next/navigation';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
+type SavedPortfolioSnapshot = {
+  id: string;
+  title: string;
+  slug: string;
+  customSlug?: string | null;
+  isPublic: boolean;
+  updatedAt: string;
+  lastPublishedAt?: string | null;
+  publishedAt?: string | null;
+  viewCount?: number;
+};
+
 export const usePortfolioPersistence = () => {
   const { state } = useEditor();
   const { setUnsavedChanges } = useEditorActions();
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+
   const initialId = searchParams.get('id');
   const [activePortfolioId, setActivePortfolioId] = useState<string | null>(initialId);
 
@@ -22,6 +34,7 @@ export const usePortfolioPersistence = () => {
 
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState<SavedPortfolioSnapshot | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
 
@@ -30,6 +43,13 @@ export const usePortfolioPersistence = () => {
   const isSavingRef = useRef(false);
   const pendingSaveRef = useRef(false);
   const latestSaveOpRef = useRef(0);
+  const activeSavePromiseRef = useRef<Promise<unknown> | null>(null);
+  const lastSavedPayloadRef = useRef<string | null>(null);
+  const stateVersionRef = useRef(0);
+
+  useEffect(() => {
+    stateVersionRef.current += 1;
+  }, [state.sections, state.portfolioTitle, state.templateId]);
 
   const beginSaveOperation = () => {
     latestSaveOpRef.current += 1;
@@ -38,36 +58,94 @@ export const usePortfolioPersistence = () => {
 
   const isLatestSaveOperation = (opId: number) => latestSaveOpRef.current === opId;
 
+  const buildPayload = useCallback((titleOverride?: string) => {
+    // Strip undefined values so MongoDB / Prisma never sees them.
+    const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
+
+    return {
+      content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
+      title: titleOverride || state.portfolioTitle || 'Untitled Portfolio',
+      template: state.templateId || 'default'
+    };
+  }, [state.portfolioTitle, state.sections, state.templateId]);
+
+  const recordSavedSnapshot = useCallback((data: unknown) => {
+    if (!data || typeof data !== 'object') return;
+    const typed = data as Record<string, unknown>;
+    if (typeof typed.id !== 'string') return;
+
+    setLastSavedSnapshot({
+      id: typed.id,
+      title: typeof typed.title === 'string' ? typed.title : state.portfolioTitle || 'Untitled Portfolio',
+      slug: typeof typed.slug === 'string' ? typed.slug : '',
+      customSlug: typed.customSlug === null || typeof typed.customSlug === 'string' ? typed.customSlug : undefined,
+      isPublic: Boolean(typed.isPublic),
+      updatedAt: typeof typed.updatedAt === 'string' ? typed.updatedAt : new Date().toISOString(),
+      lastPublishedAt: typeof typed.lastPublishedAt === 'string'
+        ? typed.lastPublishedAt
+        : typed.lastPublishedAt
+          ? new Date(typed.lastPublishedAt as Date).toISOString()
+          : null,
+      publishedAt: typeof typed.publishedAt === 'string'
+        ? typed.publishedAt
+        : typed.publishedAt
+          ? new Date(typed.publishedAt as Date).toISOString()
+          : null,
+      viewCount: typeof typed.viewCount === 'number' ? typed.viewCount : undefined,
+    });
+  }, [state.portfolioTitle]);
+
   const performAutoSave = useCallback(async () => {
+    if (activeSavePromiseRef.current) {
+      pendingSaveRef.current = true;
+      return;
+    }
+
     const saveOpId = beginSaveOperation();
+    const saveVersion = stateVersionRef.current;
+
+    const payload = buildPayload();
+    const body = JSON.stringify(payload);
+
+    if (body === lastSavedPayloadRef.current) {
+      setUnsavedChanges(false);
+      if (isLatestSaveOperation(saveOpId)) {
+        setSaveState('saved');
+        setLastSaved(new Date());
+        setSaveError(null);
+
+        setTimeout(() => {
+          if (isLatestSaveOperation(saveOpId)) {
+            setSaveState('idle');
+          }
+        }, 2000);
+      }
+      return;
+    }
+
     isSavingRef.current = true;
     setSaveState('saving');
     setSaveError(null);
 
     try {
-      // Strip undefined values so MongoDB / Prisma never sees them.
-      const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
-
-      const payload = {
-        content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
-        title: state.portfolioTitle || 'Untitled Portfolio',
-        template: state.templateId || 'default'
-      };
-
-      let response;
+      const savePromise = (async () => {
       if (activePortfolioId) {
-        response = await fetch(`/api/portfolios/${activePortfolioId}`, {
+          return fetch(`/api/portfolios/${activePortfolioId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+            body,
+          });
       } else {
-        response = await fetch(`/api/portfolios`, {
+          return fetch(`/api/portfolios`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+            body,
+          });
       }
+      })();
+
+      activeSavePromiseRef.current = savePromise;
+      const response = await savePromise;
 
       // Guard against HTML error pages (e.g. Next.js 500 page) being returned
       // instead of JSON — without this, response.json() throws a SyntaxError.
@@ -85,13 +163,19 @@ export const usePortfolioPersistence = () => {
         }
 
         if (isLatestSaveOperation(saveOpId)) {
+          lastSavedPayloadRef.current = body;
           setSaveState('saved');
           setLastSaved(new Date());
           setSaveError(null);
+          recordSavedSnapshot(result.data);
         }
 
-        // Clear unsaved changes flag immediately after successful save
-        setUnsavedChanges(false);
+        // Clear unsaved changes if no edits landed mid-save
+        if (stateVersionRef.current === saveVersion) {
+          setUnsavedChanges(false);
+        } else {
+          pendingSaveRef.current = true;
+        }
 
         // Reset to idle after showing success briefly
         setTimeout(() => {
@@ -117,6 +201,9 @@ export const usePortfolioPersistence = () => {
       }, 5000);
     } finally {
       isSavingRef.current = false;
+      if (activeSavePromiseRef.current) {
+        activeSavePromiseRef.current = null;
+      }
 
       // If there was a pending save request, trigger it now
       if (pendingSaveRef.current) {
@@ -124,7 +211,7 @@ export const usePortfolioPersistence = () => {
         setTimeout(() => performAutoSave(), 100);
       }
     }
-  }, [activePortfolioId, state, setUnsavedChanges, router]);
+  }, [activePortfolioId, buildPayload, recordSavedSnapshot, router, setUnsavedChanges]);
 
 
   // Debounced auto-save with queue
@@ -156,7 +243,12 @@ export const usePortfolioPersistence = () => {
   }, [state.sections, state.hasUnsavedChanges, state.portfolioTitle, activePortfolioId, autoSaveEnabled, performAutoSave]);
 
   const saveToDatabase = useCallback(async (title?: string) => {
+    if (activeSavePromiseRef.current) {
+      await activeSavePromiseRef.current;
+    }
+
     const saveOpId = beginSaveOperation();
+    const saveVersion = stateVersionRef.current;
 
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
@@ -164,33 +256,47 @@ export const usePortfolioPersistence = () => {
     }
     pendingSaveRef.current = false;
 
+    const payload = buildPayload(title);
+    const body = JSON.stringify(payload);
+
+    if (body === lastSavedPayloadRef.current) {
+      setUnsavedChanges(false);
+      if (isLatestSaveOperation(saveOpId)) {
+        setSaveState('saved');
+        setLastSaved(new Date());
+        setSaveError(null);
+
+        setTimeout(() => {
+          if (isLatestSaveOperation(saveOpId)) {
+            setSaveState('idle');
+          }
+        }, 2000);
+      }
+      return activePortfolioId || null;
+    }
+
+    isSavingRef.current = true;
     setSaveState('saving');
     setSaveError(null);
 
     try {
-      // Strip undefined values before sending (same as auto-save)
-      const sanitizedSections = JSON.parse(JSON.stringify(state.sections));
-
-      const payload = {
-        content: { sections: sanitizedSections, portfolioTitle: state.portfolioTitle },
-        title: title || state.portfolioTitle || 'Untitled Portfolio',
-        template: state.templateId || 'default'
-      };
-
-      let response;
-      if (activePortfolioId) {
-        response = await fetch(`/api/portfolios/${activePortfolioId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        response = await fetch(`/api/portfolios`, {
+      const savePromise = (async () => {
+        if (activePortfolioId) {
+          return fetch(`/api/portfolios/${activePortfolioId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+          });
+        }
+        return fetch(`/api/portfolios`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body,
         });
-      }
+      })();
+
+      activeSavePromiseRef.current = savePromise;
+      const response = await savePromise;
 
       // Guard against HTML error pages
       const contentType = response.headers.get('content-type') || '';
@@ -211,13 +317,19 @@ export const usePortfolioPersistence = () => {
         }
 
         if (isLatestSaveOperation(saveOpId)) {
+          lastSavedPayloadRef.current = body;
           setSaveState('saved');
           setLastSaved(new Date());
           setSaveError(null);
+          recordSavedSnapshot(result.data);
         }
 
-        // Clear unsaved changes flag immediately after successful save
-        setUnsavedChanges(false);
+        // Clear unsaved changes only if no edits landed mid-save
+        if (stateVersionRef.current === saveVersion) {
+          setUnsavedChanges(false);
+        } else {
+          pendingSaveRef.current = true;
+        }
 
         setTimeout(() => {
           if (isLatestSaveOperation(saveOpId)) {
@@ -226,9 +338,8 @@ export const usePortfolioPersistence = () => {
         }, 2000);
 
         return result.data.id;
-      } else {
-        throw new Error(result.error || 'Failed to save');
       }
+      throw new Error(result.error || 'Failed to save');
     } catch (error) {
       console.error('[Manual save] Error:', error);
       if (isLatestSaveOperation(saveOpId)) {
@@ -236,8 +347,18 @@ export const usePortfolioPersistence = () => {
         setSaveError(error instanceof Error ? error.message : 'Failed to save portfolio');
       }
       throw error;
+    } finally {
+      isSavingRef.current = false;
+      if (activeSavePromiseRef.current) {
+        activeSavePromiseRef.current = null;
+      }
+
+      if (pendingSaveRef.current) {
+        pendingSaveRef.current = false;
+        setTimeout(() => performAutoSave(), 100);
+      }
     }
-  }, [state, activePortfolioId, setUnsavedChanges, router]);
+  }, [activePortfolioId, buildPayload, performAutoSave, recordSavedSnapshot, router, setUnsavedChanges]);
 
   const loadFromDatabase = useCallback(async (id: string) => {
     try {
@@ -287,6 +408,7 @@ export const usePortfolioPersistence = () => {
     saveState,
     isSaving: saveState === 'saving',
     lastSaved,
+    lastSavedSnapshot,
     saveError,
     autoSaveEnabled,
     portfolioId: activePortfolioId, // Backward compatibility
