@@ -128,7 +128,6 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
-      let response;
       const savePromise = (async () => {
       if (activePortfolioId) {
           return fetch(`/api/portfolios/${activePortfolioId}`, {
@@ -146,7 +145,7 @@ export const usePortfolioPersistence = () => {
       })();
 
       activeSavePromiseRef.current = savePromise;
-      response = await savePromise;
+      const response = await savePromise;
 
       // Guard against HTML error pages (e.g. Next.js 500 page) being returned
       // instead of JSON — without this, response.json() throws a SyntaxError.
@@ -281,7 +280,6 @@ export const usePortfolioPersistence = () => {
     setSaveError(null);
 
     try {
-      let response;
       const savePromise = (async () => {
         if (activePortfolioId) {
           return fetch(`/api/portfolios/${activePortfolioId}`, {
@@ -298,7 +296,7 @@ export const usePortfolioPersistence = () => {
       })();
 
       activeSavePromiseRef.current = savePromise;
-      response = await savePromise;
+      const response = await savePromise;
 
       // Guard against HTML error pages
       const contentType = response.headers.get('content-type') || '';

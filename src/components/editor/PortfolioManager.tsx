@@ -167,7 +167,7 @@ export const PortfolioManager: React.FC = () => {
     } else {
       setShowSaveDialog(true);
     }
-  }, [portfolioId, state.portfolioTitle, saveToDatabase, fetchPortfolioDetails]);
+  }, [portfolioId, state.portfolioTitle, saveToDatabase]);
 
   // Keyboard shortcut: Ctrl+S / ⌘S to save
   useEffect(() => {
@@ -308,7 +308,7 @@ export const PortfolioManager: React.FC = () => {
       {saveError && (
         <div className="hidden sm:flex items-center gap-2 text-xs text-red-600 bg-red-50 px-3 py-1.5 rounded-md">
           <AlertCircle className="w-3.5 h-3.5" />
-          <span className="max-w-[200px] truncate">{saveError}</span>
+          <span className="max-w-50 truncate">{saveError}</span>
           <button onClick={clearSaveError} className="hover:text-red-800">×</button>
         </div>
       )}
