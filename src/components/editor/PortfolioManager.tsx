@@ -39,7 +39,8 @@ export const PortfolioManager: React.FC = () => {
     saveError,
     portfolioId,
     saveToDatabase,
-    clearSaveError
+    clearSaveError,
+    lastSavedSnapshot
   } = usePortfolioPersistence();
 
   const [saveTitle, setSaveTitle] = useState('');
@@ -116,8 +117,42 @@ export const PortfolioManager: React.FC = () => {
   }, [portfolioId]);
 
   useEffect(() => {
+    if (!portfolioId) return;
+    if (lastSavedSnapshot?.id === portfolioId) return;
     fetchPortfolioDetails();
-  }, [fetchPortfolioDetails]);
+  }, [fetchPortfolioDetails, lastSavedSnapshot, portfolioId]);
+
+  useEffect(() => {
+    if (!lastSavedSnapshot) return;
+
+    setPortfolioDetails((prev) => {
+      if (!prev || prev.id !== lastSavedSnapshot.id) {
+        return {
+          id: lastSavedSnapshot.id,
+          title: lastSavedSnapshot.title,
+          slug: lastSavedSnapshot.slug,
+          customSlug: lastSavedSnapshot.customSlug ?? null,
+          isPublic: lastSavedSnapshot.isPublic,
+          updatedAt: lastSavedSnapshot.updatedAt,
+          lastPublishedAt: lastSavedSnapshot.lastPublishedAt ?? null,
+          publishedAt: lastSavedSnapshot.publishedAt ?? null,
+          viewCount: lastSavedSnapshot.viewCount ?? 0,
+        };
+      }
+
+      return {
+        ...prev,
+        title: lastSavedSnapshot.title || prev.title,
+        slug: lastSavedSnapshot.slug || prev.slug,
+        customSlug: lastSavedSnapshot.customSlug ?? prev.customSlug,
+        isPublic: lastSavedSnapshot.isPublic,
+        updatedAt: lastSavedSnapshot.updatedAt || prev.updatedAt,
+        lastPublishedAt: lastSavedSnapshot.lastPublishedAt ?? prev.lastPublishedAt,
+        publishedAt: lastSavedSnapshot.publishedAt ?? prev.publishedAt,
+        viewCount: typeof lastSavedSnapshot.viewCount === 'number' ? lastSavedSnapshot.viewCount : prev.viewCount,
+      };
+    });
+  }, [lastSavedSnapshot]);
 
   // Quick save — saves immediately without title dialog
   // If portfolio already exists (has ID), save directly.
@@ -126,7 +161,6 @@ export const PortfolioManager: React.FC = () => {
     if (portfolioId) {
       try {
         await saveToDatabase(state.portfolioTitle);
-        fetchPortfolioDetails(portfolioId);
       } catch {
         // Error displayed by saveError state
       }
@@ -152,14 +186,9 @@ export const PortfolioManager: React.FC = () => {
   const handleSaveWithTitle = async () => {
     try {
       const title = saveTitle.trim() || 'Untitled Portfolio';
-      const newId = await saveToDatabase(title);
+      await saveToDatabase(title);
       setSaveTitle('');
       setShowSaveDialog(false);
-
-      // Reload portfolio details explicitly via newly returned ID since hook state won't be fresh here yet
-      if (typeof newId === 'string') {
-        fetchPortfolioDetails(newId);
-      }
     } catch {
       // Error already displayed by saveError state
     }
