@@ -8,7 +8,7 @@ import Footer from "@/components/landing/Footer";
 
 export default function HomePage() {
   return (
-    <div className="landing-editorial selection:bg-[#d8d0c6] selection:text-[#2D2A26]">
+    <div className="landing-editorial bg-amber-700 selection:text-[#2D2A26]">
       <Header />
       <main className="overflow-hidden pt-[5.15rem] sm:pt-[5.65rem]">
         <Hero />
